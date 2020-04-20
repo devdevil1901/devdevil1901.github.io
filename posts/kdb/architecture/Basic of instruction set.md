@@ -161,33 +161,33 @@ C(carry)는 carry or unsigned overflow set
 V(overflow)는 signed overflow일때 set
 
 
-<code>
-mov x0, #0x1
+<pre>
+mov x0, #0x1  
 cmp x0, #0x2
-</code>
+</pre>
 
 위의 코드에서, register는 어떻게 변했는지 확인해 보자.
 
-<code>
+<pre>
 (gdb) *info registers cpsr*
 cpsr 0x80000000 -2147483648
 1000 0000 0000 0000 0000 0000 0000 0000
-</code>
+</pre>
 
 cmp는 같은지 비교를 위해서 사실 빼기를 수행한다.
 31번째 bit가 1인것을 확인하 수 있다.
 1-2 = -1이기 때문에
 N(negative) flag가 set 되었다.
 
-<code>
-mov x0, #0x1
+<pre>
+mov x0, #0x1   
 cmp x0, #0x1
-</code>
+</pre>
 
-<code>
+<pre>
 (gdb) *info registers cpsr*
 cpsr 0x60000000 1610612736
 0110 0000 0000 0000 0000 0000 0000 0000
-</code>
+</pre>
 1-1=0이기 때문에 Z(Zero) flag와 C(Carry) flag가 set되었다.
 
