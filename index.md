@@ -17,7 +17,7 @@ KDB(Knowledge Database)
 </pre>
 
 ## ARCHITECTURE
-* [Basic of instruction set](posts/kdb/architecture/Basic%20of%20instruction%20set.md)
+* [Basic of instruction set](./posts/kdb/architecture/Basic%20of%20instruction%20set.md)
   * Data Type
 * [Conditional flags](posts/kdb/architecture/Conditional%20flags)
 
