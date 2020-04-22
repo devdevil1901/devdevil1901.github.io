@@ -1,13 +1,19 @@
 ---
-title: "KDB(Knowledge Database"
+title: "KDB(Knowledge Database)"
 permalink: /kdb/
 toc_sticky: true
 toc_ads : true
 layout: single
 ---
 
-# Architecture
+## [Architecture](/kdb/arch/)
 
-# Linux Kernel
+### [Basic of Instruction set](/kdb/arch/basic_of_instruction_set)
 
-# Android
+### 
+
+## Linux Kernel
+
+## Android
+
+## Security
