@@ -8,9 +8,8 @@ layout: single
 
 ## [Architecture](/kdb/arch/)
 
-### [Basic of Instruction set](/kdb/arch/basic_of_instruction_set)
-
-### [Assembly_Programming](/kdb/arch/assembly_programming)
+1. [Basic of Instruction set](/kdb/arch/basic_of_instruction_set)
+2. [Assembly_Programming](/kdb/arch/assembly_programming)
 
 ## [Linux Kernel](/kdb/linux/)
 
