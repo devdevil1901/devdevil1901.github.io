@@ -10,10 +10,10 @@ layout: single
 
 ### [Basic of Instruction set](/kdb/arch/basic_of_instruction_set)
 
-### 
+### [Assembly_Programming](/kdb/arch/assembly_programming)
 
-## Linux Kernel
+## [Linux Kernel](/kdb/linux/)
 
-## Android
+## [Android](/kdb/android/)
 
-## Security
+## [Security](/kdb/security/)
