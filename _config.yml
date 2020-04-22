@@ -1,7 +1,7 @@
-blog_theme: light # Or use dark
+blog_theme: dark # Or use dark
 name: Chalk
 paginate: 25
-url: http://chalk.nielsenramon.com
+url: https://devdevil1901.github.io
 
 
 # Optional settings
