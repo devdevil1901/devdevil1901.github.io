@@ -21,10 +21,35 @@ x86_64와 aarch64를 기준으로 설명하며, x86과 aarch64에서 공통적�
 # Signed vs UnSigned
 
 Signed는 negative 즉 음수도 포함하는 값, Unsigned는 양수만의 값.
-Signed char는 -128~+128까지를 저장할 수 있고,
-Unsigned char의 경우는 0~256까지를 저장할 수 있게 되는 것.
+정확한 크기는 arm 기준으로 다음과 같다.
 
-즉 Unsigned가 양수라면, 2배를 담을 수 있다.(그래서 hexa값을 unsigned에 담는 것이다)
+|Type|Range|
+|---|:---:|
+|signed char|-128~127|
+|unsigned char|0~255|
+|signed short|-32,768~32,767|
+|unsigned short|0~65535|
+|signed int|–2,147,483,648~2,147,483,647|
+|unsigned int|0~4,294,967,295|
+|signed long long|–9,223,372,036,854,775,808~9,223,372,036,854,775,807|
+|unsigned long long|0~18,446,744,073,709,551,615|
+
+
+즉 값은 크기지만, 담는 대상에 따라서, Unsigned 경우는 2배 까지를 담을 수 있게 된다.
+Hexa코드를 Byte단위로 읽는 다고 할때는 UnSigned로 담아야 한다.
+
+이전에 Global 회사에서, 모바일 취약점 분석툴을 개발해서, 앱 출시 과정에 자동으로 보고서를 생성하는 툴을 개발하여서, 
+Deploy Process에 추가하는 프로젝트를 수행하였었는데 개발 언어를 엄청 고민했었다.
+
+왜냐하면, binary에서 assembly code를 읽어오는 부분이 핵심기능중 하나였는데,
+Deploy Process에 넣기에는 JAR형태가 필요했었고, java는 UnSigned가 없기 때문에 byte code를 읽어오는데 문제점이 있었기 때문이다.
+즉 127이 넘는 byte(0xD0같이)의 경우는 값이 이상해 지기 때문이다. 
+그렇지만 java stream쪽 API들이 보다 큰 값의 자료형을 사용해서(int면 long에 담는 식으로) 이 문제를 해결해 주는 것을 확인하고 JAVA로 개발한 적이 있다.
+
+즉 unsigned와 singed를 정확히 이해하는 것은 그것을 지원하지 않는 언어를 사용하는 경우에도 매우 중요하다고 할 수 있다.
+
+> 지금은 kotlin의 경우 experimental이긴 하지만, unsigned를 나름 제대로 지원하고 있다.
+
 signed는 부호를 표현하기 위해서, 다음과 같이 msb(마지막 bit)를 사용한다. positive(+)는 0, nagative(-)는 1이다.
 
 ## 1. MSB(Most Significant Bit)
