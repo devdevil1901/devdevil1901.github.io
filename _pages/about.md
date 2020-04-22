@@ -7,4 +7,5 @@ layout: single
 ---
 
 ### Who am I?
-<h6>Security Engineer and Android Developer</h6>
+Security Engineer and Android Developer
+
