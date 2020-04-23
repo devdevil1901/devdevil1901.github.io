@@ -1,6 +1,6 @@
 ---
 title: "Hardware"
-permalink: /kdb/arch/hardware
+permalink: /kdb/arch/hardware/
 toc_sticky: true
 toc_ads : true
 layout: single
