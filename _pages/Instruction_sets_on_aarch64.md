@@ -1,3 +1,11 @@
+---
+title: "Instruction sets on aarch64"
+permalink: /kdb/arch/instruction_sets_on_aarch64/
+toc_sticky: true
+toc_ads : true
+layout: single
+---
+
 # Exception Level
 Coretex-a7에서 Priviledge level 처럼 EL0~ EL3의 4가지 Exception Level이 도입되었다.    
 EL0 와 EL1은 secure 와 non-secure    
