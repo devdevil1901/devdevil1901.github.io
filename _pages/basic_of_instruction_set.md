@@ -34,18 +34,11 @@ Signed는 negative 즉 음수도 포함하는 값, Unsigned는 양수만의 값.
 |signed long long|–9,223,372,036,854,775,808~9,223,372,036,854,775,807|
 |unsigned long long|0~18,446,744,073,709,551,615|
 
-
-즉 값은 크기지만, 담는 대상에 따라서, Unsigned 경우는 2배 까지를 담을 수 있게 된다.
-Hexa코드를 Byte단위로 읽는 다고 할때는 UnSigned로 담아야 한다.
-
-이전에 Global 회사에서, 모바일 취약점 분석툴을 개발해서, 앱 출시 과정에 자동으로 보고서를 생성하는 툴을 개발하여서, 
-Deploy Process에 추가하는 프로젝트를 수행하였었는데 개발 언어를 엄청 고민했었다.
-
-왜냐하면, binary에서 assembly code를 읽어오는 부분이 핵심기능중 하나였는데,
-Deploy Process에 넣기에는 JAR형태가 필요했었고, java는 UnSigned가 없기 때문에 byte code를 읽어오는데 문제점이 있었기 때문이다.
-즉 127이 넘는 byte(0xD0같이)의 경우는 값이 이상해 지기 때문이다. 
-그렇지만 java stream쪽 API들이 보다 큰 값의 자료형을 사용해서(int면 long에 담는 식으로) 이 문제를 해결해 주는 것을 확인하고 JAVA로 개발한 적이 있다.
-
+즉 값은 크기지만, 담는 대상에 따라서, UnSigned 경우는 2배 까지를 담을 수 있게 된다.
+예로 Hexa값을 읽어 올때는 UnSigned에 담아야 한다.
+127이 넘는 byte(0xD0같이)의 경우는 값이 이상해 지기 때문이다.
+Java에는 UnSigned 개념이 없기 때문에 이런 경우 값이 이상해 질 수 있다.
+그렇지만 java stream쪽 API들이 보다 큰 값의 자료형을 사용해서(int면 long에 담는 식으로) 이 문제를 해결해 주고있다.
 즉 unsigned와 singed를 정확히 이해하는 것은 그것을 지원하지 않는 언어를 사용하는 경우에도 매우 중요하다고 할 수 있다.
 
 > 지금은 kotlin의 경우 experimental이긴 하지만, unsigned를 나름 제대로 지원하고 있다.
@@ -106,7 +99,7 @@ aarch64에서는 PSTATE register가 있고, 이것을 저장하는 spsr_eln regi
 ## 1. carry and overflow
 간단하지만 헷갈리는 부분이 carry와 overflow이다. 인터넷에 있는 자료들중 태반의 설명이 잘못되어 있는 것을 확인하였다 때문에 예제를 들어 자세히 정리한다.
 
-간단하게 정리해서, carry는 **올림**이 발생하는 현상으로 **unsigned** 에서만 의미가 있다.
+간단하게 정리해서, carry는 **올림**이나 **내림**이 발생하는 현상으로 **unsigned** 에서만 의미가 있다.
 overflow는 연산으로 부호 bit가 변하면 발생하는 현상으로 **signed**에서만 의미가 있다.
 하지만 기억해야 할 것은 ALU나 FPU등이 flag를 set할때는 이 값이 signed 인지 unsigned인지는 알고하는 것은 아니라는 것이다.
 
@@ -143,9 +136,16 @@ carry가 발생 했을까? 이 계산을 한 register가  1 byte짜리라면 맞
 -1 + 0
 1111 1111 1111 1111 1111 1111 1111 1111
 
-지금까지는 간단했지만,
+좀더 까다로운 부분을 다루어 보자.
+올림과 마찬가지로 **내림**에서도 carry가 발생하게된다.
+
 3 + -1을 생각해 보자.
 10진수로 했을 경우에는 2가 되기 때문에, carry는 발생하지 않을 것 같지만 그렇지 않다.
+
+32bit라고 생각했을때, -1은 이진수로 
+1111 1111 1111 1111
+이 된다. 이 값은 signed라면 -1이지만, unsigned라면 65535라는 큰 값이다.
+위에서 설명했듯이 ALU는 unsigned와 signed를 구별하지 않고 연산후 flag를 set하게된다.
 
 <pre>
    0000 0000 0000 0000 0000 0000 0000 0011
@@ -153,16 +153,35 @@ carry가 발생 했을까? 이 계산을 한 register가  1 byte짜리라면 맞
  1 0000 0000 0000 0000 0000 0000 0000 0010
 </pre>
 
+즉 3+65535은 unsigned에서는 overflow이고, signed에서는 carry이다.
+때문에 aarch64에서는 unsigned overflow나 carry 모두 carry flag만을 set하게 된다.
+
 이것이 3-1을 했을때 carry flag가 set되는 이유이다.
 실제로 다음과 같은 코드에서는 carry flag가 set된다.
+
+  1111 1111 1111 1111 1111 1111 1111 1111
++ 1111 1111 1111 1111 1111 1111 1111 1111
 
 <pre>
 mov x0, #3
 cmp x0, #1
 </pre>
 
+aarch64에서 V flag즉 signed overflow에 대해서 확인해 보자.
+
+32767
+0111111111111111
+
+16384
+0100000000000000
+
+**자 아무래도 기본적으로 ALU는 unsigned로 연산을 하는 것 같다. 특별히 signed instruction을 별도로 사용하지 않는다고 하면은 말이다. 일단 instruction관련 정리를 해 나가면서 다시 제대로 테스트를 하도록 하자.**
+
+
 overflow는 두 연산에서 **부호가 같은데** 연산의 **결과는 부호가 반대**인 경우를 의미한다.
-(즉 부호가 다른 경우에는 overflow가 없다)
+Positive + Positive = Negative
+Negative + Negatieve = Positive
+
 
 32bit 덧셈에서 
 16384 + 16384 = 32768 된다. 2진수로 보면.
@@ -249,3 +268,5 @@ aarch64에는
 N,Z,C,V
 #### aarch 
 
+# Calling convention
+the stack grows towards lower address. stack이 더 낮은 주소로 자라는 것은 aarch64와 x86 둘다 동일하다.
