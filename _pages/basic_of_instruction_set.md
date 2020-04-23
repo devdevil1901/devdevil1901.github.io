@@ -6,7 +6,7 @@ toc_ads : true
 layout: single
 ---
 
-<h1> 
+<h1>현재 편집중</h1>
 
 x86_64와 aarch64를 기준으로 설명하며, x86과 aarch64에서 공통적인 부분들을 추려보았다.
 
