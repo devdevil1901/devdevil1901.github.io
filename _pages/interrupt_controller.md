@@ -47,4 +47,4 @@ virtual core 마다 존재
 
 # Reference
 이 GIC에 대한 명세는 ARM® Generic Interrupt Controller Architecture Specification에 나와있다.   
-(https://static.docs.arm.com/ihi0069/d/IHI0069D_gic_architecture_specification.pdf)
+[link](https://static.docs.arm.com/ihi0069/d/IHI0069D_gic_architecture_specification.pdf)
