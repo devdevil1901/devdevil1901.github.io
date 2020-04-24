@@ -12,3 +12,4 @@ layout: single
 ## [Assembly_Programming](/kdb/arch/assembly_programming)
 ## [Instruction sets on aarch64](/kdb/arch/instruction_sets_on_aarch64/)
 ## [Hardware](/kdb/arch/hardware/)
+## [BIOS/UEFI](/kdb/arch/bios_uefi/)
