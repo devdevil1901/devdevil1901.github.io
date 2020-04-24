@@ -14,3 +14,4 @@ layout: single
 ## [Hardware](/kdb/arch/hardware/)
 ## [BIOS/UEFI](/kdb/arch/bios_uefi/)
 ## [Interrupt Controller](/kdb/arch/interrupt_controller/)
+## [CPU](/kdb/arch/cpu/)
