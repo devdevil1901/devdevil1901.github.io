@@ -29,7 +29,7 @@
 <loc>http://localhost:4000/kdb/dev/</loc>
 </url>
 <url>
-<loc>http://localhost:4000/kdb/arch/hardware</loc>
+<loc>http://localhost:4000/kdb/arch/hardware/</loc>
 </url>
 <url>
 <loc>http://localhost:4000/</loc>
