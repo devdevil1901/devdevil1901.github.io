@@ -10,7 +10,7 @@ PIC는 x86 architecture의 interrupt controller이다.
 software로서 control가능하기 때문에, programmable IC즉 PIC라고 부른다.   
 APIC는 SMP 환경에서의 IC이다.   
 
-![APIC](./assets/images/arch_ic_1_apic.png)
+![APIC](https://devdevil1901.github.io/assets/images/arch_ic_1_apic.png)
 
 IRQ를 처리하는 external I/O APIC와 추가적으로 scheduler의 time slice를 가능하게 하는 timer interrupt,      
 IPI(Inter Processor Interrupt), IRQ from locally conected I/O device의 interrupt들을 처리하는 local APIC로 구성된다.   
