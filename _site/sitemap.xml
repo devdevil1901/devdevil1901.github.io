@@ -29,6 +29,9 @@
 <loc>http://devdevil1901.github.io/kdb/arch/bios_uefi/</loc>
 </url>
 <url>
+<loc>http://devdevil1901.github.io/kdb/arch/cpu/</loc>
+</url>
+<url>
 <loc>http://devdevil1901.github.io/kdb/dev/</loc>
 </url>
 <url>
@@ -39,6 +42,9 @@
 </url>
 <url>
 <loc>http://devdevil1901.github.io/</loc>
+</url>
+<url>
+<loc>http://devdevil1901.github.io/kdb/arch/interrupt_controller/</loc>
 </url>
 <url>
 <loc>http://devdevil1901.github.io/kdb/</loc>
