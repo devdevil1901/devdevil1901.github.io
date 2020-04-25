@@ -70,9 +70,9 @@ All I played today was Governor Cuomo.
 New Reporter:(1:12)   
 Why is now the moment to do that, sir?   
 Trump(1:13)   
-saying very positive things about the job the federal government has done,   and those people
-News Rerpoter:
-On the day where more that 40,000 Americans have now died.
+saying very positive things about the job the federal government has done, and those people   
+News Rerpoter:   
+On the day where more that 40,000 Americans have now died.   
 <h6>
 난 그런 대단한 일을 해낸 사람들을 지지 합니다.  
 난 또한 의사들 간호사들 군 의사들을 지지합니다. 
@@ -82,28 +82,41 @@ On the day where more that 40,000 Americans have now died.
 연방 정부가 한 긍정적인 것들에 대해 말하는 것은, 그리고 그런 사람들    
 4만명 넘는 사람들이 지금 죽어가는 날에요.
 </h6>
-
- and those people have been just absolutely excoriated by some of the fake news, like you, you CNN your fake news a
-
-and let me just tell you they were excoriated by people like you that don't know any better because you don't have the brains you were born with you should be praising the people that have done a good job,
-
-not doing what you do even that question so just so you understand if we didn't do a job.
-I now not worry
-
-Reporter: ?BlahBlah
-
 Trump:
-I'll tell you why now.
-are you ready?
-because these people are right now in hospitals
-it's dangerous it's going to a battlefield 
-and I want these people I want you I want you
-
-Rerporter: .Blah Blah
+and those people have been just absolutely excoriated by some of the fake news,   
+like you, you CNN your fake news    
+and let me just tell you they were excoriated by people like you that don't know any better    
+because you don't have the brains you were born with you should be praising the people that have done a good job,   
+not doing what you do even that question so just so you understand if we didn't do a job
+News Reporter:
+The question is: 'Why now, sir?'
+The question is: 'Why now' not 'why are you doing it' but why now?   
+Trump:   
+I'll tell you why now.   
+you're ready?   
+because these people are right now in hospitals   
+it's dangerous it's going to a battlefield    
+and I want these people I want you I want you   
+Rerporter:   
+This wasn't about hospital workers, sir.
+Trump:    
+I want you and   
+Reporter:   
+This wasn't about the doctors.   
+Trump:
+It's all about that.   
+Reporter:   
+This was about you and your administration   
+Trmp:
+It's not about me. no, **nothing is about me**
+<h6>
+excoriate [eksˈkɔːrieɪt] 상처를 입히다, 마구비난하다.
+</h6>
 
 Trump:(1:59)
-that's all about that it's not about me
-nothing's about me look look you're never gonna treat me fairly many of you
+look look you're never gonna treat me fairly many of you   
+and I understand that I don't even know   
+I got here with the worst   
+most unfair press treatment they say in the history of the United States for president    
+they did say Abraham Lincoln had very bad treatment too.    
 
- and I understand that I don't even know 
-I got here with the worst most unfair press treatment they say in the history of the United States for president they did say Abraham Lincoln had very bad treatment.
