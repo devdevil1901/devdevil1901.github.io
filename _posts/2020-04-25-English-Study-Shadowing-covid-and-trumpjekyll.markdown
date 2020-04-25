@@ -1,6 +1,12 @@
 
-Today shadowing.
+---
+layout: post
+title:  "Trump Insults CNN Reporter Who Challenged Him"
+date:   2020-04-25 12:38:33 +0900
+categories: jekyll update
+---
 
+Today shadowing.
 
 comment:   
 Why did Trump congratulate himself after 40k people died?   
