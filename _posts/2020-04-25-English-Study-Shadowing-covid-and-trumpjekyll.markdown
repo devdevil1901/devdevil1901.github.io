@@ -1,10 +1,11 @@
-
 ---
 layout: post
 title:  "Trump Insults CNN Reporter Who Challenged Him"
 date:   2020-04-25 12:38:33 +0900
 categories: jekyll update
 ---
+
+
 
 Today shadowing.
 
