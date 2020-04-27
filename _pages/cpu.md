@@ -308,7 +308,7 @@ on-chip에 비해, off-chip 활동은 전력을 더 소모하기 때문에 저�
 ## 1.AP(Application Processor)
 대표적인 것인 smart phone에서 사용되는 Mobile AP(Application Processor)이다.   
 즉 AP가 SOC다.   
-ARM에서는 core(ALU, CU, Register)와 Cache, JTAG, WB, CP + bus를 licensing하고,   
+ARM에서는 core(ALU, CU, Register)와 Cache, JTAG, WB, CP + bus를   
 삼성, 퀄컴등은 여기서 라이센스를 구매해서 여기에다가, timer, sram, nor등의 peripheral 장치들을 추가해서 soc를 만들어서 판매하는 것이다.   
 실제 크기는 1cm 남짓으로 손톱보다도 작다.   
 JTAG debugger는 core를 test하기 위해 추가되는 국제 규약의 pin이다.   
