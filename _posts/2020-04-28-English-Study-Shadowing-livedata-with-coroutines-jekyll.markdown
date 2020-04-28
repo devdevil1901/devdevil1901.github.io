@@ -4,8 +4,11 @@ title:  "LiveData with Coroutines and Flow"
 date:   2020-04-25 12:38:33 +0900
 categories: jekyll update
 ---
+[source](https://www.youtube.com/watch?v=B8ppnjGPAGE)
 
 
+
+<pre>
 Hi there.   
 My name is Jose Alcerreca. I'm developer relations engineer working on Android.   
 My name is Yigit Boyar. I also work on the Android team.   
@@ -14,6 +17,8 @@ We were here last year with a talk titled fun with LiveData.
 Today we're going to talk about its integration with coroutines and with Flow.   
 
 So since API we've struggled to understand Android lifecycles.   
+</pre>
+
 <h6>
 안녕하세요 제이름은 호세 알세레카이고요, 안드로이드에서 일하는 엔지니어관련 개발자 입니다.   
 저는 이짓 보얄이고요, 저또한 안드로이드 팀에서 일하고 있어요.   
