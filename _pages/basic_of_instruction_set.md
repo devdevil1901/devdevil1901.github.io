@@ -241,8 +241,12 @@ Negative + Negatieve = Positive
 
 1. N(negative)는 if negative set
 2. Z(Zero)는 if eqaul or zero set
-3. C(carry)는 **carry or unsigned overflow set**
-4. V(overflow)는 **signed overflow**일때 set
+3. C(carry)는 **carry or unsigned overflow set**   
+Logical instruction에서는 1이 왼쪽으로 shift된것을 의미하고,   64
+산술연산에서라면 값이 64bit 보다 커진것을 의미한다.   
+4. V(overflow)는 **signed overflow**일때 set   
+Logical instruction에서는 의미가 없고, 두 Signed의 Arithmetic 연산에서 64bit 보다 더 큰 값이 요구되는 경우로서   
+값이 손상되었음을 내포하고 있다.   
 
 ### 2.3 SPSR(32bit Saved Process Status Register on aarch64)
 |Bit|Flag|Description| 
@@ -268,7 +272,31 @@ Negative + Negatieve = Positive
 branch와 data processing instruction들은 조건 부로 동작이 가능한데 conditional code의 접미어로 사용한다.
 aarch64에는
 N,Z,C,V
-#### aarch 
+#### on aarch64    
+
+|Code|Meaning|Condition flags|
+|---|---|---|
+|EQ|Equal|Z set|
+|NE|Not Equal|Z clear|
+|HI|UnSigned Higher|C set and Z clear|
+|HS|UnSigned Higher or Same|C set|
+|LS|UnSigned Lower or Same|C clear or Z set|
+|LO|UnSigned Lower|C clear|
+|GT|Signed Greater Than|Z clear and N equal V|
+|GE|Signed Creater Than or Equal|N equal V|
+|LE|Signed Less Than or Equal|Z set or N not equal V|
+|LT|Signed Less Than|N not equal V|
+|CS|UnSigned Overflow|C set|
+|CC|No SuSigned Overflow|C clear|
+|VS|Signed Overflow|V set|
+|VC|No Signed Overflow|V clear|
+|MI|Minus, Negative|N set|
+|PL|Plus, Positive or Zero|N clear|
+|AL|Always Execute|Any|
+|NV|Never Execute|Any|
+
+
 
 # Calling convention
-the stack grows towards lower address. stack이 더 낮은 주소로 자라는 것은 aarch64와 x86 둘다 동일하다.
+the stack grows towards lower address. stack이 더 낮은 주소로 자라는 것은 aarch64와 x86 둘다 동일하다.   
+
