@@ -10,4 +10,10 @@ var store = [{
         "tags": [],
         "url": "http://devdevil1901.github.io/jekyll/update/English-Study-Shadowing-covid-and-trumpjekyll/",
         "teaser": null
+      },{
+        "title": "LiveData with Coroutines and Flow",
+        "excerpt":"source Hi there. My name is Jose Alcerreca. I'm developer relations engineer working on Android. My name is Yigit Boyar. I also work on the Android team. Today we're going to talk about LiveData again. We were here last year with a talk titled fun with LiveData. Today we're going...","categories": ["jekyll","update"],
+        "tags": [],
+        "url": "http://devdevil1901.github.io/jekyll/update/English-Study-Shadowing-livedata-with-coroutines-jekyll/",
+        "teaser": null
       }]
