@@ -353,5 +353,7 @@ ldp x29, x30, [sp], #16
 </pre>
 에서는 high memory 쪽으로 16이 되서 호출 전의 stack pointer로 돌아간다.    
 
+# References
+[aarch64 instruction](https://modexp.wordpress.com/2018/10/30/arm64-assembly/#profiles)    
 
 
