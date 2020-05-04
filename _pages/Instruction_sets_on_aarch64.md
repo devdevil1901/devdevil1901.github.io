@@ -556,3 +556,5 @@ SBC <Xd>, XZR, <Xm>
 # References
 [aarch64 official](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0488c/CIHIDFFE.html)   
 [instruction description](https://static.docs.arm.com/ddi0596/a/DDI_0596_ARM_a64_instruction_set_architecture.pdf)   
+[armv8 a64 quick reference](https://courses.cs.washington.edu/courses/cse469/19wi/arm64.pdf)    
+
