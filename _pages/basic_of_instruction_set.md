@@ -322,6 +322,7 @@ testCond:
 main:
         bl testCond
 </pre>
+
 먼저 bl testCond가 실행된 다음의 상태이다.    
 |stack addr|stack pointer|stored|
 |---|---|---|
@@ -330,6 +331,7 @@ main:
 |0x40007ffb90|O|0x40007ffba0|
 |0x40007ffb88|||
 |0x40007ffb80|||
+
 그다음 stp x29, x30, [sp, #-16]! 즉 stack prolog가 실행되고 난 뒤는 다음과 같다.    
 |stack addr|stack pointer|stored|
 |---|---|---|
@@ -339,11 +341,12 @@ main:
 |0x40007ffb88|||
 |0x40007ffb80|O|0x40007ffba0 == x30(lr)|
 |0x40007ffb78||0x40007ffba0 == x29(fp)|
+
 <pre>
 [sp, #-16]!
 </pre>    
 을 통해서 stack pointer가 -16. 즉 low memory 쪽으로 확장된다.   
-그리고 그 sp 위치에는 돌아갈 주소인 lr이 저장된다. -8 위치인 바로 밑에는 
+그리고 그 sp 위치에는 돌아갈 주소인 lr이 저장된다. -8 위치인 바로 밑에는    
 frame buffer pointer가 저장되어 있게 된다.    
 <pre>
 ldp x29, x30, [sp], #16
