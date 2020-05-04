@@ -6,9 +6,7 @@ toc_ads : true
 layout: single
 ---
 
-<h1>현재 편집중</h1>
-
-x86_64와 aarch64를 기준으로 설명하며, x86과 aarch64에서 공통적인 부분들을 추려보았다.
+x86_64와 aarch64를 기준으로 설명하며, x86과 aarch64에서 공통적인 부분들을 추려보았다.   
 
 # Data Type
 
@@ -298,5 +296,59 @@ N,Z,C,V
 
 
 # Calling convention
-the stack grows towards lower address. stack이 더 낮은 주소로 자라는 것은 aarch64와 x86 둘다 동일하다.   
+the stack grows towards lower address.   
+**stack이 더 낮은 주소로 자라는 것**은 aarch64와 x86 둘다 동일하다.   
+
+## stack prolog & epilogue   
+function안에 다른 function을 call 하는 subroutine이 존재하는 경우에는 stack prolog와 stack epilogue를 반드시 사용해야 한다.   
+aarch64의 경우, 이를 위해서, data transfer instruction을 통해서 구현된다.    
+stack prolog는 다음과 같은 것이다.    
+testCond:                         
+        **stp x29, x30, [sp, #-16]!**          
+        
+epilogue는 다음과 같은 식.    
+        **ldp x29, x30, [sp], #16**    
+        ret   
+예를 하나 들어보도록 하자.    
+다음과 같은 코드가 있을 때 stack의 변화를 추적해 보자.    
+<pre>
+testCond:                      
+        stp x29, x30, [sp, #-16]!       
+        bl clearBits           
+        …
+        ldp x29, x30, [sp], #16
+        ret
+
+main:
+        bl testCond
+</pre>
+먼저 bl testCond가 실행된 다음의 상태이다.    
+|stack addr|stack pointer|stored|
+|---|---|---|
+|0x40007ffba0|||
+|0x40007ffb98|||
+|0x40007ffb90|O|0x40007ffba0|
+|0x40007ffb88|||
+|0x40007ffb80|||
+그다음 stp x29, x30, [sp, #-16]! 즉 stack prolog가 실행되고 난 뒤는 다음과 같다.    
+|stack addr|stack pointer|stored|
+|---|---|---|
+|0x40007ffba0|||
+|0x40007ffb98|||
+|0x40007ffb90|||
+|0x40007ffb88|||
+|0x40007ffb80|O|0x40007ffba0 == x30(lr)|
+|0x40007ffb78||0x40007ffba0 == x29(fp)|
+<pre>
+[sp, #-16]!
+</pre>    
+을 통해서 stack pointer가 -16. 즉 low memory 쪽으로 확장된다.   
+그리고 그 sp 위치에는 돌아갈 주소인 lr이 저장된다. -8 위치인 바로 밑에는 
+frame buffer pointer가 저장되어 있게 된다.    
+<pre>
+ldp x29, x30, [sp], #16
+</pre>
+에서는 high memory 쪽으로 16이 되서 호출 전의 stack pointer로 돌아간다.    
+
+
 
