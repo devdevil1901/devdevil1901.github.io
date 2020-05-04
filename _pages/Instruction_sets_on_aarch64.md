@@ -505,6 +505,7 @@ rd = ra + rn × rm
 </pre>
 정말 RISC 스러운 instruction이다.   
 앞에 두개를 곱한뒤 뒤의 것을 더한다.   
+M prefix가 붙은것은 4개의 register가 있는데 가운데 것을 곱한다고 생각하면 된다.   
 
 * MSUB   
 Multiply substract   
@@ -513,7 +514,45 @@ msub rd, rn, rm, ra
 rd = ra - (rn x rm)   
 </pre>
 
+* MNEG   
+Multiply Negative    
+<pre>
+mneg rd, rn, rm
+rd = - (rn x rm)    
+</pre>   
+
+* NEG, NEGS   
+Negate, shifted register가 올수도 있고, 그냥 register가 올수도 있다.   
+이것은 사실 sub의 alias이다.    
+NEGS는 subs의 alias이다.   
+<pre>
+neg rd, op2   
+rd = -op2   
+예를 들면   
+NEG <Wd>, <Wm>{, <shift> #<amount>}    
+은    
+SUB <Wd>, WZR, <Wm> {, <shift> #<amount>}   
+과 같다. zero register에서 빼기 때문에... 무조건 그 값으로 -가 되는 것.    
+neg     tmp3, tmp1, lsl #3    
+tmp1을 3bit만큼 left shift 해서, tmp3에 저장하라.    
+</pre>   
+
+* NGC, NGCS   
+Negte With Carry   
+SBC의 alias, SBCS의 alias이다.   
+<pre>
+ngc rd, rm   
+ngcs rd, rm  
+rd = -rm  - ~C   
+NGC <Xd>, <Xm>    
+은   
+SBC <Xd>, XZR, <Xm>   
+과 같다.   
+</pre>    
+즉 carry값을 추가로 빼준다.   
+
 
 
 # References
 [aarch64 official](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0488c/CIHIDFFE.html)   
+[instruction description](https://static.docs.arm.com/ddi0596/a/DDI_0596_ARM_a64_instruction_set_architecture.pdf)   
