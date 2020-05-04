@@ -211,8 +211,15 @@ instruction processing 속도를 향상시키는 방법이다.
 # AP(Application Processor)
 흔히 mobile AP, mobile CPU라고도 불린다.   
 하나의 Chip에 다수의 소자가 집적된 SoC구조이다.   
+최근에는 2D,3D 그래픽 작업을 처리하는 GPU,   
+3G,LTE, Wi-Fi등을 연결해 주는 Modem,   
+4K영상을 볼수 있도록 해주는 VPU(Video Processing Unit, GPU에 보통 통합 함)   
+등 다양한 것들을 하나의 Chip으로 묶는다.    
 
-# ARM vs x86 or CISC vs RISC
+
+# CISC vs RISC
+
+## 1. 성능   
 먼저 ARM과 x86을 생각해 보자.    
 ARM은 aarch64의 경우 4byte로 고정되어 있고, x86의 경우는 길이가 다양하다.   
 때문에 CPU에 instruction을 fetch로 가져오고, predecode에서 instruction 간 경게를 확인하고,   
@@ -226,6 +233,15 @@ thumb2에서는 특별히 (branch등의)  큰 값이 필요한 instruction들만
 mov, add에서는 register가 아닌 memory 영역을 접근할 수 없다.    
 
 이런 차이들에서 일반적인 instruction을 기준으로 성능적인 측면에서는 arm이 장점을 가질 수 밖에는 없다.    
+
+## 2. 전력과 발열   
+instruction들을 살펴보면, x86의 CISC 방식은 복잡한 명령어를 통해 복잡한 처리를 한다.   
+RISC인 arm의 경우 보다 단순하다.   
+때문에 CISC 방식의 경우 반도체를 구성하는 트랜지스터의 직접도가 높다.   
+이 말은 소비전력이 더 많고, 발열 또한 높다는 의미가 된다.   
+
+때문에 embeded에서는 RISC 방식을 선호하게 된것이다.   
+
 
 # SMT(Simultaneous Multi-Threading)
 용어 그대로 해석하자면, 동시 multi threading.   
