@@ -15,3 +15,7 @@ layout: single
 ## [BIOS/UEFI](/kdb/arch/bios_uefi/)
 ## [Interrupt Controller](/kdb/arch/interrupt_controller/)
 ## [CPU](/kdb/arch/cpu/)
+
+
+## References
+[Hynix News](https://news.skhynix.co.kr/category/Technology)   
