@@ -200,4 +200,159 @@ kernel version은 header.S에
 ```
 
 ## 2. EFI Handover protocol
+이것을 살펴보기 전에 EFI를 보다 명확하게 이해할 필요성이 있다.    
+EFI boot stub은 OS와 상관없는 firmware에서 직접 kernel을 로드할 수 기능이다.    
+즉 이 경우 bootloader는 필요 없고, firmware가 직접 kernel을 로드하기 때문에,     
+PE header의  Address of EntryPoint가 kernel에게 제어를 넘기는 point가 된다.    
+이 주소는 다음과 같이 arch/x86/boot/tool/build.c에서 kernel을 컴파일 할 때 채워진다.    
+```
+static void update_pecoff_text(unsigned int text_start, unsigned int file_sz,nsigned int init_sz)
+{
+...
+        put_unaligned_le32(text_start + efi_pe_entry, &buf[pe_header + 0x28]);
+...
+}
+```
+즉 이때의 시작 주소는 바로 **efi_pe_entry()**가 된다.    
+setup header의 handover_off은 kernel image의 시작 지점에서 EFI handover protocol 진입점으로의 offset을 의미한다.    
+EFI handover protocol이라는 것은 bootloader가 EFI boot stub에 대한 초기화를 지연할 수 있도록 하는 것이다.        
+
+XLF_EFI_HANDOVER_32이 set되고, kernel은 주어진 handover_offset에 32bit EFI handoff entry point를 지원 하게 된다.
+또한   
+XLF_EFI_HANDOVER_64도 set되고, kernel은 주어진 handover_offset+ 0x200에 64bit EFI handoff entry point를 지원하게 된다.   
+EFI handover을 사용하는 bootloader는 이 offset으로 jump해야한다.   
+부트 로더는 부트 미디어에서 커널/initrd를 로드하고, EFI 핸드오버 프로토콜 진입점인 hdr->handover_offset 바이트로 점프해야 한다.    
+startup_{32,64}.   
+핸드오버 진입점의 기능 프로토타입은 다음과 같다.:    
+```
+unsigned long efi_main(
+		       efi_handle_t handle,
+		       efi_system_table_t *sys_table_arg,
+		       struct boot_params *boot_params
+		      )
+```
+**handle**은 EFI 펌웨어에 의해 부팅 로더에 전달되는 EFI 이미지 핸들,      
+**table**은 EFI 시스템 테이블,       
+**bp**는 부트 로더로 작동되는 부트 매개 변수다.   
+
+부트 로더는 bp의 다음 필드를 입력해야 한다.    
+* hdr.code32_start
+* hdr.cmd_line_ptr
+* hdr.ramdisk_image(해당되는 경우)
+* hdr.ramdisk_size(해당되는 경우)
+다른 모든 필드는 0이어야 한다(?)    
+
+# analysis of boot processing
+## 1. efi boot 방식 확인
+```
+$ efibootmgr -v
+BootCurrent: 0000
+Timeout: 1 seconds
+BootOrder: 0000,0001,0002,0003,0004,0005
+Boot0000* ubuntu	HD(1,GPT,f7ea2739-6273-43c0-b609-490bf9ab4456,0x800,0x100000)/File(\EFI\ubuntu\shimx64.efi)
+Boot0001* Hard Drive	BBS(HD,,0x0)..GO..NO........q.S.a.m.s.u.n.g. .S.S.D. .9.7.0. .E.V.O. .5.0.0.G.B....................A...........................%8V..K......4..Gd-.;.A..MQ..L.S.4.6.6.N.X.0.M.6.4.1.7.4.5.X........BO
+Boot0002* USB	BBS(HD,,0x0)..GO..NO........y.W.D. .M.y. .P.a.s.s.p.o.r.t. .2.5.F.3.1.0.1.2....................A.............................F..Gd-.;.A..MQ..L.3.1.3.8.3.4.3.5.3.7.3.5.3.4.3.2.3.3.3.3.3.6.3.8........BO
+Boot0003* UEFI:CD/DVD Drive	BBS(129,,0x0)
+Boot0004* UEFI:Removable Device	BBS(130,,0x0)
+Boot0005* UEFI:Network Device	BBS(131,,0x0)
+```
+여기서 shimx64.efi 즉 UEFI의 보안 부팅을 이용하고 있는 것을 확인할 수 있다.    
+
+## 2. checking of file system
+fdisk가 이제는 gpt 형식을 지원하기 때문에, fdisk, gdisk, parted, df, /etc/fstab 등등을 이용해서 확인이 가능하다.    
+```
+$ sudo fdisk -l
+...
+Disk /dev/nvme0n1: 465.8 GiB, 500107862016 bytes, 976773168 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: A80A83A3-1EFB-4DC3-A8D1-C7E880A54F41
+
+Device           Start       End   Sectors   Size Type
+/dev/nvme0n1p1    2048   1050623   1048576   512M EFI System
+/dev/nvme0n1p2 1050624 976771071 975720448 465.3G Linux filesystem
+...
+Disk /dev/sda: 476.9 GiB, 512076283904 bytes, 1000148992 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 1048576 bytes
+Disklabel type: gpt
+Disk identifier: C4D811EE-15E6-47A7-BEDF-A70C0E10B3A4
+
+Device      Start       End   Sectors   Size Type
+/dev/sda1      34    409633    409600   200M EFI System
+/dev/sda2  411648 999884799 999473152 476.6G Linux filesystem
+...
+
+$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p2  457G  167G  268G  39% /
+/dev/nvme0n1p1  511M  6.1M  505M   2% /boot/efi
+..
+/dev/sda2       469G   90G  356G  21% /media/devdevil/aosp
+..
+$ sudo gdisk -l /dev/nvme0n1
+GPT fdisk (gdisk) version 1.0.3
+
+Partition table scan:
+  MBR: protective
+  BSD: not present
+  APM: not present
+  GPT: present
+
+....
+
+Number  Start (sector)    End (sector)  Size       Code  Name
+   1            2048         1050623   512.0 MiB   EF00  EFI System Partition
+   2         1050624       976771071   465.3 GiB   8300  
+
+$ sudo parted 
+GNU Parted 3.2
+Using /dev/sda
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) print all                                                        
+Model: WD My Passport 25F3 (scsi)
+Disk /dev/sda: 512GB
+Sector size (logical/physical): 512B/4096B
+Partition Table: gpt
+Disk Flags: 
+Number  Start   End    Size   File system  Name                  Flags
+ 1      17.4kB  210MB  210MB  fat32        EFI System Partition  boot, esp
+ 2      211MB   512GB  512GB  ext4         My Passport
+Model: Samsung SSD 970 EVO 500GB (nvme)
+Disk /dev/nvme0n1: 500GB
+Partition Table: gpt
+Number  Start   End    Size   File system  Name                  Flags
+ 1      1049kB  538MB  537MB  fat32        EFI System Partition  boot, esp
+ 2      538MB   500GB  500GB  ext4
+```
+여기서 확인할 수 있는 것은 삼성 SSD 970 EVO 500G가 /dev/nvme0n1에, My passport 외장하드가 /dev/sda에 존재한다는 것이다.     
+
+## 3. firmware test
+```
+$ sudo apt-get install fwts
+$ sudo fwts uefi --log-level=medium
+Running 1 tests, results appended to results.log
+Test: UEFI Data Table test.                                                 
+  UEFI Data Table test.                                   1 passed                                                                                                                   
+...
+--------------------------------------------------------------------------------
+FADT X_FIRMWARE_CTRL 64 bit pointer was zero, falling back to using
+FIRMWARE_CTRL 32 bit pointer.
+Test 1 of 1: UEFI Data Table test.
+UEFI ACPI Data Table:
+  Identifier: C68ED8E2-9DC6-4CBD-9D94-DB65ACC5C332
+  DataOffset: 0x0036
+  SW SMI Number: 0x00000001
+  Buffer Ptr Address: 0x00000000da8da000
+PASSED: Test 1, No issues found in UEFI table.
+
+================================================================================
+1 passed, 0 failed, 0 warning, 0 aborted, 0 skipped, 0 info only.
+================================================================================
+...
+``` 
+[more detail](https://wiki.ubuntu.com/FirmwareTestSuite/Reference)    
 
