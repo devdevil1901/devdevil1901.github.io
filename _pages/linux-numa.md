@@ -224,3 +224,5 @@ HugePages_Surp        0     0
 $ taskset -cp 2661
 pid 2661's current affinity list: 0-15
 ```
+
+
