@@ -111,12 +111,12 @@ fireware menu에서 지원한다면, interleaving을 명확하게 활성화 시�
 |interleaced|다수의 노드에서 round-robin으로 메모리를 할당 받는다.|
 
 # command line
-먼저 
+먼저 numactl을 설치해 준다.   
 ```
 sudo apt-get install numactl
 ```
 
-* policy 확인
+## 1. policy 확인
 ```
 $ numactl --show
 policy: default
@@ -126,7 +126,7 @@ cpubind: 0
 nodebind: 0
 membind: 0
 ```
-* available한 node 확인
+## 2. available한 node 확인
 ```
 $ numactl -H
 available: 1 nodes (0)
@@ -143,7 +143,7 @@ node 0에 접근 시 10의 시간이 소요됨을 나타낸다
 여기서 확인할 수 있듯이, numa를 사용중이지만, node가 0즉 하나 밖에 없는 것을 확인할 수 있다. Remote access 자체가 없는 상황.    
 node가 여러개라면, remote access 시 시간도 확인가능하다.    
 
-* status 확인
+## 3. status 확인
 ```
 $ sudo numastat
                            node0
@@ -203,7 +203,7 @@ HugePages_Free        0     0
 HugePages_Surp        0     0
 ```
 
-* 특정 process의 numa policy 정보 확인
+## 4. 특정 process의 numa policy 정보 확인
 ```
 /proc/1890$ cat numa_maps
 555f105e7000 default file=/usr/lib/gnome-settings-daemon/gsd-a11y-settings mapped=3 active=1 N0=3 kernelpagesize_kB=4
