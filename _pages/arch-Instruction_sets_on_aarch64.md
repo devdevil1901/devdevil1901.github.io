@@ -160,25 +160,25 @@ integer값 계산을 위한 register이다.
 
 
 * **parameter register**
-<pre>
+```
 w0~w7   
 x0~x7   
-</pre>
+```
 32bit와 비교해서 개수가 x2가 됨.   당연히 x0, w0 return value로도 사용된다.   
 
 * **temporary register**
-<pre>
+```
 x8~x18   
 w8~w18   
-</pre>
+```
 
 말 그대로 자유롭게 사용할 수 있는 register   
 
 * **intra procedure**
-<pre>
+```
 x16,x17
 w16,w17
-</pre>
+```
 
 IP0와 IP1이라고 부른다.   
 이전에 thumb에서 처럼 한번에 못 뛰어서, 중간에 한번 더 뛰도록 linker가 한번 더 뛰도록 삽입한 코드.   
@@ -186,32 +186,32 @@ arm32에서 링커가 코드에 삽입하는 vaneer와 유사한 역활.
 aarch64가 4byte로 정렬되는 instruction이기 때문에, 64bit 가상 메모리 주소를 한번에 뛰지 못하는 것을 기억하자.   
 
 * **Callee saved register**
-<pre>
+```
 x19~x28
 w19~w28
-</pre>
+```
 한 마디로 임의 사용 레지스터이다.   
 Callee쪽에서는 전혀 신경쓰지 않고, Caller 쪽에서, stack에 백업해 놓고, 호출 완료 후 복구 해서 써야 한다.   
 
 * **Frame Pointer(FP)**
-<pre>
+```
 x29
 w29
-</pre>
+```
 
 stack pointer를 저장해 놓는 register.
 
 * **Link Register(LR)**
-<pre>
+```
 x31
 w31
-</pre>
+```
 
 * **Stack Pointer** or **Zero Register**
-<pre>
+```
 x31, zxr
 w31, wzr
-</pre>
+```
 
 Instruction에 따라서, xzr, wzr 즉 zero register로 해석되거나, stack pointer로 해석된다.   
 Zero Register이면, source로 사용하면 0으로 읽혀지고, dest로 사용하면 값이 버려진다.   
@@ -259,12 +259,12 @@ adr이외에도 몇몇 branch instruction과 몇몇 load/store에서도 암시�
 보안 적으로도 크게 의미가 있는 design임.    
 
 * **Stack Pointer**
-<pre>
+```
 sp_el0
 sp_el1
 sp_el2
 sp_el3
-</pre>
+```
 
 Exception level에 따른 stack pointer를 가르킨다.   
 매우 편리한 점이, SPsel register의 값이 0이면, exception level과 상관없이, sp_el0을 사용한다.   
@@ -273,21 +273,21 @@ SPsel이 1이면, 각 exception level에 맞게 sp_eln을 사용하게 되는데
 linux kernel에서는 SPsel의 값을 바꾸지 않고 그냥 1인 채로 사용하고 있다.   
 
 * **Exception Link Register**
-<pre>
+```
 elr_el1
 elr_el2
 elr_el3
-</pre>
+```
 
 Exception에서 복귀 시 돌아갈 위치를 저장한다.   
 복귀 시에 pc에 이 값을 복사하게 된다.   
 
 * **Save Process Status Register**
-<pre>
+```
 spsr_el1
 spsr_el2
 spsr_el3
-</pre>
+```
 
 Exception이 발생하면, PSTATE 로 부터 SPSR 레지스터에 백업된다.   
 Exception에서 복귀할 때는 프로세서에 의해서 PSTATE로 복귀된다.   
@@ -304,7 +304,7 @@ r즉 load, 즉 system register에서 값을 읽어 온다는 의미.
 System register를 General purpose register에 읽어온다.   
 <code>Mrs xn, <system register></code>   
 예를 들어서, conditional flag를 확인하게 위해서, printf로 찍는 code로 활용한다고 하면, 다음과 같다.   
-<pre>
+```
 showFlags:
         stp  x29, x30, [sp, -16]!
         mrs x1, NZCV
@@ -317,19 +317,19 @@ showFlags:
 .balign 4
 msg:
         .asciz "Result: %p\n\0"
-</pre>
+```
 
 * **MSR**   
 Move Status To Register   
 s는 save즉 저장이다. 즉 system register에 write한다는 의미.   
 General purpose register를 system register에 쓴다.   
 이것을 Conditional flag를 clear 하는 용도로 사용한다고 하면 다음과 같다.   
-<pre>
+```
 clearFlags:
         mov x0, #0
         msr NZCV, x0
         ret
-</pre>
+```
 
 ## 4. System Register
 System register는 processor가 system을 control하기 위해 사용한다.   
@@ -348,20 +348,20 @@ msr <system register>, x1
 [2.2 NZCV](https://github.com/devdevil1901/devdevil1901.github.io/blob/master/_pages/basic_of_instruction_set.md)   
 
 * **Auxiliary Control Register**   
-<pre>
+```
 actlr_el1
 actlr_el2
 actlr_el3
-</pre>
+```
 
 Auxiliary 어그질러리 가 뜻이다(조동사할때 쓰는 단어이다)   
 즉 보조 Control register.   
 Processor-specific feature를 control한다.   
 
 * **Current cache size id register**   
-<pre>
+```
 ccsidr_el1
-</pre>
+```
 Provides information about the architecture of the currently selected cache   
 
 * **Hypervisor call**   
@@ -389,7 +389,7 @@ el1에서 el3를 호출하려면 smc
 높은 EL에서는 낮은 EL을 el 변화없이 접근할 수 있다.   
 
 * **Security Monitor call**   
-<pre>smc</pre>   
+```smc```   
 Non-secure mode에서 secure mode의 서비스를 요청할 때 쓰인다.    
 이것도 Exception으로 취급된다.    
 일종의 system call이다.    
@@ -397,14 +397,14 @@ Non-secure mode에서 secure mode의 서비스를 요청할 때 쓰인다.
 
 ### 4.1 Exception Handling Register
 * **Exception Syndrom Register**   
-<pre>
+```
 esr_el1
 esr_el2
-</pre>
+```
 동기 exception에서 exception의 발생 원인을 저장한다.  
 발생 원인을 Syndrome information이라고 한다.    
 이 register가 어떤 것인지는 aarch64의 el1_sync_handler()를 보면 명확히 알수 있다.   
-<pre>
+```
 arch/arm64/kernel/entry-common.c
 asmlinkage void notrace el1_sync_handler(struct pt_regs *regs)
 {
@@ -431,32 +431,32 @@ asmlinkage void notrace el1_sync_handler(struct pt_regs *regs)
 		el1_inv(regs, esr);
 	};
 }
-</pre>
+```
 동기화 exception의 원인을 알아내어 적당한  handler로 분배할 수 있도록 하는 것.   
 또한 debugging 역시 이를 통해 구현되고 있다.   
 
 * **Falut Address Register**   
-<pre>
+```
 far_el1
 far_el2
-</pre>
+```
 
 동기 exception에서 발생한 주소를 저장한다.   
 
 * **Exception Return**   
-<pre>
+```
 eret
-</pre>
+```
 
 Exception 처리를 끝내고 복귀시킨다.   
 spsr_eln을 PSTAE로 복원하고, elr_eln에서 return주소를 가져와서 PC에 로드한다.    
 
 * **Vector based address register**   
-<pre>
+```
 vbar_el1
 vbar_el2
 vbar_el3
-</pre>
+```
 
 Exception Handler들을 담고 있는 vector table의 주소를 담고 있다.   
 
@@ -464,68 +464,68 @@ Exception Handler들을 담고 있는 vector table의 주소를 담고 있다.
 
 ## 1. Data Processing
 ### 1.1 Arithmetic
-* ADD and ADDS   
-<pre>
+#### ADD and ADDS   
+```
 ADD Rd|SP, Rn|SP, Rm{, extend {#amount}}    
 ADD Rd|SP, Rn|SP, #imm{, shift}    
 ADD Rd, Rn, Rm{, shift #amount}   
-</pre>
+```
 **중요한것은 ADD는 NZCV를 갱신하지는 않는다.**   
 **ADDS는 NZCV를 갱신한다**   
 CMN(Compare Negative)가 사실은 ADDS의 alias이다.   
 
-* ADC and ADCS     
-<pre>ADC Rd, Rn, Rm</pre>   
+#### ADC and ADCS     
+```ADC Rd, Rn, Rm```   
 Add With Carry이다.   
 ADD와 같지만, 만약 carry flag가 set되어 있다면, 이 값 마져 더한다.    
 ADCS는 계산후에 NZCV를 갱신한다.   
 
-* SUB and SUBS
-<pre>
+#### SUB and SUBS
+```
 SUB Rd|SP, Rn|SP, Rm{, extend {#amount}}
 SUB Rd|SP, Rn|SP, #imm{, shift} 
 SUB Rd, Rn, Rm{, shift #amount}
-</pre>
+```
 
-* SBC and SBCS   
+#### SBC and SBCS   
 Substract With Carry.   
 
-* MUL   
+#### MUL   
 Multiply   
-<pre>
+```
 mul rd, rn, rm
 rd = rn x rm
-</pre>
+```
 
-* MADD   
+#### MADD   
 Multiply ADD    
-<pre>
+```
 madd rd, rn, rm, ra
 rd = ra + rn × rm   
-</pre>
+```
 정말 RISC 스러운 instruction이다.   
 앞에 두개를 곱한뒤 뒤의 것을 더한다.   
 M prefix가 붙은것은 4개의 register가 있는데 가운데 것을 곱한다고 생각하면 된다.   
 
-* MSUB   
+#### MSUB   
 Multiply substract   
-<pre>
+```
 msub rd, rn, rm, ra
 rd = ra - (rn x rm)   
-</pre>
+```
 
-* MNEG   
+#### MNEG   
 Multiply Negative    
-<pre>
+```
 mneg rd, rn, rm
 rd = - (rn x rm)    
-</pre>   
+```   
 
-* NEG, NEGS   
+#### NEG, NEGS   
 Negate, shifted register가 올수도 있고, 그냥 register가 올수도 있다.   
 이것은 사실 sub의 alias이다.    
 NEGS는 subs의 alias이다.   
-<pre>
+```
 neg rd, op2   
 rd = -op2   
 예를 들면   
@@ -535,12 +535,12 @@ SUB <Wd>, WZR, <Wm> {, <shift> #<amount>}
 과 같다. zero register에서 빼기 때문에... 무조건 그 값으로 -가 되는 것.    
 neg     tmp3, tmp1, lsl #3    
 tmp1을 3bit만큼 left shift 해서, tmp3에 저장하라.    
-</pre>   
+```
 
-* NGC, NGCS   
+#### NGC, NGCS   
 Negte With Carry   
 SBC의 alias, SBCS의 alias이다.   
-<pre>
+```
 ngc rd, rm   
 ngcs rd, rm  
 rd = -rm  - ~C   
@@ -548,13 +548,132 @@ NGC <Xd>, <Xm>
 은   
 SBC <Xd>, XZR, <Xm>   
 과 같다.   
-</pre>    
+```
 즉 carry값을 추가로 빼준다.   
 
+#### SMADDL
+Signed Multiply-add long    
 
+#### SMNEGL
+Signed Multiply-negte long    
+
+### 1.2 Logical
+#### AND, ANDS
+```
+and  Rd|SP, Rn, #imm
+and  Rd, Rn, Rm{, shift #amount}
+Rd = (rn and imm) or (rn and rm)
+```
+
+#### BIC, BICS
+Bitwise bit Clear    
+```
+bic  Rd, Rn, Rm{, shift #amount}
+Rd = Rn and Rm
+```
+BICS는 NZCV를 갱신.     
+
+### 1.3 Bit Maniplulation Instructions
+#### BFM
+Bitfield move
+```
+bfm  Rd, Rn, #immr, #imms
+```
+#### BFI
+Bit Field Insert    
+BFM의 alias이다.    
+결국 dest register의 bit값을 변경한다.    
+Src register의 index가 0을 가정하고 있다.   
+Bfi w0, w1, #9, #6   
+w1의 0~5bit를 w0의 9~14bit까지 overwirte한다.   
+즉 dest, src, dest index, src의 bit크기   
+Bfi dst, src, dst bit index, src bit 크기     
+즉 source index 의 경우는 source register의 0bit부터 크기를 가정하고 있다.     
+w0 register의 3번째 bit를 5bit만큼 clear하고 싶다면,     
+bfi w0, wzr, #3, #5     
+즉 w0의 3~7 bit가 clear되서 0이된다.    
+Wzr즉 rero register를 이용했음을 기억하자.    
+
+```
+bfi  Rd, Rn, #lsb, #width
+```
+#### UBFX
+Unsigned bit field extract      
+결국 dest register의 bit값을 변경한다.    
+Dst register의 index가 0을 가정하고 있다.    
+Ubfx w0, w1, #18, #7     
+w1의 17 bit 부터 7bit 만큼을    
+w0의 0~6bit에다가 overwrite한다.    
+
+#### ROR
+Rotate Right       
+((unsigned) x >> y | (x << (32 – y)    
+밀려난 bit는 c flag에 저장.    
+먼가 되게 어려워 보이지만, 별거 아니다.    
+1인 값들을 오른쪽으로 1bit 이동 시키는 것이다.    
+다만 밀려나면 반대쪽에서 나온다. 뫼비우스의 띠처럼.    
+0001 0001   
+을 ror하면,    
+1000 1000     
+이되고, 한번 ror하면     
+0100 0100     
+이 되는 셈.     
+
+### 1.4 Comparison
+#### CMN
+ADDS의 alias이다. 다만 더해진 값은 버리고, compare negative만을 한다.    
+
+#### CCMN
+Conditional compare negative    
+비교 결과를 conditional flag에 set한다.    
+타 instruction과 마찬가지로 Rn다음에 imm이나 Register둘다 올수있다.     
+CCMN Wn, Wm, #uimm4, cond    
+NZCV = if cond then CMP(Wn,-Wm) else uimm4.     
+CCMN Xn, Xm, #uimm4, cond     
+NZCV = if cond then CMP(Xn,-Xm) else uimm4.      
+PRD03-GENC-010197     
+CCMN Wn, #uimm5, #uimm4, cond    
+NZCV = if cond then CMP(Wn,-uimm5) else uimm4.     
+CCMN Xn, #uimm5, #uimm4, cond    
+NZCV = if cond then CMP(Xn,-uimm5) else uimm4.      
+nzcv는 0~15의 값이다. NZCV의 bitmask이다.     
+Bit3은 n, BIT2는 Z, bit1은 C, bit 0은 V이다.     
+ccmn w26, w3, #0x7, mi // mi = first     
+ccmn x0, #0x4, #0x0, hi    
+hi는 (C==1) && (Z==0) 일때 true이다.    
+ccmn w0, #0x1, #0x0, ne     
+
+### 1.5 Memory Load
+#### ADR
+```
+ADR Rd, label
+```
+PC-relative offset의 label주소를 로드한다.    
+label은 pc +/- 1M를 지정할 수 있다.    
+단순히 Xd에 label의 pc relative offset을 저장한다.    
+adr x0, addrmsg    
+adr x1, setNBit    
+
+#### ADRP
+ADR과 같지만, label에 +/- 4G의 offset을 저장할 수 있다.    
+
+#### ADRL
+Sudo-instruction이다.    
+사실은 두개의 instruction으로 구성된다.     
+adrp와 add이다.    
+때문에 더 큰 주소 범위를 담을 수 있고,     
+pc에 의해서 계산되서, relocation 코드로 적용되기 때문에, position independent한 코드를 생성할 수 있다.    
+sudo-instruction이라서, objdump로는 볼 수 없다.     
+b0000301 adrp x1, 461000 <errstring.11975+0x10>     
+910a4021 add x1, x1, #0x290     
+f00003e0 adrp x0, 47f000 <__progname_full>      
+91286000 add x0, x0, #0xa18     
 
 # References
 [aarch64 official](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0488c/CIHIDFFE.html)   
 [instruction description](https://static.docs.arm.com/ddi0596/a/DDI_0596_ARM_a64_instruction_set_architecture.pdf)   
 [armv8 a64 quick reference](https://courses.cs.washington.edu/courses/cse469/19wi/arm64.pdf)    
+
+instruction 검색해 보기 좋은 곳    
+[search](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0802a/ADDS_addsub_ext.html)     
 
