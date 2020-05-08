@@ -16,4 +16,10 @@ var store = [{
         "tags": [],
         "url": "http://devdevil1901.github.io/jekyll/update/English-Study-Shadowing-livedata-with-coroutines-jekyll/",
         "teaser": null
+      },{
+        "title": "Useful Markdown grammer tip",
+        "excerpt":"앞으로 유용한 tip들은 여기다 정리하도록 하자.   table에서 줄 바꿈하기  &lt;br\\/&gt; tag를 사용한다.   예    |f1 | f2 |    |— | — |    |첫 줄 &lt;br\\/&gt; 두 번째 줄 | |                  f1       f2                       첫 줄   두 번째 줄                   ","categories": ["jekyll","update"],
+        "tags": [],
+        "url": "http://devdevil1901.github.io/jekyll/update/useful-markdown-tip-jekyll/",
+        "teaser": null
       }]

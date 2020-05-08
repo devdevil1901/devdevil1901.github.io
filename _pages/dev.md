@@ -6,3 +6,6 @@ toc_ads : true
 layout: single
 ---
 
+### [Algorithm](/kdb/dev/algorithm/)
+### [Gradle](/kdb/dev/gradle/)
+### [Code Review](/kdb/dev/review/)

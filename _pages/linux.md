@@ -13,5 +13,6 @@ layout: single
 ### [Kernel Binary](/kdb/linux/binary/)
 ### [Memory Management](/kdb/linux/memory/)
 ### [Process](/kdb/linux/process/)
+### [Scheduling](/kdb/linux/scheduling/)
 
 
