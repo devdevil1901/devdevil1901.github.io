@@ -8,4 +8,4 @@ layout: single
 
 
 ### [Deeplink](/kdb/android/deeplink/)
-### [Memory Management](/kdb/android/memorymanagement/)
+### [Memory Management](/kdb/android/memory_management/)

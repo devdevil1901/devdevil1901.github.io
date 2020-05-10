@@ -1,6 +1,6 @@
 ---
 title: "Memory Management"
-permalink: /kdb/android/memorymanagement/
+permalink: /kdb/android/memory_management/
 toc_sticky: true
 toc_ads : true
 layout: single
