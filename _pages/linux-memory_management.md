@@ -65,3 +65,8 @@ kmem_cache           195    576    448   36    4 : tunables    0    0    0 : sla
 
 즉 task가 생성되면, task_strurct 만큼 메모리 할당을 요청하면 slab memory assigner가 미리 할당해 놓은 시작주소를 돌려주게 되는 것이다.    
 
+
+# memory model
+flatmem, discontigmem등의 model이 있지만, 현재 x86_64와 arm64 모두 sparse model을 사용중이기 때문에    
+여기에 초점을 맞추도록 한다.      
+x86_64에서 NUMA를 사용하는 경우도 이 model을 사용한다.    
