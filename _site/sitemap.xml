@@ -75,6 +75,9 @@
 <loc>http://devdevil1901.github.io/kdb/dev/gradle/</loc>
 </url>
 <url>
+<loc>http://devdevil1901.github.io/kdb/dev/kotlin/</loc>
+</url>
+<url>
 <loc>http://devdevil1901.github.io/kdb/dev/</loc>
 </url>
 <url>
@@ -111,7 +114,13 @@
 <loc>http://devdevil1901.github.io/kdb/linux/scheduling/</loc>
 </url>
 <url>
+<loc>http://devdevil1901.github.io/kdb/linux/numa/</loc>
+</url>
+<url>
 <loc>http://devdevil1901.github.io/kdb/linux/</loc>
+</url>
+<url>
+<loc>http://devdevil1901.github.io/kdb/security/tee/</loc>
 </url>
 <url>
 <loc>http://devdevil1901.github.io/kdb/security/</loc>

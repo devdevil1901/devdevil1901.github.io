@@ -6,6 +6,25 @@ toc_ads : true
 layout: single
 ---
 
+# table of contents
+[Outline](#outline)    
+[Task state](#task-state)     
+[RunQueue](#runqueue)    
+[Scheduler](#scheduler)     
+[     1. Time slice](#1-time-slice)        
+[     2. Domain](#2-domain)    
+[     3. Policy](#3-policy)    
+[     4. Scheduler](#4-scheduler)     
+[     5. sched_class](#5-sched_class)
+[     6. Priority](#5-priority)     
+[           6.1. top command](#61--top-command)      
+[Preemption](#preemption)      
+[     1. User preempt](#1-user-preempt)      
+[     2. Preempt level](#2-preempt-level)     
+[Context Switching](#context-switching)     
+
+
+# Outline
 [Process](/kdb/linux/process)에서 살펴보았듯이 스케줄링은 task 단위로 이루어진다.    
 때문에 스케줄링이라는 것은 task를 cpu에 어떻게 배분할 것인지에 대한 방법인 것이다.    
 다르게 표현하자면,  process가 cpu를 독식하는 starvation을 회피하고자 하는 방법이다.    
@@ -104,7 +123,7 @@ CPU에서 실행대기하고 있는 Queue로 이곳에 있는 task를 적절히 
 다른 말로 하면 task가 실행되기 위해서는 이곳에 enqueue되어야 한다.    
 RunQueue는 core마다 존재한다.    
 
-<pre>
+```
 kernel/sched/sched.h
 //Enqueue된 모든 process 개수. 같은 cache line에 있어야 한다.
 unsigned int nr_running;
@@ -116,10 +135,21 @@ struct dl_rq dl;   // Deadline scheduler의 sub run queue
 // task를 점유중인 task
 struct task_struct __rcu        *curr;
 struct list_head cfs_tasks; // cfs scheduler를 쓰는 task의 link list
-</pre>
+```
+
+task가 실행을 위해서 rq에 enqueue를 하면, rq의 cfs_tasks에(linked list) 자신의 task descripter를 추가한다.      
 
 
 # Scheduler
+
+scheduler는 다음과 같이 발전해 왔다.      
+|version|scheduling method|
+|---|---|
+|2.4 이전| Priority based + Round-robin 방식이었다.|
+|2.6|O(1) scheduler 도입됨|
+|2.6.3|CFS scheduler로 변경되었다.<br/>weight과 priority에 기반하여 cpu time을 분배한다.|
+
+
 ## 1. time slice
 CPU를 점유하는 단위. 
 
@@ -134,8 +164,20 @@ HZ는 1초에 1000번을 tick하면 1Hz이고, 1 milliseconds가 된다.
 이 지피스를 설정된 Hz로 나누면 부팅 이후 몇초가 흘렀는지를 알수 있다.     
 
 ## 2. domain
-Hyper Threading과 같은 SMT 구조, NUMA 등과 같은 다양한 architecture에서 스케줄링에 대한 고려가 큰 이슈가 됨.    
-domain의 개념이 추가되었다.    
+스케줄링을 위해서, Hyper Threading과 같은 SMT 구조, NUMA 등과 같은 구조를 고려해야 해야 한다.         
+그래서 group과 domain개념이 추가되었다.(sched_group과 sched_domain 자료구조)           
+domain들은 하이라키컬하게 구성되며 속성과 정책을 공유한다.        
+
+다음과 같이 os의 domain을 확인할 수 있다. 
+```
+$ sudo sysctl -a | grep sched_domain
+kernel.sched_domain.cpu0.domain1.min_interval = 8
+...
+kernel.sched_domain.cpu10.domain2.flags = 4143
+```
+
+SMT를 통해 core의 2배로 증가된 cpu별로 domain이 존재하며, 여러 cpu를 group으로 묶기도 한다.     
+이를 통해서 cpu의 부하를 균등하게 분배 하고자 하는 것이다.     
 
 ## 3. policy
 **NORMAL**:     
@@ -219,7 +261,7 @@ void (*prio_changed) (struct rq *this_rq, struct task_struct *task,int oldprio);
 void (*update_curr)(struct rq *rq);
 ```
 
-## 5. Priority
+## 6. Priority
 task가 더 많은 time slice를 가지기 위한 우선순위 값을 의미한다.    
 policy가 normal, batch, idle인 경우는 weight과 priority를 통해서 배분되는 것을 기억하자.     
 user level에서 nice 값을 설정하면, system call을 통해서 kernel level로 진입하여, nice 값을 통해 prioirty를 산출하게 된다.     
@@ -303,7 +345,7 @@ task_struct에서 다음과 같이 priority를 유지한다.
 |rt_priority|RT Scheduler를 사용하는 RT task에서만 사용한다.<br/>0~99 즉 100까지만 사용한다. <br/> MAX_RT_PRIO는 100 이다.|
 
  
-### 5.1  top command
+### 6.1  top command
 원래 priority는 nice + 120이지만, top command에서는 nice + 20으로 표시하기 때문에 값이 좀 이상해 보일 수 있다.     
 ```
  PID  USER      PR  NI VIRT    RES    SHR    S   %CPU %MEM  TIME+ COMMAND   
@@ -320,7 +362,7 @@ nice default값은 0이기 때문에, PR=20 NI 0이 default이다.
 PR이 -로 표시된 root권한으로 실행된 RT task인것을 확인할 수 있다.     
 PR이 rt로 표시된 것은 가장 높은 우선 순위를 의미한다.     
 
-# Preemptive
+# Preemption
 일명 컴싸(컴퓨터 사이언스) 채용 문제들에서 Non-preemptive와 preeptive kernel에 대한 문제들이 나오는데,      
 잘못된 것들이 매우 많다.    
 왜냐하면, non-preemptive os라는 것은 존재하지 않기 때문이다.    
@@ -330,6 +372,40 @@ linux에서 non-preemptive option으로 kernel을 compile할 수 있지만,
 정말 non-preemptive라면 debugging도 할 수 없게 된다.     
 때문에 리눅스에 대해 더 많이 아는 사람이 오히려 헷갈릴 수 있는 tricky한 문제가 될 수 있다.     
 
+선점요청이라는 것은 cpu를 점유하고 있는 task가 다른 task에 cpu를 양보하는 것이다.     
+좀 더 detail하게는 task의(task_struct) thread_info.flag에 TIF_NEED_RESCHED를 설정하는 것이다.       
+다르게 생각하면, 얼마나 여러 task들이 공정하게 실행되어야 하는 가에 대한 것이다.     
+이것은 scheduling에서 가장 핵심적인 부분이라고 할 수 있다.      
+
+선점이 강력하면 강력할 수록 처리량이 줄어들고, kernel code에 대한 **runtime overhead**가 발생한다.     
+하지만 interactive한 측면 즉 사용자 반응성 측면에서는 매우 향상된 성능을 보이게 된다.        
+예를 들어 사용자 입력이 매우 중요한 게임, 그리고 스마트 폰의 앱들의 경우.      
+반응성이 매우 중요 한데, 이것을 가능하게 하려면 더욱 공정하게 선점 될 수 있도록 해야 할 필요성이 생긴다.      
+
+## 1. User Preempt
+선점에 있어서 기준이 되는 중요한 개념이다.     
+task A가 svc나 system call로 kernel mode로 진입하고, 복귀전에 task B로 선점이 일어나서       
+user mode로 복귀후에, task B가 실행될 수 있다는 것이다.     
+즉 interrupt가 발생했을 때, 사용자 공간으로 복귀직전에 _TIF_NEED_RESCHED flag가 set되어 있다면,      
+선점이 일어날 수 있는 것.      
+preempt none으로 해도 무조건 일어나는 선점이다.     
+
+## 2. Preempt level
+
+|kernel config|description|frequency p가 선점 발생가능|
+|---|---|---|
+|CONFIG_PREEMPT_NONE|computing power를 극대화 시키기 위해서 최소한의 선점만 허용 하는 것이다.<br/>한 task를 확실히 처리하고 다음으로 넘기는 식이기 때문에 때때로 더 긴 지연이 가능하지만,<br/>그 만큼 근본적인 처리능력을 최대화 시킬 수 있다.<br/>+ 공평한 scheduling을 위한 처리코드<br/>+runqueue등등에서 쓰이는 lock<br/>+ process context switching<br/>등등의 overheader가 발생.<br/> user preempt는 발생한다. 하지만, kernel mode에서는 선점되지 않늗나.<br/>즉 현재 실행중인 task가 yield()나 sleep()을 하거나,<br/> interrupt가 발생해서 user preempt를 하지 않는다면 선점되지 않는다.<br/>서버 또는 과학, 계산 시스템에 적합하다.<br/>즉 멀티 tasking이나 사용자 반응성 보다는 처리 능력이 중요시 되는 경우에 적합하다. |pnnnnnnnpnnpnnnnnnnp|
+|CONFIG_PREEMPT_VOLUNTARY|명확하게(explicit) 선점 point를 추가하여, 커널의 대기시간(latency)를 줄인다.<br/>NONE과 마찬가지로 kernel mode에서 선점되지 않지만,<br/>kernel code 곳곳에 might_sleep()를 넣어 두었다.<br/> 현재 ubuntu desktop이 이걸로 compile된다. none 보다 application이 보다 부드럽게 실행되고,<br/>대화형 이벤트에 빠르게 반응 가능.|pnnnpnnnpnpnnnp|
+|CONFIG_PREEMPT|최신 kernel에서는 CONFIG_PREEMPT_LL로 변경되었다.<br/>critical section을 제외한, kernel code 대 부분에서 선점이 가능하다.<br/> work load 중에도 50% 이상의 시간을 선점가능.<br/>thread_info.preempt_count가 0이 되면 선점 가능해짐.<br/>또한 낮은 우선 순위의 task 도 선점될 수 있도록 허용해서 대화형 event들을 반응 할 수 있게 한다.<br/>low-latency desktop, embeded system에서 활용된다. 스마트폰, android emulator kernel인 ranchu에서도 이것이 기본값이다.|pnpppppppnpppppppppn|
+|CONFIG_PREEMPT_RT|interrupt도 preempt 될수 있는 상태.<br/> pending의 thread irq를 사용한다. <br/> 즉 IRQ handler가 kernel thread 로 동작해서 hard irq handler는 이것을 wake up만 하고, ksoftirqd는 kernel thread로서<br/>모든 soft irq를 처리한다.<br/>latency가 milli second||
+|CONFIG_PREEMPT_RT_FULL|선점이 되지 않는 spinLock을 선점 가능한 Mutext로 대체하고, 거의 대다수의 코드를 선점할 수 있다.<br/>latency가 100 usecs 이하로 응답해야 할 때.||
+|CONFIG_PREEMPT_RCU|read only RCU section까지도 선점이 가능. Workload중 95% 이상을 선점할수 있다고 함.||
+
+사실상 CONFIG_PREEPT까지만 쓰이고 있기 때문에 보통은 interrupt와 spinlock은 preempt되지 않는다.      
+여담으로 서버로 사용중인 Clude에 들어가보면, 서버용인데 CONFIG_PREEMPT_VOLUNTARY로 되어 있는경우가 많다.     
+이것은 이런 지식을 이해하지 못한데서 발생한 일들이다.      
+
+
 # Context switching
 context switching은    
 <pre>
@@ -338,4 +414,3 @@ __schedule() -> context_switch() -> switch_to()
 순서로 진행된다.         
 이렇게 저장되는 정보로는 pid, 등등이 있는데 이런 정보는 사실 task_struct에 원래 저장되어 있지 별도로 context switching시에 하지는 않는다.    
 사실 context switching시에 thread_struct나 pstate register를 이용하게 된다    
-

@@ -6,6 +6,24 @@ toc_ads : true
 layout: single
 ---
 
+# Table of contents
+[Boot Protocol](#boot-protocol)       
+[   1. setup header](#1-setup-header)       
+[       1.1 vid_mode](#11-vid_mode)        
+[       1.2 bootloader-identifier](#12-bootloader-identifier)          
+[       1.3 boot protocol option flag](#13-boot-protocol-option-flag)               
+[       1.4 boot protocol option flag](#14-code32_start)               
+[       1.5 ramdisk image](#15-ramdisk_image)               
+[       1.6 xloadflags](#16-xloadflags)               
+[       1.7 setup data](#17-setup_data)               
+[       1.8 init_size](#18-init_size)               
+[       1.9 kernel version](#19-kernel-version)               
+[   2. Efi handover protocol](#2-efi-handover-protocol)       
+[Analysis of boot process](#analysis-of-boot-processing)      
+[   1. Efi boot 방식 확인](#1-efi-boot-%EB%B0%A9%EC%8B%9D-%ED%99%95%EC%9D%B8)        
+[   2. Checking of file system](#2-checking-of-file-system)        
+[   3. Firmware test](#3-firmware-test)        
+
 # Boot Protocol
 v5.7-rc3 기준으로 boot protocol은 2.15 version 까지 존재한다.   
 kernel size가 512kb를 넘으면 사용하는(사실상 모든 kernel이 사용하는) 메모리 layout은 다음과 같다.    
