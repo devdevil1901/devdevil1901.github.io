@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="http://devdevil1901.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="http://devdevil1901.github.io/" rel="alternate" type="text/html" /><updated>2020-05-14T09:30:49+09:00</updated><id>http://devdevil1901.github.io/feed.xml</id><title type="html">Devdevil’s blog</title><subtitle>Android and Security</subtitle><author><name>Tyrese Ahn</name><email>thevampir2lestat@gmail.com</email></author><entry><title type="html">Useful Markdown grammer tip</title><link href="http://devdevil1901.github.io/jekyll/update/ubuntu-console-mode-jekyll/" rel="alternate" type="text/html" title="Useful Markdown grammer tip" /><published>2020-05-10T20:18:33+09:00</published><updated>2020-05-10T20:18:33+09:00</updated><id>http://devdevil1901.github.io/jekyll/update/ubuntu-console-mode-jekyll</id><content type="html" xml:base="http://devdevil1901.github.io/jekyll/update/ubuntu-console-mode-jekyll/">&lt;p&gt;대학교 1학년때, 학교에서 LUG(Linux User Group)을 만들어서 Linux를 공부하고,     &lt;br /&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-05-14T17:29:53+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Devdevil’s blog</title><subtitle>Android and Security</subtitle><author><name>Tyrese Ahn</name><email>thevampir2lestat@gmail.com</email></author><entry><title type="html">Useful Markdown grammer tip</title><link href="http://localhost:4000/jekyll/update/ubuntu-console-mode-jekyll/" rel="alternate" type="text/html" title="Useful Markdown grammer tip" /><published>2020-05-10T20:18:33+09:00</published><updated>2020-05-10T20:18:33+09:00</updated><id>http://localhost:4000/jekyll/update/ubuntu-console-mode-jekyll</id><content type="html" xml:base="http://localhost:4000/jekyll/update/ubuntu-console-mode-jekyll/">&lt;p&gt;대학교 1학년때, 학교에서 LUG(Linux User Group)을 만들어서 Linux를 공부하고,     &lt;br /&gt;
 전국러그에서 1대 서울러그 리더가 되서 언더그라운드 해커들과 서울러그를 결성해서 헛 소리하던 때가 엇그제 같은데.   &lt;br /&gt;
 어드덧 이렇게 나이를 먹게 되었다.     &lt;br /&gt;
 그 당시 내가 좋아하던 리눅스는 console로만 쓰는 linux 였다.    &lt;br /&gt;
@@ -19,137 +19,7 @@ $ sudo reboot 0
 &lt;p&gt;x windows로 다시 복구.&lt;/p&gt;
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo systemctl set-default graphical target
 $ sudo reboot 0
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Tyrese Ahn</name><email>thevampir2lestat@gmail.com</email></author><summary type="html">대학교 1학년때, 학교에서 LUG(Linux User Group)을 만들어서 Linux를 공부하고, 전국러그에서 1대 서울러그 리더가 되서 언더그라운드 해커들과 서울러그를 결성해서 헛 소리하던 때가 엇그제 같은데. 어드덧 이렇게 나이를 먹게 되었다. 그 당시 내가 좋아하던 리눅스는 console로만 쓰는 linux 였다. 리눅스를 설치하면 init 3로 부팅되게 수정해서, x-windows 없이 부팅하도록 해놓는게 가장 먼저하는 일이었다.</summary></entry><entry><title type="html">Trump Insults CNN Reporter Who Challenged Him</title><link href="http://devdevil1901.github.io/jekyll/update/English-Study-Shadowing-covid-and-trumpjekyll/" rel="alternate" type="text/html" title="Trump Insults CNN Reporter Who Challenged Him" /><published>2020-04-25T12:38:33+09:00</published><updated>2020-04-25T12:38:33+09:00</updated><id>http://devdevil1901.github.io/jekyll/update/English-Study-Shadowing-covid-and-trumpjekyll</id><content type="html" xml:base="http://devdevil1901.github.io/jekyll/update/English-Study-Shadowing-covid-and-trumpjekyll/">&lt;p&gt;Today shadowing.&lt;/p&gt;
-
-&lt;p&gt;comment: &lt;br /&gt;
-Why did Trump congratulate himself after 40k people died? &lt;br /&gt;
-Let him explain.&lt;/p&gt;
-
-&lt;p&gt;Trump: &lt;br /&gt;
-like yeah here we go&lt;/p&gt;
-
-&lt;p&gt;CNN Reporter:(00:08) &lt;br /&gt;
-Mr. president. 22 more than 22 million Americans are currently unemployed yeah as a result of this. &lt;br /&gt;
-today we &lt;strong&gt;hit the grim milestone&lt;/strong&gt; of more than 40,000 Americans now having died from the corona virus. &lt;br /&gt;
-can you explain then why you come out here and you were reading clips and  &lt;br /&gt;
-and and showing clips of praise for you and for your administration. &lt;br /&gt;
-is this really the time for self-congratulations.&lt;/p&gt;
-
-&lt;h6&gt;   
-40000명의 사람들이 죽은후 왜 트럼프는 자축을 하는가? 그에서 설명을 들어보자.   
-
-시작해 볼까요?
-
-대통령님. 22만 명의 미국인이 현재 실직 상태입니다. 이것의 결과로요.
-
-오늘 우리는 4만명이상의 미국인이 코로나 바이러스로 죽어가고 있는 암울한 이정표를 남겼습니다.
-왜 여기나와서 당신과 당신 정부를 칭찬하는 clip을 읽고 보여주는 것입니까?
-정말 자축할 시간이 맞나요?   
-     
-grim  [ɡrɪm] 엄숙한, 암울한, 음침한&lt;/h6&gt;
-&lt;p&gt;praise [preɪz] 칭찬,찬양 &lt;br /&gt;
-40,000 forty thousand&lt;br /&gt;
-&amp;lt;/h6&amp;gt;&lt;/p&gt;
-
-&lt;p&gt;Trump:(00:33) &lt;br /&gt;
-well I will tell you this what I’m doing is I’m standing up for the men and women. &lt;br /&gt;
-that have done such an incredible job not for me.  &lt;br /&gt;
-and for the men and women   ,
-Admirals, vice president  &lt;br /&gt;
-if I might &lt;br /&gt;
-but all of the men and women thousands tens of thousands of them that built hospitals in New York and New Jersey 
-and all over this country &lt;strong&gt;in record time&lt;/strong&gt; that throw up a thousand beds in four days.&lt;/p&gt;
-
-&lt;h6&gt;
-음..나는 나를 위해서가 아니라, 그런 놀라운 것을 해낸 사람들을 위해 서있는 것이 내가 하는 일입니다.
-남성들 여성들, 해군제독,부통령을 위해.   
-만약 아마도   
-뉴욕과 뉴저지에서 모두가 많은 사람들이죠 그들이 병원을 지었습니다.   
-이 나라 곳곳에4일만에 천개의 침상이 버려지는 기록적인 시간들속에서요.   
-
-I will tell you this what은 you know what 정도의 의미인듯.
-admiral [ˈædmərəl] 해군장성
-vice president 부통령
-&lt;/h6&gt;
-
-&lt;p&gt;I’m sticking up for those people those people have been incredible .  &lt;br /&gt;
-I’m also sticking up for doctors and nurses and military doctors &lt;br /&gt;
-New Reporter: (01:08) &lt;br /&gt;
-But the clips that you played and what you read earlier was praising you and your administration specifically. &lt;br /&gt;
-Trump(01:12):  &lt;br /&gt;
-All I played today was Governor Cuomo. &lt;br /&gt;
-New Reporter:(1:12) &lt;br /&gt;
-Why is now the moment to do that, sir? &lt;br /&gt;
-Trump(1:13) &lt;br /&gt;
-saying very positive things about the job the federal government has done, and those people &lt;br /&gt;
-News Rerpoter: &lt;br /&gt;
-On the day where more that 40,000 Americans have now died.&lt;/p&gt;
-&lt;h6&gt;
-난 그런 대단한 일을 해낸 사람들을 지지 합니다.  
-난 또한 의사들 간호사들 군 의사들을 지지합니다. 
-그렇지만 당신이 앞서 보여준 clip과 읽은 것들은 당신과 당신의 정부를 찬양하는 것들이었습니다.   
-나는 오늘 Cuomo 주지사를 플레이한게 다에요.    
-왜 지금 순간에 한거죠?   
-연방 정부가 한 긍정적인 것들에 대해 말하는 것은, 그리고 그런 사람들    
-4만명 넘는 사람들이 지금 죽어가는 날에요.
-&lt;/h6&gt;
-&lt;p&gt;Trump:
-and those people have been just absolutely excoriated by some of the fake news, &lt;br /&gt;
-like you, you CNN your fake news  &lt;br /&gt;
-and let me just tell you they were excoriated by people like you that don’t know any better  &lt;br /&gt;
-because you don’t have the brains you were born with you should be praising the people that have done a good job, &lt;br /&gt;
-not doing what you do even that question so just so you understand if we didn’t do a job
-News Reporter:
-The question is: ‘Why now, sir?’
-The question is: ‘Why now’ not ‘why are you doing it’ but why now? &lt;br /&gt;
-Trump: &lt;br /&gt;
-I’ll tell you why now. &lt;br /&gt;
-you’re ready? &lt;br /&gt;
-because these people are right now in hospitals &lt;br /&gt;
-it’s dangerous it’s going to a battlefield  &lt;br /&gt;
-and I want these people I want you I want you &lt;br /&gt;
-Rerporter: &lt;br /&gt;
-This wasn’t about hospital workers, sir.
-Trump:  &lt;br /&gt;
-I want you and &lt;br /&gt;
-Reporter: &lt;br /&gt;
-This wasn’t about the doctors. &lt;br /&gt;
-Trump:
-It’s all about that. &lt;br /&gt;
-Reporter: &lt;br /&gt;
-This was about you and your administration &lt;br /&gt;
-Trmp:
-It’s not about me. no, &lt;strong&gt;nothing is about me&lt;/strong&gt;&lt;/p&gt;
-&lt;h6&gt;
-excoriate [eksˈkɔːrieɪt] 상처를 입히다, 마구비난하다.
-&lt;/h6&gt;
-
-&lt;p&gt;Trump:(1:59)
-look look you’re never gonna treat me fairly many of you &lt;br /&gt;
-and I understand that I don’t even know &lt;br /&gt;
-I got here with the worst &lt;br /&gt;
-most unfair press treatment they say in the history of the United States for president  &lt;br /&gt;
-they did say Abraham Lincoln had very bad treatment too.&lt;/p&gt;</content><author><name>Tyrese Ahn</name><email>thevampir2lestat@gmail.com</email></author><summary type="html">Today shadowing.</summary></entry><entry><title type="html">LiveData with Coroutines and Flow</title><link href="http://devdevil1901.github.io/jekyll/update/English-Study-Shadowing-livedata-with-coroutines-jekyll/" rel="alternate" type="text/html" title="LiveData with Coroutines and Flow" /><published>2020-04-25T12:38:33+09:00</published><updated>2020-04-25T12:38:33+09:00</updated><id>http://devdevil1901.github.io/jekyll/update/English-Study-Shadowing-livedata-with-coroutines-jekyll</id><content type="html" xml:base="http://devdevil1901.github.io/jekyll/update/English-Study-Shadowing-livedata-with-coroutines-jekyll/">&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=B8ppnjGPAGE&quot;&gt;source&lt;/a&gt;&lt;/p&gt;
-
-&lt;pre&gt;
-Hi there.   
-My name is Jose Alcerreca. I'm developer relations engineer working on Android.   
-My name is Yigit Boyar. I also work on the Android team.   
-Today we're going to talk about LiveData again.   
-We were here last year with a talk titled fun with LiveData.   
-Today we're going to talk about its integration with coroutines and with Flow.   
-
-So since API we've struggled to understand Android lifecycles.   
-&lt;/pre&gt;
-
-&lt;h6&gt;안녕하세요 제이름은 호세 알세레카이고요, 안드로이드에서 일하는 엔지니어관련 개발자 입니다.   
-&lt;h6&gt;저는 이짓 보얄이고요, 저또한 안드로이드 팀에서 일하고 있어요.   
-&lt;h6&gt;오늘 우리는 다시 LiveData에 대해서 얘기할 거에요.   
-&lt;h6&gt;우리는 여기서, 지난해에 fun with LiveData란 제목으로 이야기 했었죠.  
-&lt;h6&gt;오늘은 우리는 코루틴과 플로우와 함께 그것의 통합에 대해 말하려고 합니다.   
-&lt;h6&gt;API 이래로 우리는 안드로이드 라이프 사이클을 이해하기 위해 노력해 왔습니&lt;/h6&gt;
-
-&lt;/h6&gt;&lt;/h6&gt;&lt;/h6&gt;&lt;/h6&gt;&lt;/h6&gt;</content><author><name>Tyrese Ahn</name><email>thevampir2lestat@gmail.com</email></author><summary type="html">source</summary></entry><entry><title type="html">Useful Markdown grammer tip</title><link href="http://devdevil1901.github.io/jekyll/update/useful-markdown-tip-jekyll/" rel="alternate" type="text/html" title="Useful Markdown grammer tip" /><published>2020-04-25T12:38:33+09:00</published><updated>2020-04-25T12:38:33+09:00</updated><id>http://devdevil1901.github.io/jekyll/update/useful-markdown-tip-jekyll</id><content type="html" xml:base="http://devdevil1901.github.io/jekyll/update/useful-markdown-tip-jekyll/">&lt;p&gt;앞으로 유용한 tip들은 여기다 정리하도록 하자.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Tyrese Ahn</name><email>thevampir2lestat@gmail.com</email></author><summary type="html">대학교 1학년때, 학교에서 LUG(Linux User Group)을 만들어서 Linux를 공부하고, 전국러그에서 1대 서울러그 리더가 되서 언더그라운드 해커들과 서울러그를 결성해서 헛 소리하던 때가 엇그제 같은데. 어드덧 이렇게 나이를 먹게 되었다. 그 당시 내가 좋아하던 리눅스는 console로만 쓰는 linux 였다. 리눅스를 설치하면 init 3로 부팅되게 수정해서, x-windows 없이 부팅하도록 해놓는게 가장 먼저하는 일이었다.</summary></entry><entry><title type="html">Useful Markdown grammer tip</title><link href="http://localhost:4000/jekyll/update/useful-markdown-tip-jekyll/" rel="alternate" type="text/html" title="Useful Markdown grammer tip" /><published>2020-04-25T12:38:33+09:00</published><updated>2020-04-25T12:38:33+09:00</updated><id>http://localhost:4000/jekyll/update/useful-markdown-tip-jekyll</id><content type="html" xml:base="http://localhost:4000/jekyll/update/useful-markdown-tip-jekyll/">&lt;p&gt;앞으로 유용한 tip들은 여기다 정리하도록 하자.&lt;/p&gt;
 
 &lt;h3 id=&quot;table에서-줄-바꿈하기&quot;&gt;table에서 줄 바꿈하기&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;&amp;lt;br\/&amp;gt;&lt;/strong&gt; tag를 사용한다.&lt;/p&gt;
@@ -172,7 +42,7 @@ So since API we've struggled to understand Android lifecycles.
       &lt;td&gt; &lt;/td&gt;
     &lt;/tr&gt;
   &lt;/tbody&gt;
-&lt;/table&gt;</content><author><name>Tyrese Ahn</name><email>thevampir2lestat@gmail.com</email></author><summary type="html">앞으로 유용한 tip들은 여기다 정리하도록 하자.</summary></entry><entry><title type="html">Welcome to Jekyll!</title><link href="http://devdevil1901.github.io/jekyll/update/welcome-to-jekyll/" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2020-04-22T12:10:33+09:00</published><updated>2020-04-22T12:10:33+09:00</updated><id>http://devdevil1901.github.io/jekyll/update/welcome-to-jekyll</id><content type="html" xml:base="http://devdevil1901.github.io/jekyll/update/welcome-to-jekyll/">&lt;p&gt;You’ll find this post in your &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
+&lt;/table&gt;</content><author><name>Tyrese Ahn</name><email>thevampir2lestat@gmail.com</email></author><summary type="html">앞으로 유용한 tip들은 여기다 정리하도록 하자.</summary></entry><entry><title type="html">Welcome to Jekyll!</title><link href="http://localhost:4000/jekyll/update/welcome-to-jekyll/" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2020-04-22T12:10:33+09:00</published><updated>2020-04-22T12:10:33+09:00</updated><id>http://localhost:4000/jekyll/update/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/jekyll/update/welcome-to-jekyll/">&lt;p&gt;You’ll find this post in your &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
 
 &lt;p&gt;Jekyll requires blog post files to be named according to the following format:&lt;/p&gt;
 

@@ -16,8 +16,9 @@ layout: single
 [     3. Policy](#3-policy)    
 [     4. Scheduler](#4-scheduler)     
 [     5. sched_class](#5-sched_class)
-[     6. Priority](#5-priority)     
+[     6. Priority](#6-priority)     
 [           6.1. top command](#61--top-command)      
+[     7. weight](#7-weight)     
 [Preemption](#preemption)      
 [     1. User preempt](#1-user-preempt)      
 [     2. Preempt level](#2-preempt-level)     
@@ -147,7 +148,7 @@ scheduler는 다음과 같이 발전해 왔다.
 |---|---|
 |2.4 이전| Priority based + Round-robin 방식이었다.|
 |2.6|O(1) scheduler 도입됨|
-|2.6.3|CFS scheduler로 변경되었다.<br/>weight과 priority에 기반하여 cpu time을 분배한다.|
+|2.6.3|CFS scheduler로 변경되었다.<br/>load_weight에 기반하여 cpu time을 분배한다.|
 
 
 ## 1. time slice
@@ -263,7 +264,7 @@ void (*update_curr)(struct rq *rq);
 
 ## 6. Priority
 task가 더 많은 time slice를 가지기 위한 우선순위 값을 의미한다.    
-policy가 normal, batch, idle인 경우는 weight과 priority를 통해서 배분되는 것을 기억하자.     
+policy가 normal, batch, idle인 경우는 load_weight에 기반해서,  배분되는 것을 기억하자.     
 user level에서 nice 값을 설정하면, system call을 통해서 kernel level로 진입하여, nice 값을 통해 prioirty를 산출하게 된다.     
 ```
 linux/sched/proi.h
@@ -344,6 +345,7 @@ task_struct에서 다음과 같이 priority를 유지한다.
 |static_prio|nice값이 변경되는 system call이 실행될 때, 갱신된다.(NICE_TO_PRIO())<br/>load wieght를 계산할 때 사용된다.|
 |rt_priority|RT Scheduler를 사용하는 RT task에서만 사용한다.<br/>0~99 즉 100까지만 사용한다. <br/> MAX_RT_PRIO는 100 이다.|
 
+이 값들은 fork될 때 초기값은 부모의 값으로 복사된다.     
  
 ### 6.1  top command
 원래 priority는 nice + 120이지만, top command에서는 nice + 20으로 표시하기 때문에 값이 좀 이상해 보일 수 있다.     
@@ -361,6 +363,25 @@ task_struct에서 다음과 같이 priority를 유지한다.
 nice default값은 0이기 때문에, PR=20 NI 0이 default이다.    
 PR이 -로 표시된 root권한으로 실행된 RT task인것을 확인할 수 있다.     
 PR이 rt로 표시된 것은 가장 높은 우선 순위를 의미한다.     
+
+## 7. weight
+CFS scheduler의 time slice 배분의 기준이 되는 값이다.       
+```
+[include/linux/sched.h]
+struct load_weight {
+	unsigned long			weight;
+	u32				inv_weight;
+};
+```
+특정 task가 얻는 cpu time slice는     
+```
+task의 load_weight/전체 task의 load_wieght
+```
+으로 구할 수 있다. 
+
+cfs scheduler에서 load_weight을 구하는 부분을 살펴보자.     
+![to weight from priority](../../../assets/images/linux_load_weight.png)     
+
 
 # Preemption
 일명 컴싸(컴퓨터 사이언스) 채용 문제들에서 Non-preemptive와 preeptive kernel에 대한 문제들이 나오는데,      
