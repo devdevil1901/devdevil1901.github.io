@@ -1,6 +1,6 @@
 ---
-title: "NUMA(Non-Uniformed Memory Access"
-permalink: /kdb/linux/numa/
+title: "Virtualization"
+permalink: /kdb/linux/vm/
 toc_sticky: true
 toc_ads : true
 layout: single
