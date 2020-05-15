@@ -34,6 +34,7 @@ kernel size가 512kb를 넘으면 사용하는(사실상 모든 kernel이 사용
 장치의 실제 sector size와는 무관하게, boot protocol에서 한 sector는 512 byte를 의미한다.   
 (어짜피 GTP의 1LBA도 512 byte이다.)   
 kernel loading의 첫 단계로 real-mode code(kernel setup and boot sector)가 load된다.   
+real mode에 대한 좀 더 상세한 설명은 [segmentation](/kdb/linux/memory/#segmentation)을 참조한다.      
 이 주소는 bootloader에 의해 결정되는 X값 + 0x8000이다.     
 protected kernel인 vmlinux.bin은 0x100000에 load된다.        
 그리고 더 낮은 부분에 setup code가 배치되고, MBR에서 읽어온 stage 1 bootloader도 배치된다.    
