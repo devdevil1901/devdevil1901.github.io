@@ -7,9 +7,18 @@ layout: single
 ---
 
 # Table of contents
+[Outline](#outline)         
+[Segmentation](#segmentation)          
+[1. Real mode segmentation](#1-real-mode-segmentation)         
+[2. Protected mode segmentation](#2-protected-mode-segmentation)        
+[3. IA32e-64bit mode segmentation](#3-ia32e-64bit-mode-segmentation)       
+[4. System descriptor](#4-system-descriptor)         
+[Paging](#paging)         
+[1. Paging on protected mode](#1-paging-on-protected-mode)        
+[SLAB](#slab)       
+[Memory Model](#memory-model)      
 
 # Outline
-
 
 # Segmentation
 먼저 Segmentation을 살펴보자.      
@@ -71,14 +80,37 @@ Protected mode와 ia32e-64bit에서의 segment descriptor는 다음과 같이 �
 즉 선형주소 자체가 64bit 전체가 되는 것이다.      
 이말은 segmentation을 사실 상 하지 않는 다고 할 수 있다.      
 
+## 4. System descriptor
+segment descriptor의 sbit가 0이라면, 이 segment descriptor는 CS,DS와 같은 것이 아니라, System Descriptor라는 의미이다.      
+System descriptor에는 다음이 존재한다.        
+|System descriptor|desc|
+|---|---|
+|LDT|Local Descripter Table Segment에 대한 descriptor|
+|TSS|Task State Descriptor|
+|Call|Gate Descriptor|
+|Interrupt||
+|Trap|Gate Descriptor|
+|Task|Gate Descriptor|
+
 # Paging
+Segmentation이 physical address로 즉시 변경되는데 반해서,        
+paging에서는 linear address로 불리는 logical address가 paging을 거쳐서 physical address로 변환된다.       
+Paging을 이해하기 위해서는 먼저 protected mode를 확실하게 이해해야 한다.       
+Protected mode는 1982년에 x86 아키텍쳐에 추가되었다. 큰 RAM의 메모리에 접근하기 위해서 였다.         
+(64K의 고정 크기 세그먼트)       
+이후 64bit에서 IA-32e(amd에서는 long mode)가 나오기 전까지 메인 모드였다.      
+protected mode에서 memory 접근은 segment와 paging으로 이루어진다.     
 
+# 1. paging on protected mode
+4k의 page를 사용하는 3단계 paging을 사용한다.     
+Protected mode segmentation을 통해서 찾아진 Linear Addresss는 다음과 같다.        
+31-----Page Directory Index---22-21---Page Table Index---12-11---Offset into Page---0           
 
-# Protected mode
 32bit protected mode에서의 메모리 접근을 그림으로 표현해 보았다.       
 ![protected mode access memory](../../../assets/images/linux_protected_access.png)      
 
-
+Page Directory Index를 통해서 Page Table을 찾고, 그 Page Table에서 Page Table Index로 address를 구해서 Offset into Page를 더하면     
+물리주소를 구하는 것을 확인할 수 있다.        
 
 # SLAB
 Slab은 memory의 assign 속도와 fragmentation의 최소화를 통한 성능 개선을 위해 도입되었다.    
@@ -139,6 +171,33 @@ kmem_cache           195    576    448   36    4 : tunables    0    0    0 : sla
 
 즉 task가 생성되면, task_strurct 만큼 메모리 할당을 요청하면 slab memory assigner가 미리 할당해 놓은 시작주소를 돌려주게 되는 것이다.    
 
+# Fixmap
+Compile 시점에서 virtual address가 결정되는 공간이다.     
+fixmap이란 것은 고정(fix)된 가상 주소 영역을 사용해서 물리 주소를 매핑하는 것이다.      
+보통 vmap과 같은 mapping subsystem이 활성화 되기 전에 mapping이 필요할 때 사용된다.      
+* console device를 정식으로 초기화하기전에 사용하고자 할때 early_ioremap()으로     
+* read only로 설정된 kernel code를 변경하고자 할때, fixmap을 임시로 사용.     
+
+Fixmap은 slot을 나우어서, architecture나 kernel version등에 맞추어 여러가지 용도로 나누어 제공된다.       
+FDT slot(for dtb)은 최대 2M이지만, align을 사용해서 4M의 영역을 지원한다.       
+소스레벨에서 살펴보게 되면,       
+```
+early_fixmap_init()에서 초기화 되고, 
+다음과 같이 fixmap_remap_fdt()에서 활성화 된다.
+__init setup_arch() [arch/arm64/setup.c]
+-> setup_machine_fdt() [arch/arm64/kernel/setup.c]
+    -> fixmap_remap_fdt() 
+    -> early_init_dt_scan()
+```    
+
+관련 API는 다음과 같다.      
+```
+set_fixmap()
+clear_fixmap()
+set_fixmap_nocache()
+set_fixmap_io()
+__set_fixmap() (arch/arm64/mm/mmu.c)
+```
 
 # memory model
 flatmem, discontigmem등의 model이 있지만, 현재 x86_64와 arm64 모두 sparse model을 사용중이기 때문에    

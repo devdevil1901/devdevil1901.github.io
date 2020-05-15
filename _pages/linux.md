@@ -14,6 +14,7 @@ layout: single
 ### [Memory Management](/kdb/linux/memory/)
 ### [Process](/kdb/linux/process/)
 ### [Scheduling](/kdb/linux/scheduling/)
+### [Device Mapper](/kdb/linux/device_mapper/)
 ### [Virtualization](/kdb/linux/vm/)
 
 
