@@ -8,6 +8,8 @@ layout: single
 
 # Table of contents
 [Boot Protocol](#boot-protocol)       
+[Boot Sequence](#boot-sequence)       
+[1. on x86_64](#1-x86)       
 [1. setup header](#1-setup-header)       
 [1.1 vid_mode](#11-vid_mode)        
 [1.2 bootloader-identifier](#12-bootloader-identifier)          
@@ -32,8 +34,97 @@ kernel size가 512kb를 넘으면 사용하는(사실상 모든 kernel이 사용
 장치의 실제 sector size와는 무관하게, boot protocol에서 한 sector는 512 byte를 의미한다.   
 (어짜피 GTP의 1LBA도 512 byte이다.)   
 kernel loading의 첫 단계로 real-mode code(kernel setup and boot sector)가 load된다.   
-protected kernel인 vmlinux.bin은 0x100000에 relocation된다.   
+이 주소는 bootloader에 의해 결정되는 X값 + 0x8000이다.     
+protected kernel인 vmlinux.bin은 0x100000에 load된다.        
 그리고 더 낮은 부분에 setup code가 배치되고, MBR에서 읽어온 stage 1 bootloader도 배치된다.    
+
+# Boot Sequence
+## 1. x86
+Boot Process를 결론적으로 정리하자면 다음과 같다.      
+```
+by BIOS
+16bit real mode -> 32bit protected mode -> IA32e mode
+
+by UEFI
+32bit protected mode -> IA32e mode
+```
+
+즉 UEFI의 경우는 구 시대의 유물인 16bit real mode가 없이 32bit protected mode가 직접 간다. 이것이 가장 인상적인 면이라고 할 수 있겠다.      
+그럼 어떻게 이렇게 되는지 자세히 살펴보도록 하자.      
+
+먼저 32bit protected mode kernel로 진입한 첫 단계인 startup_64()까지의 code이다.      
+(그림이 크기 때문에 별도 탭에서 열어서 봐야 한다.)       
+![boot sequence on x86_64](../../../assets/images/linux_boot_sequence.png)     
+
+이 그림은 이론적인 부분이고, 보통 일반적인 ubuntu라면,       
+/boot/efi/EFI/ubuntu/shimx64.efi(UEFI secure booting)로  boot를 시작해서,       
+/boot/efi/EFI/ubuntu/grubx64.efi로 booting을 시작할 것이다.       
+그리고 /boot/grub/grub.cfg에 지정된 /boot/vmlinuz-xxxx를 로드하게 된다.             
+즉 efi단의 bootloader는 생략하였다.      
+
+먼저 real mode에 대해서 살펴볼 필요가 있다.     
+BIOS가 메모리가 1M이고, register가 16bit 이기 때문에 존재하는 real mode의 코드는 다음과 같다.     
+<pre>
+// 16 bit real mode의 entry point
+arch/x86/boot/header.S
+arch/x86/boot/main.c
+arch/x86/boot/memory.c
+// protected mode로의 전환을 구현
+arch/x86/boot/pm.c    
+arch/x86/boot/pmjump.S
+</pre>
+
+다음으로 32bit protected mode의 code들은 어떤 것들이 있는지 살펴보도록 하자.      
+<pre>
+// 32bit protected mode entry point and efi_stub_entry
+arch/x86/boot/compressed/head_32.S
+arch/x86/boot/compressed/head_64.S
+// efi_main and efi call funtions
+drivers/firmware/efi/libstub/x86-stub.c
+</pre>
+
+마지막으로 IA32e mode(Long mode)의 시작은 다음과 같다.     
+<pre>
+// startup_64
+arch/x86/boot/compressed/head_64.S
+</pre>
+
+
+default인 EFI boot stub에 의해서 direct로 kernel을 로드한 경우에는 direct로 firmware가 kernel image를 load하게 된다.       
+이 경우 그림에서와 같이 efi_pe_entry()로 jmp하게 된다.   
+또한 kernel setup header(PE file)에 handover_offset을 지정하고, xloadflags에 해당 flag를 set하면,    
+efi_stub_entry64()로 jump하게 된다.     
+
+그리고 결국에 모든 branch들은 startup_64()에서 만나게 된다.       
+상세한 내용은 본 페이지의 setup header, efi stub, handover 부분을 참조하자.     
+
+bios를 통한 boot를 통해서, main()은 16bit real mode에서 32bit protected mode로 진입하기 위한 준비과정을 수행한다.         
+1. copy_boot_params()을 호출해서 Kernel compile time과 bootloader에 의해 구해진 값으로 boot_params를 채운다.      
+2. init_heap()으로 heap을 초기화
+3. detect_memory()로 bios interrupt(0x15 bios system service)를 이용해서, physical memory의 구성을 체크한다. 
+4. keyboard_init() 등까지 수행한 후에, 일종의 detour로서 동작하는 go_to_protected_mode()를 실행한다.      
+
+go_to_protected_mode()에서는 다음의 process를 수행한다.    
+
+|function|decription|
+|---|---|
+|realmode_switch_hook()|Cli로 interrupt disable<br/>outb(0x80, 0x70);으로 0x70 port에 0x80 전송해서 NMI를 disable<br/>0x70은 CMOS address register이다.<br/>|
+|enable_a20()|a20 gate를 enable 시킨다.<br/> 이 a20 gate는 real mode와 같은 과거의 잔재로서, 어서 사라져야할 부분이다.<br/>현 상황의 hardware와는 매우 동떨어진 동작이기 때문이다.<br/>이전에 MS-DOS가 real mode로 동작하였지만  A20 Gate를 on시켜서, 0xFFFF:0x0010 ~ 0xFFFF:0xFFFF까지 사용할수 있었다.<br/>이걸 켜지 않으면 0x200000는 접근가능하나 0x300000은 접근하지 못하는 식으로<br/>홀수 접근이 안되서 접근할 수 있는 범위가 줄어든다.|
+|setup_idt()|IDT에 null idt를 넣는다.(size와 address가 둘다 0으로 되어 있는 상태)|
+|setup_gdt()|CS, DS, TSS를 위한 간단한 descripter table을 만들어서,<br/>lgdtl instruction으로 gdtr register에 로드한다.<br/>TSS는 task State segment이다.<br/>|
+|reset_coprocessor()|0xf0 0xf1 port에 0을 전송해서 coprocessor를 reset한다.|
+|mask_all_interrupts()|0xa1 port에 0xff를 전송해서, primary PIC에 모든  interrupt를 masking<br/>0x21에 0xfb를 전송해서 secondary PIC에 모든 interrupt를 masking<br/>즉 interrupt를 disable 시키는 것인데 너무 당연한 것이 지금 interrupt handler는<br/> 등록되지 않은 상황으로 bios interrupt만 실행하고 있는 상황인 것이다.|
+|protected_mode_jump()|Cr0 register의 최하위 bit를 1로 setting해서, protected mode로 전환 한다.<br/>movl    %edx, %cr0<br/>인자로 code32_start 값이 전달되고 최종적으로 여기로 jmp되는데.<br/>arch/x86/boot/header.S에서 보면,<br/>code32_start:               # here loaders can put a different<br/>.long   0x100000    # 0x100000 = default for big kernel<br/>0x100000이 들어있다. 즉 여기로 jmp한다.<br/>이 주소에는 bzImage를 사용할 때 protected mode kernel이 relocation 되어 있다.|
+
+그 이후에 도착하게 되는 startup_64(). 그림에서와는 다르게 EFI_CONFIG_MIXED(default y)로 인해서 handover_offset에는 startup_32가 들어갈 수도 있다.     
+아무튼 startup64는 64bit bootloader 혹은 firmware, 혹은 startup_32()로 부터 도착하게 된다.     
+이제 IA32e mode에 진입하기 위해서 다음과 같은 작업을 수행한다.      
+
+1. PAE 활성화
+2. Page Table을 빌드하고, 최상위 페이지 테이블의 주소를 cr3에 로드
+3. EFER.LME 활성화
+4. 페이징 활성화
+
 
 ## 1. setup header
 x86에서 bootloader를 위해 존재하는 real mode를 위한 header지만, UEFI와 같이 16bit를 건너뛰는 process에서도 사용된다.   

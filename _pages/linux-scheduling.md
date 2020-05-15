@@ -15,7 +15,7 @@ layout: single
 [     2. Domain](#2-domain)    
 [     3. Policy](#3-policy)    
 [     4. Scheduler](#4-scheduler)     
-[     5. sched_class](#5-sched_class)
+[     5. sched_class](#5-sched_class)     
 [     6. Priority](#6-priority)     
 [           6.1. top command](#61--top-command)      
 [     7. weight](#7-weight)     
@@ -373,14 +373,35 @@ struct load_weight {
 	u32				inv_weight;
 };
 ```
-특정 task가 얻는 cpu time slice는     
+먼저 load_weight의 용도는  cpu에 얼마나 할당해야 하는지를 결정하기 위함이다.     
+
+특정 task가 얻는 cpu time slice는 **task의 load_weight/전체 task의 load_weight** 으로 구할 수 있다.     
+전체 task의 load_weight의 합이라는 의미는 runqueue에 있는 task들의 load_weight의 합이라는 의미이다.     
+즉 runqueue에서, CFS scheduler의 rq에 있는 load가 바로 그 값이다.     
 ```
-task의 load_weight/전체 task의 load_wieght
+kernel/sched/sched.h
+struct rq {
+    ...
+    cfs_rq cfs;
+    ...
+}
+struct cfs_rq {
+    ...
+    struct load_weight load;
+    ...
+}
 ```
-으로 구할 수 있다. 
+
+load_weight은 다음과 같이 변환 된다.     
+user level의 nice -> kernel level의 priority(task_struct의 static_prio) -> load_weight
+nice값이 0에서 1로 우선순위가 하나 떨어지면, CPU time은 10% 감소하게 된다.    
+반대로 1에서 0이되면, CPU time은 10% 증가하게 된다.     
 
 cfs scheduler에서 load_weight을 구하는 부분을 살펴보자.     
 ![to weight from priority](../../../assets/images/linux_load_weight.png)     
+
+여기서 prio는 task_struct의 static_prio이다.      
+그리고 미리 0~48까지로 값을 setting해 놓은 것을 확인 할 수 있다.     
 
 
 # Preemption
