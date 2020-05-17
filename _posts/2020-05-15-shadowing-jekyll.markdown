@@ -123,3 +123,25 @@ He's like 'I look cute, I don't have to pay'
 meow 미야~오 야옹. hi meow. 야옹아 안녕.
 admission 입장료
 ```
+
+# 
+
+```
+Jerome?
+What are you doing? The fight's tonight.
+Sorry, fellas i just got a call.
+My mom had a stroke.
+I've gotta go back to Long Island to see her.
+Hey, a Mets fan, huh?
+No, no Joe, Now is not the time to use your new conversation techniques.
+I love her so much, look at her. so beautiful.
+And there's no one to take care of her.
+so unfortunately, I'll be gone for a while.
+I gotta close this place for a month.
+A Month?
+I wish it was February.
+cause you know that's the shortest month.
+
+for a while 한동안
+stroke: 뇌졸증
+```
