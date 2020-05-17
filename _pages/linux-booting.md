@@ -10,7 +10,8 @@ layout: single
 [Boot Protocol](#boot-protocol)       
 [Boot Sequence](#boot-sequence)       
 [1. on x86_64](#1-x86)       
-[1. setup header](#1-setup-header)       
+[2. init calls](#2-__init-and-__init_calls)       
+[Setup header](#setup-header)       
 [1.1 vid_mode](#11-vid_mode)        
 [1.2 bootloader-identifier](#12-bootloader-identifier)          
 [1.3 boot protocol option flag](#13-boot-protocol-option-flag)               
@@ -62,6 +63,11 @@ by UEFI
 /boot/efi/EFI/ubuntu/grubx64.efi로 booting을 시작할 것이다.       
 그리고 /boot/grub/grub.cfg에 지정된 /boot/vmlinuz-xxxx를 로드하게 된다.             
 즉 efi단의 bootloader는 생략하였다.      
+EFI를 사용하는 경우는 bootloader대신 efi manager가 대체한다.     
+그리고 efi manager는 stub 방식, handover 방식 왜에도 GPT에 bootloader를 놓는 방식으로도 부팅이 가능하다.     
+즉 efi manager -> bootloader -> kernel 이런 식인데.      
+ubuntu는 이 방식으로 GPT의 ESP에 grub bootloader를 두어서, 부팅을 하고 있다.     
+grub이 굳이 필요 없어 보이지만, UEFI의 secure boot등을 지원해서 사용하고 있는듯 하다.      
 
 먼저 real mode에 대해서 살펴볼 필요가 있다.     
 BIOS가 메모리가 1M이고, register가 16bit 이기 때문에 존재하는 real mode의 코드는 다음과 같다.     
@@ -126,8 +132,65 @@ go_to_protected_mode()에서는 다음의 process를 수행한다.
 3. EFER.LME 활성화
 4. 페이징 활성화
 
+## 2. __init and __init_calls
 
-## 1. setup header
+BSP에서 booting이 진행 되다가,  
+
+
+xxx_initcall() 와 같은 function들이 있다.     
+```
+[include/linux/init.h]
+#ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS
+#define ___define_initcall(fn, id, __sec)			\
+	__ADDRESSABLE(fn)					\
+	asm(".section	\"" #__sec ".init\", \"a\"	\n"	\
+	"__initcall_" #fn #id ":			\n"	\
+	    ".long	" #fn " - .			\n"	\
+	    ".previous					\n");
+#else
+#define ___define_initcall(fn, id, __sec) \
+	static initcall_t __initcall_##fn##id __used \
+		__attribute__((__section__(#__sec ".init"))) = fn;
+#endif
+
+#define __define_initcall(fn, id) ___define_initcall(fn, id, .initcall##id)
+
+/*
+ * Early initcalls run before initializing SMP.
+ *
+ * Only for built-in code, not modules.
+ */
+#define early_initcall(fn)		__define_initcall(fn, early)
+
+/*
+ * A "pure" initcall has no dependencies on anything else, and purely
+ * initializes variables that couldn't be statically initialized.
+ *
+ * This only exists for built-in code, not for modules.
+ * Keep main.c:initcall_level_names[] in sync.
+ */
+#define pure_initcall(fn)		__define_initcall(fn, 0)
+
+#define core_initcall(fn)		__define_initcall(fn, 1)
+#define core_initcall_sync(fn)		__define_initcall(fn, 1s)
+#define postcore_initcall(fn)		__define_initcall(fn, 2)
+#define postcore_initcall_sync(fn)	__define_initcall(fn, 2s)
+#define arch_initcall(fn)		__define_initcall(fn, 3)
+#define arch_initcall_sync(fn)		__define_initcall(fn, 3s)
+#define subsys_initcall(fn)		__define_initcall(fn, 4)
+#define subsys_initcall_sync(fn)	__define_initcall(fn, 4s)
+#define fs_initcall(fn)			__define_initcall(fn, 5)
+#define fs_initcall_sync(fn)		__define_initcall(fn, 5s)
+#define rootfs_initcall(fn)		__define_initcall(fn, rootfs)
+#define device_initcall(fn)		__define_initcall(fn, 6)
+#define device_initcall_sync(fn)	__define_initcall(fn, 6s)
+#define late_initcall(fn)		__define_initcall(fn, 7)
+#define late_initcall_sync(fn)		__define_initcall(fn, 7s)
+
+#define __initcall(fn) device_initcall(fn)
+```
+
+## setup header
 x86에서 bootloader를 위해 존재하는 real mode를 위한 header지만, UEFI와 같이 16bit를 건너뛰는 process에서도 사용된다.   
 bzImage의 layout에서 확인했듯이, binary의 offset 0x01F1의 위치에 .header section으로 존재한다.    
 header 는 arch/x86/boot/header.S에 구현되어 있다.    

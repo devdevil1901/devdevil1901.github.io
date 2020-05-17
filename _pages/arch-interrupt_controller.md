@@ -5,6 +5,10 @@ toc_sticky: true
 toc_ads : true
 layout: single
 ---
+
+# Outline
+software 개발자도 hardware를 이해해야 할 때가 있다.      
+
 # APIC(Advanced Programmable Interrupt Controller)
 PIC는 x86 architecture의 interrupt controller이다.   
 software로서 control가능하기 때문에, programmable IC즉 PIC라고 부른다.   

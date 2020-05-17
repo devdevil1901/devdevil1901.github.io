@@ -102,10 +102,6 @@ other_node                     0
 ```
 fireware menu에서 지원한다면, interleaving을 명확하게 활성화 시키는 것이 더 낳을 것이다.     
 
-
-참고로 ACPI(Advanced Configuration and Power Interface)는 DTB와 같이 hardware를 기술하기 위한 표준이다.       
-[more detail](https://elinux.org/images/f/f8/ACPI_vs_DT.pdf)        
-
 # Policy
 |policy|desc|
 |---|---|

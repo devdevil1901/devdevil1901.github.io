@@ -112,6 +112,29 @@ Protected mode segmentation을 통해서 찾아진 Linear Addresss는 다음과 
 Page Directory Index를 통해서 Page Table을 찾고, 그 Page Table에서 Page Table Index로 address를 구해서 Offset into Page를 더하면     
 물리주소를 구하는 것을 확인할 수 있다.        
 
+# 2. 64bit page table walk
+64bit 시스템에서 전체 주소 범위인 2의 64승을 사용하지는 않는다.      
+2의 26승 ~ 2의 48승까지의 범위를 이용한다.      
+
+2의 48승의(256TB) 주소 범위를 사용하고, page 크기를 4kb 라고 하면,        
+(주소 범위는 0x00000000_00000000~0x0000ffff_ffffffff)        
+256 tb / 4k = 64GB 즉 640억개의 entry가 필요하게 된다.       
+너무 많기 때문에 이로인한 부하도 크다. 때문에 2~4 level 까지 나누어서 page table walk를 수행하게 되는 것이다.      
+위의 protected mode access memory 그림을 참조하자.       
+
+architecture 별로는 다음과 같다.         
+**on x86**       
+PGD(Page Global Directory) -> P4D -> PUD(Page Upper Directory) -> PMD(Page Mid-level Directory) -> PTE(Page Table Entry)          
+**on aarch64**        
+PGD -> PUD -> PMD -> PTE      
+
+아무래도 embeded에서 사용되는 arm64가 P4D 한 단계가 없다.       
+
+추가로 arm64의 MMU 내부에 ttbr0과 ttbr1 register가 존재 한다.       
+ttbr0는 user level의 주소 공간 page table 주소를 담고 있다.      
+ttbr1은 kernel level의 주소 공간 page table 주소를 담고 있다.          
+
+
 # SLAB
 Slab은 memory의 assign 속도와 fragmentation의 최소화를 통한 성능 개선을 위해 도입되었다.    
 즉 memory를 빨리 할당하고, 잔여 memory를 최대한 남기려고 하는 것이다.    

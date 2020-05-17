@@ -314,3 +314,24 @@ Exception을 처리한다는 것은 다음을 의미한다.
 |x86|현재 cpu를 점유하고 있는 프로세의 실행을 멈춘다.<br/>현재 status(pc, register)를 save한다. |interrupt의 handler를 실행.<br/>  Kernel mode 진입. Exception Vector table에서 해당 ISR를 실행<br/> interrupt handler(ISR)의 주소는 Interrupt Descripter Table (IDT)에 저장된다. |interrupted process의 실행을 재개한다.(time slace를 이어서 실행)|
 |aarch64|Exception이 발생하면, ELR_ELx instruction을 이용해서, 돌아올 address를 저장해 놓는다.|SPSR_ELx instruction을 실행해서, 현재 processor의 state인 PSTATE 값을 에 PSTATE를 저장한다.|그리고 exception 처리가 끝나면 ERET을 써서, pc에 복귀할 주소를 넣고, spsr에서 PSTATE를 복구한다.|
 
+# Interrupt Controller
+## 1. on x86_64
+초기화를 위해서 먼저 APIC의 spec을 확인해야 한다.     
+이 정보는 apic_driver와 apic_drivers에 초기화 된다.      
+**apic_boot_init()**       
+**apic_intr_mode_init()**        
+이후에는
+**setup_local_APIC()**       
+를 통해서 APIC에서 다양한 register를 구성하게 된다.      
+예를 들어 LVT0/1을 설정하는 것이다.       
+
+다음과 같이 해당 interrupt vector를 초기화 한다.      
+```
+start_kernel()
+    init_IRQ()
+        native_init_IRQ()
+            idt_setup_apic_and_irq_gates()
+                idt_setup_from_table(idt_table, apic_idts, ARRAY_SIZE(apic_idts), true);
+```  
+
+

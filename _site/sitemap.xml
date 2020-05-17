@@ -26,6 +26,9 @@
 <loc>http://devdevil1901.github.io/kdb/android/deeplink/</loc>
 </url>
 <url>
+<loc>http://devdevil1901.github.io/kdb/android/device_mapper/</loc>
+</url>
+<url>
 <loc>http://devdevil1901.github.io/kdb/android/memory_management/</loc>
 </url>
 <url>
@@ -92,10 +95,10 @@
 <loc>http://devdevil1901.github.io/kdb/linux/build/</loc>
 </url>
 <url>
-<loc>http://devdevil1901.github.io/kdb/linux/device_mapper/</loc>
+<loc>http://devdevil1901.github.io/kdb/linux/exception/</loc>
 </url>
 <url>
-<loc>http://devdevil1901.github.io/kdb/linux/exception/</loc>
+<loc>http://devdevil1901.github.io/kdb/linux/hardware/</loc>
 </url>
 <url>
 <loc>http://devdevil1901.github.io/kdb/linux/binary/</loc>
@@ -111,6 +114,9 @@
 </url>
 <url>
 <loc>http://devdevil1901.github.io/kdb/linux/scheduling/</loc>
+</url>
+<url>
+<loc>http://devdevil1901.github.io/kdb/linux/system_call/</loc>
 </url>
 <url>
 <loc>http://devdevil1901.github.io/kdb/linux/vm/</loc>

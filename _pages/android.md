@@ -9,3 +9,4 @@ layout: single
 
 ### [Deeplink](/kdb/android/deeplink/)
 ### [Memory Management](/kdb/android/memory_management/)
+### [Device Mapper](/kdb/android/device_mapper/)

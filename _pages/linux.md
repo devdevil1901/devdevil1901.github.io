@@ -6,6 +6,7 @@ toc_ads : true
 layout: single
 ---
 
+# Table of contents    
 ### [How to build linux kernel](/kdb/linux/build/)
 ### [NUMA](/kdb/linux/numa/)
 ### [Booting](/kdb/linux/boot/)
@@ -14,7 +15,8 @@ layout: single
 ### [Memory Management](/kdb/linux/memory/)
 ### [Process](/kdb/linux/process/)
 ### [Scheduling](/kdb/linux/scheduling/)
-### [Device Mapper](/kdb/linux/device_mapper/)
+### [Hardware](/kdb/linux/hardware/)
+### [System call](/kdb/linux/system_call/)
 ### [Virtualization](/kdb/linux/vm/)
 
 

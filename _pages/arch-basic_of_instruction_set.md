@@ -6,6 +6,26 @@ toc_ads : true
 layout: single
 ---
 
+# Table of contents
+[Outline](#outline)      
+[Data Type](#data-type)     
+[Signed vs Unsigned](#signed-vs-unsigned)         
+[1. MSB(Most Significant Bit](#1-msbmost-significant-bit)       
+[2. Negative expression of signed](#2-negative-expression-of-signed)        
+[Shift](#shift)       
+[Conditional flags](#conditional-flags)       
+[1. carry and overflow](#1-carry-and-overflow)      
+[2. Register](#2-register)      
+[2.1 RFLAGS](#21-rflags64bit-on-x86_64)      
+[2.2 NZCV](#22-nzcv64bit-on-aarch64)          
+[2.3 SPSR](#23-spsr32bit-saved-process-status-register-on-aarch64)
+[3. Conditional code](#3-conditional-code)       
+[3.1 on aarch64](#on-aarch64)        
+[Calling convention](#calling-convention)        
+[1. stack prolog & epilog](#stack-prolog--epilogue)      
+[References](#references)      
+
+# Outline
 x86_64와 aarch64를 기준으로 설명하며, x86과 aarch64에서 공통적인 부분들을 추려보았다.   
 
 # Data Type
@@ -97,6 +117,10 @@ arm에서는 cpsr, spsr register가 있었다.
 aarch64에서는 PSTATE register가 있고, 이것을 저장하는 spsr_eln register가 존재 한다. (n은 1,2,3 0은 없음)
 
 ## 1. carry and overflow
+
+**TODO** 지금 overflow는 설명이 미진하다. 64bit register라면 64bit register 값을 초과할 때 발생하는 것이 overflow이다.        
+**TODOP** 때문에 예제 코등와 함께 이것을 추가하도록 하자.      
+
 간단하지만 헷갈리는 부분이 carry와 overflow이다. 인터넷에 있는 자료들중 태반의 설명이 잘못되어 있는 것을 확인하였다 때문에 예제를 들어 자세히 정리한다.
 
 간단하게 정리해서, carry는 **올림**이나 **내림**이 발생하는 현상으로 **unsigned** 에서만 의미가 있다.
@@ -217,7 +241,7 @@ Negative + Negatieve = Positive
 |12-13|IOPL|I/P Privilege level|
 |14|NT|Nested Task|
 |15|Reserved|   |
-|16|RF|Resume flag|
+|16|RF|Resume flag<br/>SYSCALL instruction이 실행될때 clear된다.|
 |17|VM|Virtual-8086 Mode|
 |18|AC|Alignment Check/Access Control|
 |19|VIF|Virtual Interrupt Flag|

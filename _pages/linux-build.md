@@ -6,14 +6,25 @@ toc_ads : true
 layout: single
 ---
 
-1. Prepare
+# Table of contents
+[1. Prepare](#1-prepare)       
+[2. Download Source](#2-download-source)       
+[2.1 android kernel](#21-android-kernel)        
+[2.2 linux kernel](#22-linux-kernel)        
+[3. Toochain download(android case)](#3-toolchain-download-android-case)        
+[4. Make .config](#4-make-config)        
+[5. Build](#5-build)        
+[6. Post works](#6-post-works)        
+
+
+# 1. Prepare
 <pre>
 $ sudo apt-get install libncurses5 libncurses5-dev libssl-dev make gcc
 $ sudo apt-get install libelf-dev
 </pre>
 
-2. Download source
-## android kernel   
+# 2. Download source
+## 2.1 android kernel   
 [android kernel list](https://android.googlesource.com/kernel/)    
 여기에 goldfish, samsung, hikey-linaro, exynos등등이 전부 있다.   
 여기에 android-msm 이게 가장 많이 쓰이는(50%정도) 퀄컴 것이다.    
@@ -25,7 +36,7 @@ $ git clone https://android.googlesource.com/kernel/goldfish -b android-4.14
 remote: Sending approximately 1.52 GiB ...
 remote: Counting objects: 781, done
 </pre>
-## linux kernel
+## 2.2 linux kernel
 [tags](https://github.com/torvalds/linux/tags)    
 에서 rc postfix가 붙은 안정화 버전 중 선택한다.    
 선택한 tag name으로 clone한다.   
@@ -33,7 +44,7 @@ remote: Counting objects: 781, done
 $ git clone -b v5.6-rc3 https://github.com/torvalds/linux.git
 </pre>
 
-3. Toolchain download (android case)
+# 3. Toolchain download (android case)
 x86_64용    
 <pre>
 $ git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/x86/x86_64-linux-android-4.9
@@ -53,7 +64,7 @@ $ export ARCH=arm64
 $ export CROSS_COMPILE=aarch64-linux-android-
 </pre>
 
-4. Make .config
+# 4. Make .config
 emulator를 위한 x86_64의 경우   
 <pre>
 arch/x86/config에서 적당한 defconfig을 확인한다.
@@ -77,16 +88,17 @@ $ make defconfig
 $ make menuconfig
 </pre>
 
-5. Build
+# 5. Build
 <pre>
 make -j16
 </pre>
 이후에 숫자는 Hyperthreading이 반영된 hardware thread 개수(core x 2)를 지정하면 된다.    
 
-6. Post works
+# 6. Post works
 android emulator의 경우    
 <pre>
 export LD_LIBRARY_PATH=~/Android/Sdk/emulator/lib64:~/Android/Sdk/emulator/lib64/qt/lib
 ./qemu-system-x86_64 -avd target1 -kernel /media/devdevil/kernel/goldfish/arch/x86/boot/bzImage
 qemu: could not load PC BIOS 'bios-256k.bin'
 </pre>
+
