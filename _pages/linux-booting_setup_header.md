@@ -41,13 +41,7 @@ protected kernel인 vmlinux.bin은 0x100000에 load된다.
 그리고 더 낮은 부분에 setup code가 배치되고, MBR에서 읽어온 stage 1 bootloader도 배치된다.    
 
 # Boot Sequence
-이상하네      
-????      
-![Boot Process](../../../assets/images/linux-to_start_kernel.png)     
-[test](../../../assets/images/linux-to_start_kernel.png)     
-
 ## 1. x86
-음.음.음.음.음.     
 Boot Process를 결론적으로 정리하자면 다음과 같다.      
 ```
 by BIOS
