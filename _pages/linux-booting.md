@@ -7,28 +7,22 @@ layout: single
 ---
 
 # Table of contents
-[Boot Protocol](#boot-protocol)       
-[Boot Sequence](#boot-sequence)       
-[1. on x86_64](#1-x86)       
-[2. init calls](#2-__init-and-__init_calls)       
-[Setup header](#setup-header)       
-[1.1 vid_mode](#11-vid_mode)        
-[1.2 bootloader-identifier](#12-bootloader-identifier)          
-[1.3 boot protocol option flag](#13-boot-protocol-option-flag)               
-[1.4 boot protocol option flag](#14-code32_start)               
-[1.5 ramdisk image](#15-ramdisk_image)               
-[1.6 xloadflags](#16-xloadflags)               
-[1.7 setup data](#17-setup_data)               
-[1.8 init_size](#18-init_size)               
-[1.9 kernel version](#19-kernel-version)               
-[2. Efi handover protocol](#2-efi-handover-protocol)       
-[Analysis of boot process](#analysis-of-boot-processing)      
-[1. Efi boot 방식 확인](#1-efi-boot-%EB%B0%A9%EC%8B%9D-%ED%99%95%EC%9D%B8)        
-[2. Checking of file system](#2-checking-of-file-system)        
-[3. Firmware test](#3-firmware-test)        
+1. [Boot Protocol](#boot-protocol)    
+	1. [setup header](/kdb/linux/boot_setup/)     
+2. [Boot Sequence](#boot-sequence)       
+	1. [from firmware to kernel](#1-from-firmware-to-kernel)     
+    2. [from kernel to init proecss](#2-from-kernel-to-init-process)     
+		1. [real mode functions](#221-real-mode-functions)      
+		2. [protected mode functions](#222-protected-mode-functions)      
+		3. [long mode](#223-long-mode)      
+    4. [2. init calls](#2-__init-and-__init_calls)       
+3. [Analysis of boot process](#analysis-of-boot-processing)      
+    1. [1. Efi boot 방식 확인](#1-efi-boot-%EB%B0%A9%EC%8B%9D-%ED%99%95%EC%9D%B8)        
+    2. [2. Checking of file system](#2-checking-of-file-system)        
+    3. [3. Firmware test](#3-firmware-test)        
 
 # Boot Protocol
-v5.7-rc3 기준으로 boot protocol은 2.15 version 까지 존재한다.   
+v5.7-rc6 기준으로 boot protocol은 2.15 version 까지 존재한다.   
 kernel size가 512kb를 넘으면 사용하는(사실상 모든 kernel이 사용하는) 메모리 layout은 다음과 같다.    
 ![bzImage](../../../assets/images/linux_layout_inmemory.png)   
 
@@ -40,100 +34,425 @@ real mode에 대한 좀 더 상세한 설명은 [segmentation](/kdb/linux/memory
 protected kernel인 vmlinux.bin은 0x100000에 load된다.        
 그리고 더 낮은 부분에 setup code가 배치되고, MBR에서 읽어온 stage 1 bootloader도 배치된다.    
 
+boot protocol의 핵심은 setup이다.      
+[setup header](/kdb/linux/boot_setup)      
+보통 16 real mode setup header라고 부르지만, 아래의 내용과 같이 64bit에서도, 또 UEFI에서도 booting을 위해서       
+이 정보를 이용한다.      
+setup header for booting이 적당할 것이다.     
+
 # Boot Sequence
+x86의 경우, bios에서 UEFI가 나오면서, 뭐랄까 부팅 초기화 과정이 좀 넝마가 되어버린 듯한 모습니다.      
+
+# 1. from firmware to kernel
+x86 기준으로 그림을 그려보았다.     
+firmware의 UEFI는 efi bootmanager를 의미한다.(legacy bootloader를 대체하는 부분이라고 볼수 있다.)        
+*arm64 부분도 추가하도록 하자.*     
+![boot sequence on x86_64](../../../assets/images/linux_boot_sequence.png)       
+Mainboard가 power supply에 signal을 보내면 전력공급 시작되고, Mainboard가 power good signal을 받게되면 cpu를 start 시킨다.     
+Cpu는 register를 초기화 하고, 첫 instruction을 실행하게 된다.     
+uefi firmware는 직접 kernel을 실행할 수 있지만, ubuntu의 경우,       
+handover를 써서, grub2를 이용하는 것으로 보인다.      
+/boot/efi/EFI/ubuntu/shimx64.efi(UEFI secure booting)로  boot를 시작해서,            
+/boot/efi/EFI/ubuntu/grubx64.efi로 booting을 시작한다.                
+그리고 /boot/grub/grub.cfg에 지정된 /boot/vmlinuz-xxxx를 로드하게 된다.       
+
+# 2. from kernel to init process
+architecture 고유의 코드로 진행되다고 공통의 코드로 합쳐지는, init process 즉 start_kernel() 부분까지를 정리하였다.     
+여기서 부터는 arm64쪽도 같이 정리하도록 한다.      
 ![Boot Process](../../../assets/images/linux-to_start_kernel.png)     
-[test](../../../assets/images/linux-to_start_kernel.png)     
 
-## 1. x86
-Boot Process를 결론적으로 정리하자면 다음과 같다.      
-```
-by BIOS
-16bit real mode -> 32bit protected mode -> IA32e mode
-
-by UEFI
-32bit protected mode -> IA32e mode
-```
-
-즉 UEFI의 경우는 구 시대의 유물인 16bit real mode가 없이 32bit protected mode가 직접 간다. 이것이 가장 인상적인 면이라고 할 수 있겠다.      
-그럼 어떻게 이렇게 되는지 자세히 살펴보도록 하자.      
-
-먼저 32bit protected mode kernel로 진입한 첫 단계인 startup_64()까지의 code이다.      
-(그림이 크기 때문에 별도 탭에서 열어서 봐야 한다.)       
-![boot sequence on x86_64](../../../assets/images/linux_boot_sequence.png)     
-
-이 그림은 이론적인 부분이고, 보통 일반적인 ubuntu라면,       
-/boot/efi/EFI/ubuntu/shimx64.efi(UEFI secure booting)로  boot를 시작해서,       
-/boot/efi/EFI/ubuntu/grubx64.efi로 booting을 시작할 것이다.       
-그리고 /boot/grub/grub.cfg에 지정된 /boot/vmlinuz-xxxx를 로드하게 된다.             
-즉 efi단의 bootloader는 생략하였다.      
-EFI를 사용하는 경우는 bootloader대신 efi manager가 대체한다.     
-그리고 efi manager는 stub 방식, handover 방식 왜에도 GPT에 bootloader를 놓는 방식으로도 부팅이 가능하다.     
-즉 efi manager -> bootloader -> kernel 이런 식인데.      
-ubuntu는 이 방식으로 GPT의 ESP에 grub bootloader를 두어서, 부팅을 하고 있다.     
-grub이 굳이 필요 없어 보이지만, UEFI의 secure boot등을 지원해서 사용하고 있는듯 하다.      
-
-먼저 real mode에 대해서 살펴볼 필요가 있다.     
-BIOS가 메모리가 1M이고, register가 16bit 이기 때문에 존재하는 real mode의 코드는 다음과 같다.     
-<pre>
-// 16 bit real mode의 entry point
-arch/x86/boot/header.S
-arch/x86/boot/main.c
-arch/x86/boot/memory.c
-// protected mode로의 전환을 구현
-arch/x86/boot/pm.c    
-arch/x86/boot/pmjump.S
-</pre>
-
-다음으로 32bit protected mode의 code들은 어떤 것들이 있는지 살펴보도록 하자.      
-<pre>
-// 32bit protected mode entry point and efi_stub_entry
-arch/x86/boot/compressed/head_32.S
-arch/x86/boot/compressed/head_64.S
-// efi_main and efi call funtions
-drivers/firmware/efi/libstub/x86-stub.c
-</pre>
-
-마지막으로 IA32e mode(Long mode)의 시작은 다음과 같다.     
-<pre>
-// startup_64
-arch/x86/boot/compressed/head_64.S
-</pre>
-
+x86의 경우 **real mode에서 IA32e의 64bit mode(흔히 long mode)까지의 여정**이라고 볼수 있다.     
+그림에서 가장 눈에 띄는 부분은 efi boot manager로 start되는 경우는 32bit protected mode 부터로 16bit real mode가 없다는 점일 것이다.      
+firmware가 BIOS나 UEFI CSM mode이면, 16bit real mode로 진행될 것이고,      
+UEFI를 사용중이라면, 32bit protected mode로 진행되게 되는 것이다.      
 
 default인 EFI boot stub에 의해서 direct로 kernel을 로드한 경우에는 direct로 firmware가 kernel image를 load하게 된다.       
-이 경우 그림에서와 같이 efi_pe_entry()로 jmp하게 된다.   
-또한 kernel setup header(PE file)에 handover_offset을 지정하고, xloadflags에 해당 flag를 set하면,    
-efi_stub_entry64()로 jump하게 된다.     
+이 경우 그림에서와 같이 efi_pe_entry()로 jmp하게 된다.       
+또한 kernel setup header(PE file)에 handover_offset을 지정하고, xloadflags에 해당 flag를 set하면,     
+efi_stub_entry64()로 jump하게 된다.       
 
-그리고 결국에 모든 branch들은 startup_64()에서 만나게 된다.       
-상세한 내용은 본 페이지의 setup header, efi stub, handover 부분을 참조하자.     
+## 2.2.1 real mode functions
+Legacy boot process를 먼저 살펴보도록 하자.      
+kernel code에서 확인할 수 있듯이, real mode가 16bit라는 것은 address의 의미이다.      
+eax와 같은 32bit register를 사용하지 못하는 것은 아니다.     
+> **main()**:     
+**Bios interrupt를 이용해서, 정보를 파악해서, boot_params를 완성한다.**      
+먼저 boot_params가 무엇인지를 좀더 확실히 할 필요가 있다.     
+1. 쉽게 말해서, Kernel compile time에 kernel configure등에 의해서 설정된 값,      
+2. bootloader에 의해 구해진 값.      
+3. bios interrupt나 efi boot service에 의해서,  구해진 값.       
+이런 값들이 저장되는 곳이다.       
+copy_boot_params()를 실행해서 boot paramter의 real mode setup header를 채워넣는다.     
+boot_params에는 setup header도 포함된다.              
+```
+include/uapi/asm/bootparams.h   
+struct boot_params {
+    ...
+	__u8  sentinel;					/* 0x1ef */
+	__u8  _pad6[1];					/* 0x1f0 */
+    ...
+	struct setup_header hdr;    /* setup header */	/* 0x1f1 */
+```
 
-bios를 통한 boot를 통해서, main()은 16bit real mode에서 32bit protected mode로 진입하기 위한 준비과정을 수행한다.         
-1. copy_boot_params()을 호출해서 Kernel compile time과 bootloader에 의해 구해진 값으로 boot_params를 채운다.      
-2. init_heap()으로 heap을 초기화
-3. detect_memory()로 bios interrupt(0x15 bios system service)를 이용해서, physical memory의 구성을 체크한다. 
-4. keyboard_init() 등까지 수행한 후에, 일종의 detour로서 동작하는 go_to_protected_mode()를 실행한다.      
+>>**console_init()**을 실행해서 console로 message를 출력할 수 있도록 한다.     
 
-go_to_protected_mode()에서는 다음의 process를 수행한다.    
+>>**init_heap()**으로 heap을 초기화 한다.       
 
-|function|decription|
-|---|---|
-|realmode_switch_hook()|Cli로 interrupt disable<br/>outb(0x80, 0x70);으로 0x70 port에 0x80 전송해서 NMI를 disable<br/>0x70은 CMOS address register이다.<br/>|
-|enable_a20()|a20 gate를 enable 시킨다.<br/> 이 a20 gate는 real mode와 같은 과거의 잔재로서, 어서 사라져야할 부분이다.<br/>현 상황의 hardware와는 매우 동떨어진 동작이기 때문이다.<br/>이전에 MS-DOS가 real mode로 동작하였지만  A20 Gate를 on시켜서, 0xFFFF:0x0010 ~ 0xFFFF:0xFFFF까지 사용할수 있었다.<br/>이걸 켜지 않으면 0x200000는 접근가능하나 0x300000은 접근하지 못하는 식으로<br/>홀수 접근이 안되서 접근할 수 있는 범위가 줄어든다.|
-|setup_idt()|IDT에 null idt를 넣는다.(size와 address가 둘다 0으로 되어 있는 상태)|
-|setup_gdt()|CS, DS, TSS를 위한 간단한 descripter table을 만들어서,<br/>lgdtl instruction으로 gdtr register에 로드한다.<br/>TSS는 task State segment이다.<br/>|
-|reset_coprocessor()|0xf0 0xf1 port에 0을 전송해서 coprocessor를 reset한다.|
-|mask_all_interrupts()|0xa1 port에 0xff를 전송해서, primary PIC에 모든  interrupt를 masking<br/>0x21에 0xfb를 전송해서 secondary PIC에 모든 interrupt를 masking<br/>즉 interrupt를 disable 시키는 것인데 너무 당연한 것이 지금 interrupt handler는<br/> 등록되지 않은 상황으로 bios interrupt만 실행하고 있는 상황인 것이다.|
-|protected_mode_jump()|Cr0 register의 최하위 bit를 1로 setting해서, protected mode로 전환 한다.<br/>movl    %edx, %cr0<br/>인자로 code32_start 값이 전달되고 최종적으로 여기로 jmp되는데.<br/>arch/x86/boot/header.S에서 보면,<br/>code32_start:               # here loaders can put a different<br/>.long   0x100000    # 0x100000 = default for big kernel<br/>0x100000이 들어있다. 즉 여기로 jmp한다.<br/>이 주소에는 bzImage를 사용할 때 protected mode kernel이 relocation 되어 있다.|
+>>**check_cpu()**로 cpu의 flag들을 확인한다.(long mode등)       
 
-그 이후에 도착하게 되는 startup_64(). 그림에서와는 다르게 EFI_CONFIG_MIXED(default y)로 인해서 handover_offset에는 startup_32가 들어갈 수도 있다.     
-아무튼 startup64는 64bit bootloader 혹은 firmware, 혹은 startup_32()로 부터 도착하게 된다.     
-이제 IA32e mode에 진입하기 위해서 다음과 같은 작업을 수행한다.      
+>>**set_bios_mode()**에서는 bios interrupt 0x15를 사용해서,       
+firmware에 long mode가 사용될 것임을 전달한다.       
 
-1. PAE 활성화
-2. Page Table을 빌드하고, 최상위 페이지 테이블의 주소를 cr3에 로드
-3. EFER.LME 활성화
-4. 페이징 활성화
+>>**detect_memory()**를 실행해서, DRAM의 메모리 layout을 파악한다.     
+
+>>**detect_memory_e820()**을 실행해서,     
+Bios interrupt로 e820 memory layout정보를 구해서, boot_params.e820_table에 저장한다.       
+```
+struct biosregs ireg
+ireg.ax  = 0xe820;
+ireg.cx  = sizeof(buf);
+ireg.edx = SMAP;
+ireg.di  = (size_t)&buf;
+intcall(0x15, &ireg, &oreg);
+```
+
+>>**detect_memory_e801()**을 실행해서, bios interrupt로  e801 layout을 구해서,     
+boot_params.alt_mem_k에 저장한다.     
+```
+ireg.ax = 0xe801;
+intcall(0x15, &ireg, &oreg);
+```
+
+>>**detect_memory_88()**을 실행해서, bios interrupt로 boot_params.screen_info.ext_mem_k에 저장한다.            
+```
+ireg.ah = 0x88;
+intcall(0x15, &ireg, &oreg);
+```
+
+>>**keyboard_init()**을 실행해서, bios interupt로 keyboard를 초기화 한다.      
+
+>>**set_video()**를 실행해서,  boot_params.hdr.vid_mode를 채운다.     
+대략적으로 이런것들을 하고, **go_to_protected_mode**로 jmp한다.      
+
+>**go_to_protected_mode()**:      
+**한 마디로 이 녀석은 32bit protected mode로의 진입을  준비한다.**         
+
+>>**realmode_switch_hook()**에서는,          
+setup header의 realmode_swtch가 설정되어 있는 경우 이 hook()을 실행한다.      
+이전의 MSDOS의 LOADLIN등에서 사용하던 option이라서 현재는 거의 쓰이지 않는다.       
+realmode_swtch가 설정되어 있지 않다면,          
+cli로 interrupt를 disable 시키고, outb(0x80, 0x70);으로 0x70 port에 0x80 전송해서 NMI까지 disable시킨다.      
+0x70은 CMOS address register이다.         
+
+>>**enable_a20()**에서는 a20 gate를 enable 시킨다.
+a20게이트는 real mode의 잔재이다.      
+이런 코드를 실행하지 않는 EFI는 얼마나 아름다운가 어서, firmware menu에서 UEFI를 enable 시키자.      
+20bit address bus로 1M의 주소만 접근가능한 real mode에서 MSDOS 등은 A20 gate를 on시켜서,     
+0xFFFF:0x0010 ~ 0xFFFF:0xFFFF까지 사용할수 있었다.        
+이걸 켜지 않으면 0x200000는 접근가능하나 0x300000은 접근하지 못하는 식으로       
+홀수 접근이 안되서 접근할 수 있는 범위가 줄어든다.       
+
+>>**setup_idt()**를 실행한다. 이름은 setup이지만, 그냥 IDT에 null idt를 넣는다.     
+size와 address가 둘다 0.      
+
+>>**setup_gdt()**를 실행한다.       
+Real mode에서는 segment base + offset으로 구성된 segment가 64kb의 고정 크기 segment를 가르켰고, 그것이 물리주소였다.       
+하지만. 32bit protected mode에서는 segmention이 GDT를 가르켜야 한다.(물론 GDT -> LDT이후 logical address가지고 paging)       
+그래서, 4G 크기의 CS와 4G 크기의 DS, 그리고 Intel VT를 위한(다른데서는 사용 안함)       
+TSS(Task State Segment)를 위해 descriptro table을 구성해서, lgdtl instruction으로 gdtr register에 로드한다.      
+
+>>**mask_all_interrupts()**를 실행해서, APIC의 모든 interrupt를 masking해서 금지 시킨다.       
+outb(0xfb, 0x21)로 primary PIC를, outb(0xff, 0xa1)으로 secondary PIC에 disable all interrupt.      
+
+>>**protected_mode_jump()**를 실행한다. 코드는 다음과 같다.       
+```
+protected_mode_jump(boot_params.hdr.code32_start, (u32)&boot_params + (ds() << 4));
+```
+첫번째 인자는 protected mode의 진입 entry이다.         
+setup header의 code32_start 부분이 지정된다.      
+kernel compile후에 확인해 보면, 0x00100000.       
+즉 big kernel의 default값이다. 이 주소는 startup_32()를  가르키고 있다.     
+두번째 인자는 boot parameter의 주소이다.      
+```
+movl	%cr0, %__KEEPIDENTS__CF
+__KEEPIDENTS__CG	$__KEEPIDENTS__CH, %dl	# Protected mode
+movl	%__KEEPIDENTS__CI, %cr0
+```
+cr0에서 PE(보호 활성화) 비트를 설정하고, long jmp로 in_pm32()실행.     
+Jmp로 호출되었기 때문에 go_to_protected_mode()에서 protected_mode_jump()호출 시,       
+첫 인자 Boot_params.hdr.code_start가 그대로 eax에 담겨있는 상황이다.      
+in_pm32() 마지막에     
+```
+jmpl    *%eax
+```
+즉 startup_32()로 jump하게 된다.     
+5.7-rc6에서는       
+```
+jmpl	*%__KEEPIDENTS__JB
+```
+와 같이 macro로 변경되었다. 하지만 같은 의미이다.      
+
+## 2.2.2 protected mode functions
+64bit cpu가 나오기 이전, main mode였던 protected mode에 접어들었다.       
+>**startup_32()**     
+IA32e의 64bit mode 즉 long mode 진입준비를 한다.       
+파일의 위치는 arch/x86/boot/compressed/head_64.S이다.     
+compressed안에 들어있는 파일은 압축된 kernel을 의미한다.      
+big kernel인 경우(대 부분의 경우), 0x100000에 로드된다.      
+```
+code32
+.text
+__HEAD
+.code32
+```
+__HEAD는     
+```
+include/linux/init.h에
+#define __HEAD		.section	".head.text","ax"
+로 선언되어 있다. 즉 ax 실행 가능한 코드섹션.
+```
+>>scratch를 이용해서 현재 로드된 주소 구하기.      
+```
+leal	(BP_scratch+4)(%esi), %esp
+call	1f
+1:	popl	%ebp
+subl	$1b, %ebp
+```
+BP_scaratch는 다음과 같이 boot_params의 member로 call 1f를 위한 임시 4 bytes stack이다.     
+```
+arch/x86/include/uapi/asm/bootparam.h
+struct boot_params {
+	__u32 scratch;		/* Scratch field! */	/* 0x1e4 */
+kernel/asm-offsets.c
+OFFSET(BP_scratch, boot_params, scratch);
+```
+binary의 section을 정의한, vmlinuz.ld에서 정의된 대로,        
+현재 시작주소는 0x0이다.        
+Call 1f를 하게 되면 return address를 push해서,      
+Stack pointer에는 return address가 위치하게 된다.     
+0x0 -----------------------------------      
+0x4 return address       
+1F ------------------------------- <- ebp     
+subl	$1b, %ebp      
+을 실행하고 나면      
+Ebp에는 startup_32의 주소인 0x100000이 담기게된다.     
+
+>>새로운 GDT를 32bit descriptor를 이용해서,  64bit segment들을 구성한다.      
+```
+leal	gdt(%ebp), %eax
+movl	%eax, 2(%eax)
+lgdt	(%eax)
+```
+같은 head_64.S에 gdt가 선언되어있다.     
+```
+.data
+SYM_DATA_START_LOCAL(gdt64)
+	.word	gdt_end - gdt - 1
+	.quad   gdt - gdt64
+SYM_DATA_END(gdt64)
+	.balign	8
+SYM_DATA_START_LOCAL(gdt)
+.word	gdt_end - gdt - 1
+.long	0
+.word	0
+.quad	0x00cf9a000000ffff	/* __KERNEL32_CS */
+.quad	0x00af9a000000ffff	/* __KERNEL_CS */
+.quad	0x00cf92000000ffff	/* __KERNEL_DS */
+.quad	0x0080890000000000	/* TS descriptor */
+.quad   0x0000000000000000	/* TS continued */
+SYM_DATA_END_LABEL(gdt, SYM_L_LOCAL, gdt_end)
+```
+32bit kernel을 위한 segment, 64bit kernel을 위한 segment kernel을 위한 data segment를 확인할 수 있다.      
+그리고, **로드한 ds로 ds,es,fs,gs,ss를 전부 같게 만든다.**     
+```
+movl	$__BOOT_DS, %eax
+movl	%eax, %ds
+movl	%eax, %es
+movl	%eax, %fs
+movl	%eax, %gs
+movl	%eax, %ss
+```
+
+>>**verify_cpu()**를 실행해서, 64bit를 지원하는지 확인한다.      
+```
+call	verify_cpu
+testl	%eax, %eax
+jnz	.Lno_longmode
+```
+no_longmode에서는 hlt로 시스템 정지 시킨다.
+
+>>decompression을 위해 relocate하기 위한 주소를 구한다.     
+```
+addl	BP_init_size(%esi), %ebx
+subl	$_end, %ebx
+//OFFSET(BP_init_size, boot_params, hdr.init_size);
+```
+setup header의 init_size는      
+커널이 메모리 맵을 검사하기 전에 커널 런타임 시작 주소에서 시작하는 선형 연속 메모리의 크기를 의미한다.               
+kernel의 안전한 로드 주소를 선택하는데 사용된다.       
+즉 이 주소에 relocate를 하는 것.       
+
+>>**PAE**를 활성화 한다.      
+```
+movl	%cr4, %eax
+orl	$X86_CR4_PAE, %eax
+movl	%eax, %cr4
+```
+X86_CR4_PAE는 다음과 같이 cr4의 5번째 bit를 set한다.      
+```
+#define X86_CR4_PAE		(1ul << 5)
+```
+
+>>4G의 early boot page table을 초기화 한다.           
+build후에 cr3 register에 로드한다.       
+```
+call	get_sev_encryption_bit
+xorl	%edx, %edx
+testl	%eax, %eax
+jz	1f
+subl	$32, %eax	/* Encryption bit is always above bit 31 */
+bts	%eax, %edx	/* Set encryption mask for page tables */
+arch/x86/boot/compressed/mem_encrypt.S
+SYM_FUNC_START(get_sev_encryption_bit)
+```
+먼저 cpuid instruction을 이용ㅎ서, **page table** 암호화 여부를 체크한다.      
+암호화를 사용하면 커널이 복사되고 압축해제될 때 보안을 보장한다.       
+그리고 page table을 0으로 초기화 한다.       
+```
+leal	pgtable(%ebx), %edi
+xorl	%eax, %eax
+movl	$(BOOT_INIT_PGT_SIZE/4), %ecx
+rep	stosl
+```
+rep는 repeat이고, 접미어 l은 32bit를 의미한다. 즉 다음의 의미.      
+```
+while(ecx>0) {
+	edi = eax
+	edi+=4
+}
+```
+page table은 같은 head_64.S에 writable한 section에 설정되어 있다.      
+```
+.section ".pgtable","aw",@nobits
+.balign 4096
+SYM_DATA_LOCAL(pgtable,		.fill BOOT_PGT_SIZE, 1, 0)
+```
+즉 edi에 page table 주소가 담겨 있었기 때문에, 0으로 초기화하는 것.     
+
+>>4개의 page table을 build한다.             
+level 4 page table이자 최상위 page table인 PML4를 build.        
+다음으로 level 3, leve 2 page table을 build한다.     
+
+>>c3에 page table을 로드.        
+```
+leal	pgtable(%ebx), %eax
+movl	%eax, %cr3
+```
+
+>>long mode로 전환       
+MSR의 EFER.LME 플래그를 0xC0000080으로 설정해서 long mode로 전환.       
+```
+movl	$MSR_EFER, %ecx
+rdmsr
+btsl	$_EFER_LME, %eax
+wrmsr
+```
+
+>>startup_64로 jmp
+CONFIG_EFI_MIXED는 EFI 32bit firmware에서, 64bit kernel을 실행 해주도록 하는 기능이다.      
+default로 y.  
+efi boot stub으로 booting된 경우(efi_pe_entry()를 타는)에는 지원되지 않고, handover로 넘어온 경우에만 적용 가능하다.   
+```
+pushl	$__KERNEL_CS
+leal	startup_64(%ebp), %eax
+pushl	%eax
+movl	$(X86_CR0_PG | X86_CR0_PE), %eax
+movl	%eax, %cr0
+lret
+```
+64bit kernel용 code segment의 주소를 push 하고(GDT에 정의된)     
+Startup_64의 주소를 eax에 넣는다. 그리고 stack에 push.      
+Paging과 protected mode를 enable하고,      
+lret으로 startup_64로 return.  아직은 32bit kernel이기 때문에 lret.     
+
+>**efi_pe_entry()**   
+Grub과 같은 bootloader가 생략된 방식이기 때문에 efi system service로 boot param을 작성해 준다.   
+(efi_allocate_pages())   
+이것을 인자로 efi_stub_entry()를 실행한다.   
+
+>**efi_main()**    
+Efi의 boot service이용해서, (기존 bios의 interrupt를 통한 것과 유사하게) boot를 위한 초기화를 수행하는 function 이다.   
+
+>>**efi_relocate_kernel()**을 실행해서 kernel을 relocate한다.   
+실패하면 return대신 efi_exit()를 통해 firmware로 return 함.(efi bios call을 이용한다.)    
+>>setup_graphics(boot_params)를 실행해서, 그래픽 초기화,   
+>>setup_efi_pci(boot_params)를 실행해서, PCI 초기화   
+>>exit_boot()로 efi boot service를 종료.   
+
+
+## 2.2.3 long mode
+>**startup_64()**    
+long mode에 진입한 상태로 시작된다.   
+**커널의 압축해제와 Relocation이 주된 임무**이다.   
+efi로 부터 호출되었거나, startup_32()로 부터 호출된 상태.   
+kernel 주석에서는 직접적으로 64bit bootloader로 부터 호출되었거나, startup_32()로 부터 호출된 다고 표현한다.   
+
+>> CS를 빼고는 모든 segment를 0으로 초기화   
+
+>> kernel이 load된 위치와 compile된 위치의 차이를 계산한다.  
+
+>> 압축해제를 위해 relocate할 주소를 계산한다.   
+
+>> stack을 재계산하고, adjust_got()를 호출해서, got(plt의 그 got)의 offset을 재조정한다.    
+
+>> long mode의 4 level paging이 enable된다.   
+먼저 GOT를 재설정한다. startup_32()에서 수행했지만, efi_stub_entry()에서 호출되서 온 경우도 있기 때문에 다시 수행.   
+```
+leaq	gdt64(%rip), %rax
+addq	%rax, 2(%rax)
+lgdt	(%rax)
+```
+**paging_prepare()**를 실행해서, trampoline을 설정하고,   
+5 level paing을 활성화 해야 하는지 확인한다.  
+이 function은 rdx:rax 쌍즉 2 quadword를 return한다.   
+tramponline 주소는 rax에 담기고,   
+Rdx가 0이 아니면 tramponline으로 5 level paging을 활성화 해야 함을 의미한다.   
+CONFIG_X86_5LEVEL은 보통 disable이다.   
+아무튼 이것이 활성화 되어 있든 말든, tramponline의 주소는 setting되고 관련 설정이 진행된다.
+rsi에는 boot_params가 담겨있고, rcx에는 tramponline의 주소가 담겨 있다.   
+
+>>**relocated label**로 jump한다.  
+```
+leaq	.Lrelocated(%rbx), %rax
+jmp	*%rax
+```
+relocated에서는 **.bss** section을 초기화(c code로 넘어가면 사용하기 위해)한다.    
+
+>>**extract_kernel()**을 호출한다.  
+압축을 해제하고, 해제한 주소를 return한다.    
+이 주소로 jump한다
+이 주소는 바로 **start_kernel()**이다.   
+```
+pushq	%rsi			/* Save the real mode argument */
+movq	%rsi, %rdi		/* real mode address */
+leaq	boot_heap(%rip), %rsi	/* malloc area for uncompression */
+leaq	input_data(%rip), %rdx  /* input_data */
+movl	$z_input_len, %ecx	/* input_len */
+movq	%rbp, %r8		/* output target address */
+movl	$z_output_len, %r9d	/* decompressed length, end of relocs */
+call	extract_kernel		/* returns kernel location in %rax */
+popq	%rsi
+/*
+ * Jump to the decompressed kernel.
+ */
+	jmp	*%rax
+```
+* mode - 초기 커널 초기화중 또는 부트로더로 채워진 채워진 boot_params 포인터  
+* heap - 초기 부팅 힙의 시작 주소를 나타내는 boot_heap의 포인터;   
+* input_data - 압축 된 커널의 시작을 가리키는 포인터 또는 다른말로 arch/x86/boot/compressed/vmlinux.bin.bz2를 가리키는 포인터;  
+* input_len - 압축된 커널의 크기;   
+* output - 향후 압축 해제 된 커널의 시작 주소;   
+* output_len - 압축 해제 된 커널의 크기;   
 
 ## 2. __init and __init_calls
 

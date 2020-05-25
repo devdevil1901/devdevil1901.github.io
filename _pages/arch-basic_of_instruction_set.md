@@ -1,29 +1,32 @@
 ---
 title: "Basic of instruction set"
-permalink: /kdb/arch/basic_of_instruction_set
+permalink: /kdb/arch/basic_of_instruction_set/
 toc_sticky: true
 toc_ads : true
 layout: single
 ---
 
 # Table of contents
-[Outline](#outline)      
-[Data Type](#data-type)     
-[Signed vs Unsigned](#signed-vs-unsigned)         
-[1. MSB(Most Significant Bit](#1-msbmost-significant-bit)       
-[2. Negative expression of signed](#2-negative-expression-of-signed)        
-[Shift](#shift)       
-[Conditional flags](#conditional-flags)       
-[1. carry and overflow](#1-carry-and-overflow)      
-[2. Register](#2-register)      
-[2.1 RFLAGS](#21-rflags64bit-on-x86_64)      
-[2.2 NZCV](#22-nzcv64bit-on-aarch64)          
-[2.3 SPSR](#23-spsr32bit-saved-process-status-register-on-aarch64)
-[3. Conditional code](#3-conditional-code)       
-[3.1 on aarch64](#on-aarch64)        
-[Calling convention](#calling-convention)        
-[1. stack prolog & epilog](#stack-prolog--epilogue)      
-[References](#references)      
+1. [Outline](#outline)      
+2. [Data Type](#data-type)     
+3. [Signed vs Unsigned](#signed-vs-unsigned)         
+	1. [1. MSB(Most Significant Bit](#1-msbmost-significant-bit)       
+	2. [2. Negative expression of signed](#2-negative-expression-of-signed)        
+4. [Shift](#shift)       
+5.[Conditional flags](#conditional-flags)       
+	1. [1. carry and overflow](#1-carry-and-overflow)      
+	2. [2. Register](#2-register)      
+		1. [2.1 RFLAGS](#21-rflags64bit-on-x86_64)      
+		2. [2.2 NZCV](#22-nzcv64bit-on-aarch64)          
+		3. [2.3 SPSR](#23-spsr32bit-saved-process-status-register-on-aarch64)
+	3. [3. Conditional code](#3-conditional-code)       
+		1. [3.1 on aarch64](#on-aarch64)        
+6. [Calling convention](#calling-convention)        
+	1. [1. aarch64](#1-aarch64)         
+		1. [1.1 stack prolog & epilog](#11-stack-prolog--epilogue)             
+	2. [2. x86_64](#2-x86_64)         
+		1. [stack prolog & epilogue](#21-stack-prolog--epilogue)         
+7. [References](#references)        
 
 # Outline
 x86_64와 aarch64를 기준으로 설명하며, x86과 aarch64에서 공통적인 부분들을 추려보았다.   
@@ -323,7 +326,9 @@ N,Z,C,V
 the stack grows towards lower address.   
 **stack이 더 낮은 주소로 자라는 것**은 aarch64와 x86 둘다 동일하다.   
 
-## stack prolog & epilogue   
+## 1. aarch64
+
+### 1.1 stack prolog & epilogue   
 function안에 다른 function을 call 하는 subroutine이 존재하는 경우에는 stack prolog와 stack epilogue를 반드시 사용해야 한다.   
 aarch64의 경우, 이를 위해서, data transfer instruction을 통해서 구현된다.    
 stack prolog는 다음과 같은 것이다.    
@@ -376,6 +381,26 @@ frame buffer pointer가 저장되어 있게 된다.
 ldp x29, x30, [sp], #16
 </pre>
 에서는 high memory 쪽으로 16이 되서 호출 전의 stack pointer로 돌아간다.    
+
+## 2. x86_64
+### 2.1 stack prolog & epilogue
+일반적인 prolog는 다음과 같다.       
+```
+push   %rbp
+mov    %rsp,%rbp
+```
+
+이와 쌍을 이루는 epilog는 다음과 같다.      
+```
+pop %rbp
+retq
+```
+혹은 이렇게도 가능하다.       
+```
+leaveq
+retq
+```
+
 
 # References
 [aarch64 instruction](https://modexp.wordpress.com/2018/10/30/arm64-assembly/#profiles)    

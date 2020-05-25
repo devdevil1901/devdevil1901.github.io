@@ -7,18 +7,24 @@ layout: single
 ---
 
 # Table of contents
-[Outline](#outline)         
-[Segmentation](#segmentation)          
-[1. Real mode segmentation](#1-real-mode-segmentation)         
-[2. Protected mode segmentation](#2-protected-mode-segmentation)        
-[3. IA32e-64bit mode segmentation](#3-ia32e-64bit-mode-segmentation)       
-[4. System descriptor](#4-system-descriptor)         
-[Paging](#paging)         
-[1. Paging on protected mode](#1-paging-on-protected-mode)        
-[SLAB](#slab)       
-[Memory Model](#memory-model)      
+1. [Outline](#outline)         
+    1. [Protected mode](#1-protected-mode)      
+2. [Segmentation](#segmentation)          
+	1. [Real mode segmentation](#1-real-mode-segmentation)         
+	2. [Protected mode segmentation](#2-protected-mode-segmentation)        
+    3. [IA32e-64bit mode segmentation](#3-ia32e-64bit-mode-segmentation)       
+	4. [System descriptor](#4-system-descriptor)         
+3. [Paging](#paging)         
+	1. [Paging on protected mode](#1-paging-on-protected-mode)        
+4. [SLAB](#slab)       
+5. [Memory Model](#memory-model)      
 
 # Outline
+## 1. Protected mode
+x86의 protected mode는 64bit가 나오기 이전의 main mode를 의미한다.      
+real mode에서 20 bit의 address bus가 32bit address bus로 확장되었고, 1M에서 4G로 가상메모리가 증가했다.       
+또한 이렇게 커졌기 때문에 물리주소 변환을 위해서, Paging을 사용하게 되었다.      
+
 
 # Segmentation
 먼저 Segmentation을 살펴보자.      

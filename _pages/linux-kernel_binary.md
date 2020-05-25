@@ -6,6 +6,14 @@ toc_ads : true
 layout: single
 ---
 
+# Table of content
+[Outline](#outline)   
+[Layout](#layout)   
+	1. [on x86_64](#1-on-x86_64)   
+	2. [on aarch64](#2-on-aarch64)   
+[UEFI Boot stub](#uefi-boot-stub)   
+
+# Outline
 kernel을 compile 하면, 생성되는 binary와 layout에 대해서 살펴보도록 하자.   
 x86에서 최종 output은 vmlinuz나 bzImage, aarch64에서는 vmlinux or Image.gz이다.   
 
@@ -42,6 +50,17 @@ setup.bin의 header 부분은 arch/x86/boot/header.S에 선언되어 있고 다�
 .bstext .bsdata .header .entrytext .initdat section으로 구성되어 있다.   
 ![setup.bin의 header 부분](https://devdevil1901.github.io/assets/images/linux_setup_bin.png)    
 
+section 부분을 살펴보자면  
+[arch/x86/boot/compressed/vmlinux.lds.S]  
+**.head.text** (startup_32() 즉 protected kernel이 위치)      
+**.rodata** (압축된 코드)    
+**.text** (여기에 압축해제 코드도 있다.)   
+**.got**    
+**.data**   
+**.bss**     
+**.pgtable**  
+이런 구조로 구성되어 있다.   
+
 ## 2. on aarch64
 arm64의 64 bytes image header는 다음과 같이 구현되어 있다.   
 ```
@@ -60,9 +79,10 @@ struct arm64_image_header {
 };
 ```
 여기서 flags는 bit flags로서 의미는 다음과 같다.   
-|64bit~4 bit|3 bit|1,2 bit|0 bit|
+
+|64bit<br/>~4 bit|3 bit|1,2 bit|0 bit| 
 |---|---|---|---|
-|reserved|kernel의 물리적 위치를 나타낸다.  0이면 2MB 정렬 베이스는 D램 베이스에 최대한 근접해야 하며, 그 아래의 메모리는 선형 매핑을 통해 접근할 수 없기 때문이다.  1이면 2MB 정렬 베이스는 physical memory의 어디에든 위치할 수 있다. |page size를 나타낸다. 1이면 4K, 2이면 16K, 3이면 64k이다.|0이면 little endian 1이면 big endian이다.|
+|reserved|kernel의 물리적 위치를 나타낸다.<br/> 0이면 2MB 정렬 베이스는 D램 베이스에 최대한 근접해야 하며,<br/> 그 아래의 메모리는 선형 매핑을 통해 접근할 수 없기 때문이다.<br/>1이면 2MB 정렬 베이스는 physical memory의 어디에든 위치할 수 있다.<br/>|page size를 나타낸다.<br/>1이면 4K, 2이면 16K, 3이면 64k이다.|0이면 little endian 1이면 big endian이다.|
 
 x86에서 setup header를 실제 구현한 부분이 header.S이듯이, 위의 image header를 실제로 구현한 부분은 다음과 같다.    
 ```
