@@ -7,9 +7,9 @@ layout: single
 ---
 
 # Table of content
-[Exception Level](#exception-level)     
-[Basic structure of instruction on aarch64](#basic-structure-of-instruction-on-aarch64)      
-[Register](#register)      
+1. [Exception Level](#exception-level)     
+2. [Basic structure of instruction on aarch64](#basic-structure-of-instruction-on-aarch64)      
+3. [Register](#register)      
 	1. [General purpose register](#1-general-purpose-register)      
 		1. [Integer operation](#11-integer-operation)      
 		2. [FP and SIMD Operation](#12-fp-and-simd-operation)      
@@ -18,14 +18,15 @@ layout: single
 	3. [System Register Access Register](#3-system-register-access-register)         
 	4. [System Register](#4-system-register)      
 		1. [Exception Handing Register](#41-exception-handling-register)      
-[Instruction set](#instruction-set)      
+4. [Instruction set](#instruction-set)      
 	1. [Data Processing](#1-data-processing)      
 		1. [Arithmetic](#11-arithmetic)      
 		2. [Logical](#12-logical)      
 		3. [Bit Maniplulation Instructions](#13-bit-maniplulation-instructions)      
 		4. [Comparison](#14-comparison)      
 		5. [Memory Load](#15-memory-load)      
-[References](#references)      
+	2. [Branch](#2-branch)      
+5. [References](#references)      
 
 # Exception Level
 Coretex-a7에서 Priviledge level 처럼 EL0~ EL3의 4가지 Exception Level이 도입되었다.    
@@ -689,6 +690,11 @@ b0000301 adrp x1, 461000 <errstring.11975+0x10>
 910a4021 add x1, x1, #0x290     
 f00003e0 adrp x0, 47f000 <__progname_full>      
 91286000 add x0, x0, #0xa18     
+
+## 2. Branch
+>**CBZ and CBNZ**   
+Compare and Branch on Zero.    
+Compare and BRanch on Non-Zero.   
 
 # References
 [aarch64 official](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0488c/CIHIDFFE.html)   

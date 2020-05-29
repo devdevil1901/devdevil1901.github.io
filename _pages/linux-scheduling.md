@@ -7,23 +7,22 @@ layout: single
 ---
 
 # table of contents
-[Outline](#outline)    
-[Task state](#task-state)     
-[RunQueue](#runqueue)    
-[Scheduler](#scheduler)     
-[     1. Time slice](#1-time-slice)        
-[     2. Domain](#2-domain)    
-[     3. Policy](#3-policy)    
-[     4. Scheduler](#4-scheduler)     
-[     5. sched_class](#5-sched_class)     
-[     6. Priority](#6-priority)     
-[           6.1. top command](#61--top-command)      
-[     7. weight](#7-weight)     
-[Preemption](#preemption)      
-[     1. User preempt](#1-user-preempt)      
-[     2. Preempt level](#2-preempt-level)     
-[Context Switching](#context-switching)     
-
+1. [Outline](#outline)    
+2. [Task state](#task-state)     
+3. [RunQueue](#runqueue)    
+4. [Scheduler](#scheduler)     
+	1. [Time slice](#1-time-slice)        
+	2. [Domain](#2-domain)    
+	3. [Policy](#3-policy)    
+	4. [Scheduler](#4-scheduler)     
+	5. [sched_class](#5-sched_class)     
+	6. [Priority](#6-priority)     
+		1. [top command](#61--top-command)      
+	7. [weight](#7-weight)     
+	8. [Preemption](#preemption)      
+		1. [User Preempt](#1-user-preempt)      
+		2. [Preempt level](#2-preempt-level)     
+5. [Context Switching](#context-switching)     
 
 # Outline
 [Process](/kdb/linux/process)에서 살펴보았듯이 스케줄링은 task 단위로 이루어진다.    
@@ -428,9 +427,13 @@ linux에서 non-preemptive option으로 kernel을 compile할 수 있지만,
 선점에 있어서 기준이 되는 중요한 개념이다.     
 task A가 svc나 system call로 kernel mode로 진입하고, 복귀전에 task B로 선점이 일어나서       
 user mode로 복귀후에, task B가 실행될 수 있다는 것이다.     
-즉 interrupt가 발생했을 때, 사용자 공간으로 복귀직전에 _TIF_NEED_RESCHED flag가 set되어 있다면,      
+즉 system call이 발생했을 때, handler를 실행하고,  
+사용자 공간으로 복귀직전에 _TIF_NEED_RESCHED flag가 set되어 있다면,      
 선점이 일어날 수 있는 것.      
 preempt none으로 해도 무조건 일어나는 선점이다.     
+
+상세한 과정은 다음과 같다.  
+![user preepmt 과정](../../../assets/images/linux_user_preempt.png)  
 
 ## 2. Preempt level
 

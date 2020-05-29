@@ -15,6 +15,7 @@ layout: single
 		1. [real mode functions](#221-real-mode-functions)      
 		2. [protected mode functions](#222-protected-mode-functions)      
 		3. [long mode](#223-long-mode)      
+		4. [init process](#224-init-process)   
     4. [2. init calls](#2-__init-and-__init_calls)       
 3. [Analysis of boot process](#analysis-of-boot-processing)      
     1. [1. Efi boot 방식 확인](#1-efi-boot-%EB%B0%A9%EC%8B%9D-%ED%99%95%EC%9D%B8)        
@@ -357,6 +358,7 @@ rdmsr
 btsl	$_EFER_LME, %eax
 wrmsr
 ```
+[MSR 참조](/kdb/arch/instruction_sets_on_x86_64/#2-system-register)   
 
 >>startup_64로 jmp
 CONFIG_EFI_MIXED는 EFI 32bit firmware에서, 64bit kernel을 실행 해주도록 하는 기능이다.      
@@ -388,7 +390,6 @@ Efi의 boot service이용해서, (기존 bios의 interrupt를 통한 것과 유�
 >>setup_graphics(boot_params)를 실행해서, 그래픽 초기화,   
 >>setup_efi_pci(boot_params)를 실행해서, PCI 초기화   
 >>exit_boot()로 efi boot service를 종료.   
-
 
 ## 2.2.3 long mode
 >**startup_64()**    
@@ -453,6 +454,9 @@ popq	%rsi
 * input_len - 압축된 커널의 크기;   
 * output - 향후 압축 해제 된 커널의 시작 주소;   
 * output_len - 압축 해제 된 커널의 크기;   
+
+## 2.2.4 init process
+각 architecture 별로 진행되던 boot process가 공통으로 모인 부분이 start_kernel()이다.    
 
 ## 2. __init and __init_calls
 

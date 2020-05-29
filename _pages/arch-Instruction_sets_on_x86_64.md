@@ -7,11 +7,11 @@ layout: single
 ---
 
 # Table of content
-[Register](#register)      
-	1. [General Purpose Register](#1-general-purpose-register)     
+1. [Register](#register)    
+    1. [General Purpose Register](#1-general-purpose-register)     
 	2. [System Register](#2-system-register)         
-    3. [Control Register](#3-control-register)       
-[Base structure](##base-structure)      
+	3. [Control Register](#3-control-register)       
+2. [Base structure](##base-structure)      
 
 # Register
 ## 1. General Purpose Register
@@ -56,6 +56,32 @@ RFLAGS register에 IF(interrupt flag)를 set한다.
 Clear Interrupt Flag    
 RFLAGS register에 IF를 clear한다.     
 IRQ를 pending시킨다.         
+
+> **msr**   
+Model Specific Registers   
+sysenter, sysexit, local APIC와 같은 system의 configuration을 제어하는 register 모음이다.    
+rdmsr, wrmsr, rdtsc와 같은 instruction으로 access할 수 있다.  
+AMD에서는 long mode feature를 제어하기 위해서, EFER Register를 추가하였다.   
+그 예로, MSR의 EFER.LME 플래그를 0xC0000080으로 설정해서 long mode로 전환한다.      
+linux에서 구현한것을 확인해 보자.   
+```
+[arch/x86/include/asm/msr-index.h]
+14 /* x86-64 specific MSRs */
+15 #define MSR_EFER        0xc0000080 /* extended feature register */
+16 #define MSR_STAR        0xc0000081 /* legacy mode SYSCALL target */
+17 #define MSR_LSTAR       0xc0000082 /* long mode SYSCALL target */
+18 #define MSR_CSTAR       0xc0000083 /* compat mode SYSCALL target */
+19 #define MSR_SYSCALL_MASK    0xc0000084 /* EFLAGS mask for syscall */
+20 #define MSR_FS_BASE     0xc0000100 /* 64bit FS base */
+21 #define MSR_GS_BASE     0xc0000101 /* 64bit GS base */
+22 #define MSR_KERNEL_GS_BASE  0xc0000102 /* SwapGS GS shadow */
+23 #define MSR_TSC_AUX     0xc0000103 /* Auxiliary TSC */
+```
+MSR_LSTAR는 64bit mode에서 syscall의 target이다.   
+
+>>**per-node**라는 것은 MSR은 core 별로 존재하는데, 한 core의 MSR을 변경하면 모든 core들에게도,   
+똑같이 반영되도록 해놓은것이다.   
+
 
 ## 3. Control Register
 [참조](https://en.wikipedia.org/wiki/Control_register)     

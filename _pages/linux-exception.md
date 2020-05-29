@@ -7,17 +7,18 @@ layout: single
 ---
 
 # Table of contents
-[Outline](#outline)       
-[    1. Glossary](#1-glossary)      
-[    2. Classificatio](#2-classification)      
-[IRQ Source Mapping](#irq-source-mapping)          
-[    1.1 irq_domain](#11-irq_domain)       
-[         1.1.1 Registeration of IRQ number](#111-registeration-of-irq-number)       
-[         1.1.2 Registeration of IRQ domain](#112-registeration-of-irq-domain)       
-[         1.1.3 Mapping](#113-mapping)       
-[    1.2 irq_desc](#12-irq_desc)        
-[    1.3 irq_chip](#3-irq_chip)        
-
+1. [Outline](#outline)       
+	1. [Glossary](#1-glossary)      
+	2. [Classificatio](#2-classification)      
+2. [Handling](#handling)   
+	1. [threaded IRQ or IRQ Thread](#1-threaded-irq-or-irq-thread)  
+3. [IRQ Source Mapping](#irq-source-mapping)          
+	1. [irq_domain](#11-irq_domain)       
+		1. [Registeration of IRQ number](#111-registeration-of-irq-number)       
+		2. [Registeration of IRQ domain](#112-registeration-of-irq-domain)       
+		3. [Mapping](#113-mapping)       
+	2. [irq_desc](#12-irq_desc)        
+	3. [irq_chip](#3-irq_chip)        
 
 # Outline
 Exception도 architecture에 따라서 의미가 다르다.    
@@ -64,7 +65,94 @@ Reset-------Data Abort-----------FIQ--------IRQ------------Instruction Abort----
 Timer의 경우는 IRQ0인 timer interrupt를 처리하는 callback은 do_timer이다.      
 Boot이후의 tick값인 jiffies_64에 해당 값을 더해 주고, calc_global_load()를 호출한다.     
 
+
+```
+arch/arm64/kernel/entry.S
+    .pushsection ".entry.text", "ax"
+
+    .align  11
+ENTRY(vectors)
+    kernel_ventry   1, sync_invalid         // Synchronous EL1t
+    kernel_ventry   1, irq_invalid          // IRQ EL1t
+    kernel_ventry   1, fiq_invalid          // FIQ EL1t
+    kernel_ventry   1, error_invalid        // Error EL1t
+
+    kernel_ventry   1, sync             // Synchronous EL1h
+    kernel_ventry   1, irq              // IRQ EL1h
+    kernel_ventry   1, fiq_invalid          // FIQ EL1h
+    kernel_ventry   1, error            // Error EL1h
+
+    kernel_ventry   0, sync             // Synchronous 64-bit EL0
+    kernel_ventry   0, irq              // IRQ 64-bit EL0
+    kernel_ventry   0, fiq_invalid          // FIQ 64-bit EL0
+    kernel_ventry   0, error            // Error 64-bit EL0
+
+#ifdef CONFIG_COMPAT
+    kernel_ventry   0, sync_compat, 32      // Synchronous 32-bit EL0
+    kernel_ventry   0, irq_compat, 32       // IRQ 32-bit EL0
+    kernel_ventry   0, fiq_invalid_compat, 32   // FIQ 32-bit EL0
+    kernel_ventry   0, error_compat, 32     // Error 32-bit EL0
+#else
+    kernel_ventry   0, sync_invalid, 32     // Synchronous 32-bit EL0
+    kernel_ventry   0, irq_invalid, 32      // IRQ 32-bit EL0
+    kernel_ventry   0, fiq_invalid, 32      // FIQ 32-bit EL0
+    kernel_ventry   0, error_invalid, 32        // Error 32-bit EL0
+#endif
+```
+
 [More Detail](https://developer.arm.com/docs/den0024/a/aarch64-exception-handling)     
+
+# Handling
+exception이 발생하면, el1이나 kernel level에 진입하게 된다.   
+kernel level에서 이것을 처리하는데 vector table이 활용된다.   
+vector에는 exception type에 따라 handler의 주소가 담겨 있고,  
+processor는 이 주소를 실행하게 되는 것이다.    
+
+aarch64에서 exception handler는 vbar_eln register에 담긴 vector table을 보고 실행된다.    
+![vector table 등록](../../../assets/images/arm64_reg_exception_handler.png)  
+core 0는 booting 초반에 __primary_switched()를 실행에서,    
+entry.S에 선언된 vectors를 vbar_el1 register에 load한다.   
+그밖의 core는 cpu_operations 구조체를 통해, 해당 core가 booting될 때,  
+역시 entry.S에 선언된 vectors를 vbar_el1 register에 load한다.   
+
+x86_64에서는 다음과 같다.   
+
+Exception의 처리는 Top Half(전반부 처리)와 Bottom Half(후반부처리)로 나누어 진다.   
+Top Half는 즉각적으로 처리하는 방식이고,    
+Bottom Half는 좀 미루어 놓고 실행하는 방식이다.   
+즉각적으로 처리한다는 것은 interrupt handler에서 처리한다는 의미.    
+
+보통 Top Half는 NMI(x86 only), FIQ, IRQ등을 처리하는 과정이고,  
+Bottom Half는 MI(Maskable Interrupt), SoftIrq를 처리하지만,   
+꼭 그렇지는 않다.      
+kernel configuration의 Scheudling level에 따라서 달라지지만,  
+보통 일반적인 PREEPT나, PREEMPT_VOLUNTARY 같은 경우에는 interrupt 처리 상황에서는 scheduling 되지 않는다.  
+PREEPT_RT가 되어야지 이 상황에서도 scheduling이 된다.   
+그렇기 때문에 interrupt가 LAN card에서 packet을 수신하고, 발생시키는 것과 같이 너무 많은 상황이라면 시스템은 사실상 정지 상태가 될 것이다.   
+이것이 Bottom Half를 두는 이유이다.    
+
+즉 IRQ를 처리할 때, bottom half flag를 set하고, 종료한 후에, do_softirq()에서 처리하도록 미룰 수 있다.   
+
+Bottom Half는 IRQ Thread, SoftIRQ, WorkQueue등에서 처리된다.    
+
+## 1. threaded IRQ or IRQ Thread
+Bottom Half 처리를 위한 [kernel thread](/kdb/linux/process/#1-kernel-thread)이다.          
+다음의 프로세스들이 바로 IRQ Thread이다.   
+```
+$ ps -ef
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0  5월24 ?      00:00:44 /lib/systemd/systemd --system --deserialize 41
+root         2     0  0  5월24 ?      00:00:00 [kthreadd]
+oot       221     2  0  5월24 ?      00:00:00 [irq/25-AMD-Vi]
+root       230     2  0  5월24 ?      00:00:00 [irq/26-aerdrv]
+root       231     2  0  5월24 ?      00:00:00 [irq/27-aerdrv]
+root       232     2  0  5월24 ?      00:00:00 [irq/28-aerdrv]
+root       233     2  0  5월24 ?      00:00:00 [irq/29-aerdrv]
+root       234     2  0  5월24 ?      00:00:00 [irq/31-aerdrv]
+root      1144     2  0  5월24 ?      00:46:14 [irq/104-nvidia]
+```
+irq/25-AMD-Vi는 25번 interrupt를 처리하는 irq thread라는 의미.   
+irq/xxx들은 모두 부모의 pid가 2이고, pid 2는 kthreadd이다.   
 
 # IRQ source mapping
 linux는 IRQ source를 식별하기 위해서, irq number를 사용하고 있다.     

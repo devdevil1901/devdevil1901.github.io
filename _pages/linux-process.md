@@ -5,12 +5,13 @@ toc_sticky: true
 toc_ads : true
 layout: single
 ---
-[Outline](#outline)     
-[Task](#task)      
-[    1. Creation of task](#1-creation-of-task)       
-[        1.1 Kernel mode stack 할당](#11-kernel-mode-stack-%ED%95%A0%EB%8B%B9)      
-[        1.2 Processor affinity](#12-processor-affinity)      
-[Thread](#thread)      
+1. [Outline](#outline)     
+2. [Task](#task)      
+	1. [Creation of task](#1-creation-of-task)       
+		1. [Kernel mode stack 할당](#11-kernel-mode-stack-%ED%95%A0%EB%8B%B9)      
+		2. [Processor affinity](#12-processor-affinity)      
+3. [Thread](#thread)      
+	1. [kernel thread](#1-kernel-thread)  
 
 # Outline
 process는 하나이상의 thread로 구성된다.   
@@ -93,8 +94,15 @@ copy-on-write로 실재 사용시에 복사되는 방식.(current)
 
 ## 1. kernel thread
 Kernel process가 clone()을 호출해서, light weight overhead로 생성한 것이다.    
-보통 서버나 데몬에 사용된다.    
-Kernel mode에서만 동작하고, user mode thread와는 달리 고유의 공간은 가지고 있지 않다.    
-모든 user task보다 우선순위가 높다. (Scheduler-Priory 부분 참조)    
+보통 **서버**나 **데몬**에 사용된다.(booting 시의 init process나, irq thread나 swap등 처리에 사용됨)       
+kthreadd process가 바로 kernel thread이며, **kthread_create()**로 kernel thread를 생성하면,   
+kthreadd에서 fork해서, kernel thread가 생성된다.   
+![creation process which kernel thread](../../../assets/images/linux_create_kthread.png)   
 
-# 
+booting 과정에서 init process를 실행하는 rest_init()에서 kernel thread 그 자체인 kthreadd()를 생성한다.    
+kthreadd는 무한 루프를 돌면서, list가 비었으면 schedule()을 실행하면서 대기 한다.   
+그러다가 kthread_create()로 kernel thread를 생성하면, create_kthread()를 실행해서, kthreadd에서 fork 해서,   
+자식으로 kernel thread를 생성하게 된다.    
+이렇게 여기서 scheduling을 무한 실행하기 때문에 여기서의 작업은 매우 지연되어 실행될 수 밖에 없다는 것을 명심하자.       
+
+
