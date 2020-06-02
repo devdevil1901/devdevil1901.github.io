@@ -9,9 +9,11 @@ layout: single
 # Table of contents
 1. [Outline](#outline)       
 	1. [Glossary](#1-glossary)      
-	2. [Classificatio](#2-classification)      
-2. [Handling](#handling)   
-	1. [threaded IRQ or IRQ Thread](#1-threaded-irq-or-irq-thread)  
+	2. [Classification](#2-classification)      
+2. [Handling](#handling)    
+	1. [register handler](#1-register-handler)   
+	2. [handling process](#2-handling-process)   
+	3. [threaded IRQ or IRQ Thread](#3-threaded-irq-or-irq-thread)  
 3. [IRQ Source Mapping](#irq-source-mapping)          
 	1. [irq_domain](#11-irq_domain)       
 		1. [Registeration of IRQ number](#111-registeration-of-irq-number)       
@@ -103,6 +105,7 @@ ENTRY(vectors)
 [More Detail](https://developer.arm.com/docs/den0024/a/aarch64-exception-handling)     
 
 # Handling
+## 1. register handler
 exception이 발생하면, el1이나 kernel level에 진입하게 된다.   
 kernel level에서 이것을 처리하는데 vector table이 활용된다.   
 vector에는 exception type에 따라 handler의 주소가 담겨 있고,  
@@ -135,7 +138,10 @@ PREEPT_RT가 되어야지 이 상황에서도 scheduling이 된다.
 
 Bottom Half는 IRQ Thread, SoftIRQ, WorkQueue등에서 처리된다.    
 
-## 1. threaded IRQ or IRQ Thread
+## 2. handling process
+내용 추가   
+
+## 3. threaded IRQ or IRQ Thread
 Bottom Half 처리를 위한 [kernel thread](/kdb/linux/process/#1-kernel-thread)이다.          
 다음의 프로세스들이 바로 IRQ Thread이다.   
 ```
@@ -153,6 +159,49 @@ root      1144     2  0  5월24 ?      00:46:14 [irq/104-nvidia]
 ```
 irq/25-AMD-Vi는 25번 interrupt를 처리하는 irq thread라는 의미.   
 irq/xxx들은 모두 부모의 pid가 2이고, pid 2는 kthreadd이다.   
+
+## 4. ksoftirqd
+core안의 가상 cpu의 개수 즉 hardware thread의 개수 만큼 존재 하는 daemon이다.   
+per-cpu thread라고도 불린다.    
+IRQ가 매우 빠르게 여러개 발생하였을 때 한번에 처리할 수 없기 때문에 이 녀석에 pending 시켜 놓는 것.     
+**TO DO** IRQ thread와의 연관 관계를 파악해야 한다 
+```
+ps -ef | grep irq
+root        10     2  0  5월24 ?      00:00:04 [ksoftirqd/0]
+root        18     2  0  5월24 ?      00:00:01 [ksoftirqd/1]
+root        24     2  0  5월24 ?      00:00:00 [ksoftirqd/2]
+root        30     2  0  5월24 ?      00:00:00 [ksoftirqd/3]
+root        36     2  0  5월24 ?      00:00:00 [ksoftirqd/4]
+root        42     2  0  5월24 ?      00:00:00 [ksoftirqd/5]
+root        48     2  0  5월24 ?      00:00:00 [ksoftirqd/6]
+root        54     2  0  5월24 ?      00:00:00 [ksoftirqd/7]
+root        60     2  0  5월24 ?      00:00:00 [ksoftirqd/8]
+root        66     2  0  5월24 ?      00:00:00 [ksoftirqd/9]
+root        72     2  0  5월24 ?      00:00:00 [ksoftirqd/10]
+root        78     2  0  5월24 ?      00:00:00 [ksoftirqd/11]
+root        84     2  0  5월24 ?      00:00:00 [ksoftirqd/12]
+root        90     2  0  5월24 ?      00:00:00 [ksoftirqd/13]
+root        96     2  0  5월24 ?      00:00:00 [ksoftirqd/14]
+root       102     2  0  5월24 ?      00:00:00 [ksoftirqd/15]
+```
+
+소스를 보자면, 부팅 시에 한번만 실행되는 function이다.   
+```
+kernel/softirq.c
+
+static struct smp_hotplug_thread softirq_threads = {
+	.store			= &ksoftirqd,
+	.thread_should_run	= ksoftirqd_should_run,
+	.thread_fn		= run_ksoftirqd,
+	.thread_comm		= "ksoftirqd/%u",
+};
+
+__init int spawn_ksoftirqd(void)
+early_initcall(spawn_ksoftirqd);
+```
+CONFIG_HOTPLUG_CPU가 y이면, SMP 구조에서 부하가 별로 없다면, core0만을 실행하고, 나머지 CPU는  
+On/Off를 하게 된다.    
+이때 cpu마다 존재하는 ksoftirqd를 깨우려면, wakeup_softirqd()를 호출한다.    
 
 # IRQ source mapping
 linux는 IRQ source를 식별하기 위해서, irq number를 사용하고 있다.     

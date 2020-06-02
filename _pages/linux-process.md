@@ -94,7 +94,7 @@ copy-on-write로 실재 사용시에 복사되는 방식.(current)
 
 ## 1. kernel thread
 Kernel process가 clone()을 호출해서, light weight overhead로 생성한 것이다.    
-보통 **서버**나 **데몬**에 사용된다.(booting 시의 init process나, irq thread나 swap등 처리에 사용됨)       
+보통 **서버**나 **데몬**에 사용된다.(booting 시의 init process나, work thread, irq thread나 swap등 처리에 사용됨)       
 kthreadd process가 바로 kernel thread이며, **kthread_create()**로 kernel thread를 생성하면,   
 kthreadd에서 fork해서, kernel thread가 생성된다.   
 ![creation process which kernel thread](../../../assets/images/linux_create_kthread.png)   

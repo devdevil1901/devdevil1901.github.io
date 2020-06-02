@@ -6,6 +6,12 @@ toc_ads : true
 layout: single
 ---
 
+# Table of content
+1. [Outline](#outline)   
+2. [APIC(Advanced Programmable Interrupt Controller)](##apicadvanced-programmable-interrupt-controller)    
+3. [GIC(Generic Interrupt Controller](#gicgeneric-interrupt-controller)  
+4. [References](#reference)  
+
 # Outline
 software 개발자도 hardware를 이해해야 할 때가 있다.      
 

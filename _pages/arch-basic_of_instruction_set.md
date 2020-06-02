@@ -353,6 +353,7 @@ main:
 </pre>
 
 먼저 bl testCond가 실행된 다음의 상태이다.    
+
 |stack addr|stack pointer|stored|
 |---|---|---|
 |0x40007ffba0|||
@@ -362,6 +363,7 @@ main:
 |0x40007ffb80|||
 
 그다음 stp x29, x30, [sp, #-16]! 즉 stack prolog가 실행되고 난 뒤는 다음과 같다.    
+
 |stack addr|stack pointer|stored|
 |---|---|---|
 |0x40007ffba0|||

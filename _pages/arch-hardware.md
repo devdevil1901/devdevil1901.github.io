@@ -6,6 +6,18 @@ toc_ads : true
 layout: single
 ---
 
+# Table of content
+1. [Memory](#memory)  
+	1. [RAM(Random Access Memory)](#11-sramstatic-ram)   
+	2. [DRAM(Dynamic RAM)](#12-dramdynamic-ram)   
+	3. [Flash RAM](#13-flash-ram)   
+		1. [Managed NAND](#131-managed-nand)   
+		2. [eMMC(Embeded Multi Media Card](#132-emmcembeded-multi-media-card)  
+2. [Mainboard](#mainboard)   
+3. [BUS](#bus)   
+	1. [AMBA](#1amba)   
+	2. [PCI(Peripheral Component Interconnect)](#2pciperipheral-component-interconnect)    
+
 # Memory
 
 ## 1. RAM(Random Access Memory)
@@ -100,7 +112,7 @@ ARM에서 설계해서 판매하는 core architecture, GIC와 마찬가지인것
 
 cpu에서 l3 cache를 연결하는 것도 AMBA interconnect이고, dram이나, external l4 cache와 연결하는 것도 바로 AMBA.   
 
-## 2.PCI(PCI(Peripheral Component Interconnect)
+## 2.PCI(Peripheral Component Interconnect)
 CPU와 주변 기기를 연결하는 Local Bus의 일종으로 테이터 전송률이 우수하다.   
 CPU와 PCI bus 사이에 System/PCI Bus Bridge를 두어서 Peripheral device에 상관 없이 추상화된 통신을 할 수 있다.   
 그래픽/사운드/네트워크 카드와 SCSI 카드드을 연결하여 사용한다.   

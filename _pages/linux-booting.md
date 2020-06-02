@@ -47,7 +47,6 @@ x86의 경우, bios에서 UEFI가 나오면서, 뭐랄까 부팅 초기화 과�
 # 1. from firmware to kernel
 x86 기준으로 그림을 그려보았다.     
 firmware의 UEFI는 efi bootmanager를 의미한다.(legacy bootloader를 대체하는 부분이라고 볼수 있다.)        
-*arm64 부분도 추가하도록 하자.*     
 ![boot sequence on x86_64](../../../assets/images/linux_boot_sequence.png)       
 Mainboard가 power supply에 signal을 보내면 전력공급 시작되고, Mainboard가 power good signal을 받게되면 cpu를 start 시킨다.     
 Cpu는 register를 초기화 하고, 첫 instruction을 실행하게 된다.     
@@ -62,15 +61,23 @@ architecture 고유의 코드로 진행되다고 공통의 코드로 합쳐지�
 여기서 부터는 arm64쪽도 같이 정리하도록 한다.      
 ![Boot Process](../../../assets/images/linux-to_start_kernel.png)     
 
-x86의 경우 **real mode에서 IA32e의 64bit mode(흔히 long mode)까지의 여정**이라고 볼수 있다.     
+>x86의 경우 <span style="color:red">**real mode에서 IA32e의 64bit mode(흔히 long mode)까지의 여정**</span>이라고 볼수 있다.     
 그림에서 가장 눈에 띄는 부분은 efi boot manager로 start되는 경우는 32bit protected mode 부터로 16bit real mode가 없다는 점일 것이다.      
 firmware가 BIOS나 UEFI CSM mode이면, 16bit real mode로 진행될 것이고,      
 UEFI를 사용중이라면, 32bit protected mode로 진행되게 되는 것이다.      
-
 default인 EFI boot stub에 의해서 direct로 kernel을 로드한 경우에는 direct로 firmware가 kernel image를 load하게 된다.       
 이 경우 그림에서와 같이 efi_pe_entry()로 jmp하게 된다.       
 또한 kernel setup header(PE file)에 handover_offset을 지정하고, xloadflags에 해당 flag를 set하면,     
 efi_stub_entry64()로 jump하게 된다.       
+
+>aarch64를 살펴보자.  
+arm과 arm64의 공통 entry point로서, efi_entry가 존재하고 architecture 별로 나뉘는 부분은 handler_kernel_image()를  
+별도로 구현해서 적용하였다.    
+이 단락에서 linux에서의 EFI를 좀 더 상세하게 살펴볼 필요성이 있다.   
+자료구조 부터 살펴 보도록 하자.    
+
+UEFI는 boot service table과 runtime service를 가르키고 있는, EFI System Table을 사용한다.   
+
 
 ## 2.2.1 real mode functions
 Legacy boot process를 먼저 살펴보도록 하자.      
@@ -457,6 +464,7 @@ popq	%rsi
 
 ## 2.2.4 init process
 각 architecture 별로 진행되던 boot process가 공통으로 모인 부분이 start_kernel()이다.    
+
 
 ## 2. __init and __init_calls
 

@@ -26,6 +26,7 @@ layout: single
 		4. [Comparison](#14-comparison)      
 		5. [Memory Load](#15-memory-load)      
 	2. [Branch](#2-branch)      
+	3. [System instruction](#3-system-instruction)         
 5. [References](#references)      
 
 # Exception Level
@@ -375,7 +376,6 @@ actlr_el1
 actlr_el2
 actlr_el3
 ```
-
 Auxiliary 어그질러리 가 뜻이다(조동사할때 쓰는 단어이다)   
 즉 보조 Control register.   
 Processor-specific feature를 control한다.   
@@ -416,6 +416,17 @@ Non-secure mode에서 secure mode의 서비스를 요청할 때 쓰인다.
 이것도 Exception으로 취급된다.    
 일종의 system call이다.    
 
+* **System Control Register**
+```sctlr_el1```
+el0와 el1의 memory system을 포함한 system을 control한다.   
+~[bit assignments](../assets/images/arch_sctlr.png)   
+**M**은 MMU enable이다.   
+0이면, el0와 el1의 MMU disabled 된다.    
+1이면, el0와 el1의 MMU가 enable 된다.   
+**CP15BEN**은 cp15 barrier enable 이다.  
+[coprocessor](/kdb/arch/cpu/#co-processor)에서와 같이, coretext-a8로 오면서, cp15는 사라졌다.    
+**EE**는 Exception endianness.   
+0이면 little endian, 1이면 big endian.   
 
 ### 4.1 Exception Handling Register
 * **Exception Syndrom Register**   
@@ -696,6 +707,50 @@ f00003e0 adrp x0, 47f000 <__progname_full>
 Compare and Branch on Zero.    
 Compare and BRanch on Non-Zero.   
 
+## 3. System Instruction  
+aarch64 instruction은 system register에 접근하기 위해 encoding 부분이 존재한다.    
+* system control과 system status 정보를 제공하는, debug register를 포함한 system register에 접근하기 위한 instruction    
+* elr_eln, spsr_eln과 같은 special-purpose registers들에 접근위한 instruction.      
+* cache 와 TLB maintenance instruction과 address traslation instruction.   
+* Barried와 CLREX instruction    
+* architectural hit instructions.
+
+ARMv7 및 그 이전 버전에서는 cp(coprocessor)14, cp15 또 부분적으로 cp10, cp11을 통해 이 작업이루어 졌다.   
+armv8의 aarch342에서도 coprocessor model은 개념적으로 유지된다.   
+aarch64에서는 Op0, Op1, CRn, CRm, Op2를 사용한다.   
+![encoding](../../../assets/images/arch_sys_inst_encoding.png)   
+
+Op0은 instruction type의 최상위를 식별.   
+Op1은 가장 낮은 exception level 식별.      
+
+> Op0가 0b00이고,   
+>> CRn이 0b0010이면,   
+CRm과 Op2의 값에 따라,   
+NOP, YIELD, WFE, WFI, SEV, SEVL과 같은    
+architectural hint instructions이다.    
+
+>> CRn이 0b0011이면,   
+Op2의 값에 따라 DSB, DMB,ISB Barriers instruction과 CLREX instruction이다.    
+CRm의 instruction의 option으로 사용됨   
+
+>> CRn이 0b0100이면, Op2의 값에 따라, PSTATE를 접근하는 instruction,   
+MSR DAIFSet, MSR DAIFSel, MSR DAIFClr으로 사용됨    
+Op1과 Imm4는 argument로 사용된다.   
+
+> Op0가 0b01이고,  
+>> CRn이 7이면,   
+CRm 의 값에 따라 Instruction cache 관리 instruction, Data Cache Zero instruction, Data cache 관리 instruction, Address translation instruction이다.    
+
+>> CRn이 8이면,   
+TLBI VMALLE1IS, TLBI VAE1IS, Xt, TLBI ASIDE1IS, Xt 등과 같은 TLB 관리 instruction이다.     
+
+복잡한 내용이므로, 여기에 다 정리하지 않고 이렇게 이런 것들을 식별한다는 정도만 확인하자.    
+[상세한 내용은 여기서 확인하자](https://yurichev.com/mirrors/ARMv8-A_Architecture_Reference_Manual_(Issue_A.a).pdf)에서   
+System instruction class encoding space를 검색한다.    
+
+
+ 
+> 
 # References
 [aarch64 official](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0488c/CIHIDFFE.html)   
 [instruction description](https://static.docs.arm.com/ddi0596/a/DDI_0596_ARM_a64_instruction_set_architecture.pdf)   

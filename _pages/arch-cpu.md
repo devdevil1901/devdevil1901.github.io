@@ -6,6 +6,35 @@ toc_ads : true
 layout: single
 ---
 
+# Table of contents
+1. [Outline](#outline)   
+2. [Define](#define)   
+3. [CPU topology](##cpu-topology)   
+4. [MMU and Cache](#mmu-and-cache)    
+	1. [Cache](#1-cache)   
+	2. [MMU](#2-mmumemory-management-unit)   
+5. [CPU Architecture](#cpu-architecture)   
+	1. [Out-of-order execution](#1-out-of-order-execution)   
+	2. [Pipeline](#2-pipeline)    
+	3. [Cache](#3-cache)   
+	4. [Branch Prediction](#4-branch-prediction)   
+	5. [Speculative execution](#5-speculative-execution)   
+6. [CISC vs RISC](#cisc-vs-risc)    
+	1. [performance](#1-performance)    
+	2. [Electricity and Caloric value](#2-electricity-and-caloric-value)   
+7. [SMT(Simultaneous Multi-Threading](#smtsimultaneous-multi-threading)     
+8. [NUMA(Non-Uniformed Memory Access](#numanon-uniformed-memory-access)    
+	1. [Node](#1-node)    
+	2. [interleaving](#2-interleaving)    
+	3. [support](#3-support)
+9. [GPU(Graphic Processing Unit](#gpugraphic-processing-unit)    
+10. [SOC(System-on-chip)](#socsystem-on-chip)     
+	1. [AP(Application Processor](#1apapplication-processor)    
+		1. [Brand](#11-brand)   
+11. [Co-Processor](#co-processor)   
+12. [References](#references)   
+
+# Outline
 x86 CPU의 경우, Intel, AMD, 대만의 VIA 세개의 업체가 있다.   
 VIA는 Cyrix를 인수하여 중국 정부의 지원을 통해 생존하고 있고, Intel이 주로 이루고 AMD가 뒤따라가는 형국이다.   
 본인은 저렴하고 가성비 좋은 AMD를 이용하고 있지만, Intel의 경우, Clock당 명령어 처리 능력이나, CPU의 inter connect bus 기술에서 앞서가고 있다.   
@@ -186,7 +215,8 @@ Page 뿐만 아니라, section으로 memory에 대해 접근 가능하다.
 section은 1M단위로 접근, page는 small page(4K), large page(64K)로 접근이 가능하다.   
 Section은 1 level translation table에 유지하고, page는 2 level translation table에 유지한다.   
 
-## 3. Out-of-order execution
+# CPU Architecture
+## 1. Out-of-order execution
 비 순차적 명령어 처리.   
 순차적으로 실행하다가, memory load 명령어가 cache miss가 발생하면,    
 뒤의 명령어가 memory load명령어에 영향을 받지 않는 다면 미리 실행할 수 있다면 효율적일 것이다.   
@@ -195,18 +225,15 @@ Section은 1 level translation table에 유지하고, page는 2 level translatio
 Coretex-a8에서 arm 사는, 저전력을 위해서 비순차적 명령어 처리를 넣지 않았다고 했지만, a9에서 저전력을 하고도 비순차적 명령어 처리를 넣었다고 주장함.   
 비순차적 처리를 가능하게 하는 것은 재정렬 버퍼(Reorder Buffer: ROB)이다.   
 
-## 4. Pipeline
+## 2. Pipeline
 instruction cycle의 각 단게를 다음 단계로 전달하면서, 각 단계를 동시에 병렬로 처리하는 함으로서,   
 instruction processing 속도를 향상시키는 방법이다.   
 
+## 3. Cache
 
+## 4. Branch Prediction
 
-
-## 5. Cache
-
-## 6. Branch Prediction
-
-## 7. Speculative execution
+## 5. Speculative execution
 
 # AP(Application Processor)
 흔히 mobile AP, mobile CPU라고도 불린다.   
@@ -219,7 +246,7 @@ instruction processing 속도를 향상시키는 방법이다.
 
 # CISC vs RISC
 
-## 1. 성능   
+## 1. Performance  
 먼저 ARM과 x86을 생각해 보자.    
 ARM은 aarch64의 경우 4byte로 고정되어 있고, x86의 경우는 길이가 다양하다.   
 때문에 CPU에 instruction을 fetch로 가져오고, predecode에서 instruction 간 경게를 확인하고,   
@@ -234,7 +261,7 @@ mov, add에서는 register가 아닌 memory 영역을 접근할 수 없다.
 
 이런 차이들에서 일반적인 instruction을 기준으로 성능적인 측면에서는 arm이 장점을 가질 수 밖에는 없다.    
 
-## 2. 전력과 발열   
+## 2. Electricity and Caloric value
 instruction들을 살펴보면, x86의 CISC 방식은 복잡한 명령어를 통해 복잡한 처리를 한다.   
 RISC인 arm의 경우 보다 단순하다.   
 때문에 CISC 방식의 경우 반도체를 구성하는 트랜지스터의 직접도가 높다.   
@@ -283,19 +310,19 @@ CPU의 local에 memory를 두고 매우 빠르게 접근할 수 있도록 하는
 이것을 위해서 ccNUMA라는 cache coherence NUMA라는 cache를 두어서, cache 일관성을 보장하게 된다.
 dram 접근의 병목 해결 뿐만 아니라, 또한 HTT나 QPI등의 main bus를 추가만 하기 때문에, 확장이 쉬운 장점도 있다.   
 
-## Node
+## 1. Node
 같은 local memory를 공유하는 단위를 NUMA Node라고 한다.   
 이것이 반드시 cpu socket과 1:1로 mapping되지는 않는다.   
 socket 1개에 NUMA node 2개가 있기도 하고, socket 2개에 NUMA node 1개가 있기도 하다.   
 즉 CPU 마다 틀리다.   
 node는 32bit integer의 고유한 id를 가지고 있다.   
 
-## interleaving
+## 2. interleaving
 firmware의  Node Interleaving을 enable 시키면 NUMA 구조를 가지고 있더라도, SMP 처럼 동작할 수 있도록 할 수 있다.   
 즉 memory들은 하나의 연속된 memory로 mapping되고, memory page는 round-robin 형태로 node에 분배되고,    
 local memory 접근 보다는 느리고, remote access  보다는 빠른 속도로 전 node가 균일한 속도로 접속하게 된다.    
 
-## Support
+## 3. Support
 UEFI firmware configuration(del 이나 F2로 진입하는)에서 활성화 가능한지 확인해야 한다.  
 mainboard firmware 지원해야 지만 사용할 수 있다.   
 일예로 Mac pro등에서는 NUMA를 지원하지 않는다.   
@@ -322,10 +349,15 @@ on-chip에 비해, off-chip 활동은 전력을 더 소모하기 때문에 저�
 제조 및 조립 비용감소   
 
 ## 1.AP(Application Processor)
+하나의 Chip에 다수의 소자가 집적된 SoC구조이다.   
 대표적인 것인 smart phone에서 사용되는 Mobile AP(Application Processor)이다.   
 즉 AP가 SOC다.   
 ARM에서는 core(ALU, CU, Register)와 Cache, JTAG, WB, CP + bus를   
-삼성, 퀄컴등은 여기서 라이센스를 구매해서 여기에다가, timer, sram, nor등의 peripheral 장치들을 추가해서 soc를 만들어서 판매하는 것이다.   
+삼성, 퀄컴등은 여기서 일종의 설계도를 구매해서(라이센스를 구매),    
+최근에는 2D,3D 그래픽 작업을 처리하는 GPU,   
+3G,LTE, Wi-Fi등을 연결해 주는 Modem,   
+4K영상을 볼수 있도록 해주는 VPU(Video Processing Unit, GPU에 보통 통합 함),   
+timer, sram, nor등의 peripheral 장치들을 추가해서,하나의 Chip으로 묶는 것.    
 실제 크기는 1cm 남짓으로 손톱보다도 작다.   
 JTAG debugger는 core를 test하기 위해 추가되는 국제 규약의 pin이다.   
 DSP(Digital Signal Processor) 영상과 오디오 재생에 특화된 처리를 하는 곳.   
