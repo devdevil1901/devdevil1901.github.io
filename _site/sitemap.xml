@@ -19,6 +19,12 @@
 <loc>http://localhost:4000/about/</loc>
 </url>
 <url>
+<loc>http://localhost:4000/kdb/android/boot/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/kdb/android/build/</loc>
+</url>
+<url>
 <loc>http://localhost:4000/kdb/android/concurrency/</loc>
 </url>
 <url>
@@ -134,5 +140,8 @@
 </url>
 <url>
 <loc>http://localhost:4000/kdb/security/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/kdb/todo/</loc>
 </url>
 </urlset>

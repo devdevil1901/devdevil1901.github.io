@@ -196,8 +196,7 @@ struct dt_table_header {
                              	struct is updated. */
 };
 ```
-    
-   
+
 pixel 최신 버전의 factory image의 boot.img를 풀어서 본 magic을 확인해 보면,   
 dtb는 다음과 같이 fdt_header type을 사용하고 있는 것을 확인할 수 있다.   
 ```

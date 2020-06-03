@@ -9,10 +9,14 @@ layout: single
 [To parent directory](/kdb/linux/boot/)      
 
 # Table of contents
+1. [Outline](#outline)   
+2. [Boot with UEFI](#boot-with-uefi)   
+	1. [entry point](#1-entry-point)    
+		1. [on aarch64](#11-on-aarch64)    
 
 # Outline
 
-# from firmware to kernel with UEFI
+# Boot with UEFI
 먼저 [boot](/kdb/linux/boot/#2-from-kernel-to-init-process)에서 살펴보았던 그림을 다시 확인해 보자.   
 ![boot sequence](../../../assets/images/linux-to_start_kernel.png)   
 
@@ -45,9 +49,9 @@ header는 [UEFI](/kdb/arch/bios_uefi)에서 살펴보았듯이 각 table 마다 
 efi_boot_services가 UEFI Boot Service,  
 efi_runtime_serviecs_t가 UEFI Runtime Service이다.   
 
-## 1. on aarch64
+### 1.1 on aarch64
 **efi_entry()**는 다음과 같다.   
-![]()   
+![efi_entry](../../../assets/images/linux_efi_entry.png)      
 1. 두 번째 인자로 전달된 system table을 hdr의 signature로 검증한다.   
 2. check_platform_features()를 실행해서, page가 4K로 설정되어 있다면 ok.  
 ```
@@ -123,4 +127,7 @@ initrd를 로드할 주소를 구한다.
 boot service의 allocate_pool()를 실행해서 memoery를 확보한후에, boot service의 install_configuration_table()을 실행한다.   
 
 11. allocate_new_fdt_and_exit_boot()를 실행한다.   
+FDT를 위한 memory를 할당하고 EFI commandline, initrd 관련 field를 FDT에 추가한다.    
+
+EFI boot service는 이 function 이후로 종료된다.   
 

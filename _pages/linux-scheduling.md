@@ -22,6 +22,7 @@ layout: single
 	8. [Preemption](#preemption)      
 		1. [User Preempt](#1-user-preempt)      
 		2. [Preempt level](#2-preempt-level)     
+		3. [Preempt-safe](#3-preempt-safe)     
 5. [Context Switching](#context-switching)     
 
 # Outline
@@ -450,6 +451,8 @@ preempt none으로 해도 무조건 일어나는 선점이다.
 여담으로 서버로 사용중인 Clude에 들어가보면, 서버용인데 CONFIG_PREEMPT_VOLUNTARY로 되어 있는경우가 많다.     
 이것은 이런 지식을 이해하지 못한데서 발생한 일들이다.      
 
+## 3. Preempt-safe
+https://elixir.bootlin.com/linux/v5.7-rc5/source/Documentation/preempt-locking.txt   
 
 # Context switching
 context switching은    

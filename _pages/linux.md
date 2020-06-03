@@ -11,6 +11,7 @@ layout: single
 2. [NUMA](/kdb/linux/numa/)
 3. [Booting](/kdb/linux/boot/)
 	1. [setup header](/kdb/linux/boot_setup/)     
+	2. [boot with efi](/kdb/linux/boot_efi/)     
 4. [Exception](/kdb/linux/exception/)
 5. [Kernel Binary](/kdb/linux/binary/)
 6. [Memory Management](/kdb/linux/memory/)

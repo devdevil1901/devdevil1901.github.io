@@ -73,11 +73,9 @@ efi_stub_entry64()로 jump하게 된다.
 >aarch64를 살펴보자.  
 arm과 arm64의 공통 entry point로서, efi_entry가 존재하고 architecture 별로 나뉘는 부분은 handler_kernel_image()를  
 별도로 구현해서 적용하였다.    
-이 단락에서 linux에서의 EFI를 좀 더 상세하게 살펴볼 필요성이 있다.   
-자료구조 부터 살펴 보도록 하자.    
 
 UEFI는 boot service table과 runtime service를 가르키고 있는, EFI System Table을 사용한다.   
-
+좀 더 상세한 내용은 [UEFI Boot](/kdb/linux/boot_efi/)를 참조하자.   
 
 ## 2.2.1 real mode functions
 Legacy boot process를 먼저 살펴보도록 하자.      
@@ -464,12 +462,11 @@ popq	%rsi
 
 ## 2.2.4 init process
 각 architecture 별로 진행되던 boot process가 공통으로 모인 부분이 start_kernel()이다.    
+즉 architecutre independent한 부분까지 진입하게 되었다.   
+
 
 
 ## 2. __init and __init_calls
-
-BSP에서 booting이 진행 되다가,  
-
 
 xxx_initcall() 와 같은 function들이 있다.     
 ```

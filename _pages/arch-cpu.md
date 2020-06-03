@@ -174,8 +174,10 @@ Cpu cache는 Level1이 instruction cache와 data cache로 구별되고, L2,L3,L4
 
 ## 1. Cache
 memory보다 더 빠른 접근을 위한 cpu 내부 장치.   
+RAM에 접근하기 전에 먼저 cache를 뒤지는 것이다.   
+L1뒤져서 없으면 L2, 없으면 L3 그래도 없다면 RAM을 접근하는 것이다.   
 Cache가 memory 관련 된 성능 향상을 시켜준다.  
-때문에 cache대신 ALU만 무지하게 때려 박은 gpu가 memory 접근 작업은 더 느린것이다.   
+때문에 **cache대신 ALU만 무지하게 때려 박은 gpu가 memory 접근 작업은 더 느린것**이다.   
 속도는 L1 > L2 > L3   
 용량은 L3 > L2 > L1   
 **L1에서 miss나면, L2 또 miss 면 L3이런식**.   
@@ -194,7 +196,9 @@ L2 cache: 512K
 L3 cache: 8192K
 </pre>
 
-현재 내 pc는 numa가 on이기는 하지만, fsb의 병목을 l3로 해결하고 있다.(numa node가 1이라서)   
+SoC에서는 mobile에서는 L3 cache를 사용하지 않는다.     
+하지만, 24-코어 Qualcomm 서버 SoC 또는 AMD Opteron 1100)에 사용되는 ARM 기반 프로세서는 32MB L3 캐시를 추가할 수 있다.   
+
 
 ## 2. MMU(Memory Management Unit)
 원래는 별도의 IC(intergrated Chip)에 위치하였다가, 최근에는 대 부분 CPU안에 위치한다.   
@@ -364,6 +368,27 @@ DSP(Digital Signal Processor) 영상과 오디오 재생에 특화된 처리를 
 Connectivity 4G, 5G, WIFI등의 네트워크 연결담당.   
 2d/3d accelerator와 동영상 재생에 필요한 codec이 들어 있다. (pc는 cpu가 codec실행)   
 
+기본적인 ARM cortex-A72 architecture의 구조는 다음과 같다.   
+<pre>
+  _______________Core 1_____________________________________________  core2 core 3 core 4
+  |                                                                |
+  |   ______________________    ______________   ________________  |
+  |  | ARMv8-A 32b/64b CPU |   |  NEON SIMD  |  | Floating Point]  |
+  |  -----------------------   --------------   -----------------  |
+  |                                                                |
+  |   ____________________________  ______________                 |
+  |  |  48KB I-Cache with parity | | 32kb D-Cache |                |
+  |  -----------------------------  --------------                 |
+  _________________________________________________________________|
+
+   -------    --------   _________________________
+  | ACP  |   | SCU   |  |   L2 Cache(512kb~~4MB) |
+  _______    ________   --------------------------
+  
+  ========================128 bit AMBA =============================
+</pre>
+
+
 ### 1.1 Brand
 2019년 11월 19일 기준으로 점유율은 다음과 같다.   
 ap계의 공룡은 퀄컴.   
@@ -416,7 +441,6 @@ G3등에서 실험적으로 사용하였다.
 **Intel Atom**
 intel이 x86 기반으로 생산   
 모토롤라 레이저 i에 적용 됨.   
-
 
 
 # Co-Processor
