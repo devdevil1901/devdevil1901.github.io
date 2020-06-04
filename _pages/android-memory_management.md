@@ -1,13 +1,23 @@
 ---
 title: "Memory Management"
-permalink: /kdb/android/memory_management/
+permalink: /kdb/android/memory/
 toc_sticky: true
 toc_ads : true
 layout: single
 ---
 
-<pre> 자 이제 practical 한 부분 정말 시작이다. gc 등의 메모리 관련 로직 완벽히 분석해서,  qemu등에서 테스트 하고 .. 확인하도록 하자.!!! 오키....   </pre>
+#Table of content
+1. [Outline](#outline)  
+2. [Shared Memory](#shared-memory)   
+3. [GC(Garbage Collection)](#gcgarbage-collection)   
+	1. [Generation](#1-generation)   
+	2. [GC Root and Root set](#2-gc-root-and-root-set)   
+	3. [Mark and Sweep 방법](#3-mark-and-sweep-%EB%B0%A9%EB%B2%95)   
+	4. [Garbage Collector](#4-garbage-collector)   
+		1. [GC Timing](#1-gc-timing)   
+		2. [Reachability](#2-reachability)   
 
+#Outline
 ART와 Dalvik에서는 paging 및 memory map을 사용하여 메모리를 관리한다.     
 object를 할당 하거나, mmap으로 로드한 메모리 어떤 것이든 RAM에 상주하며 paged out(aka swapsapce)되지 않는다.     
 
@@ -24,7 +34,7 @@ windows surfaces는 app과 screen compositor 사이에서 memory를 공유하고
 ART의 GC도 JVM에서와 동일했다.    
 그렇지만, AndroidO에서 부터 새로운 병렬 gabage collector를 선보였다.    
 
-## Generation
+## 1. Generation
 ART나 Dalvik에서 Heap 메모리를 회수하는 메커니즘.     
 JVM과 거의 동일하다.      
 Android에서는 Heap을 세가지 세대로 분류한다.     
@@ -38,7 +48,7 @@ Young Generation에서는 eden, S0, S1 세개의 container를 가지고 있다.
 Java Script의 v8 엔진도 2 generation으로 나누어 gc를 한다.    
 각 세대는 각각 메모리양에 제한이 있다.     
 
-## GC Root and Root set
+## 2. GC Root and Root set
 여기서 root set이라는 것은 다음을 나타낸다.     
 
       GC Root     
@@ -66,8 +76,7 @@ Object2   Object3    Object4
 public
 ```
 
-
-## Mark and Sweep 방법
+## 3. Mark and Sweep 방법
 gc를 하는 algorithm의 하나이다.    
 1. mark stage에서는 tree를 탐색한다.    
 각 object를 사용중으로 표시한다.    
@@ -100,7 +109,7 @@ SemiSpace
 
 ```
 
-## Garbage Collector
+## 4. Garbage Collector
 
 ```
 art/runtime/gc/collector/garbage_collector.h
@@ -108,7 +117,7 @@ class GarbageCollector
 ```
 
 
-## 1. GC Timing
+### 1. GC Timing
 ### TO DO 정리 필요
 메모리 할당 및 회수     
 Heap은 단일 가상 메모리 범위로 제한되며 이것은 logical heap size를 정의하며, 시스템이 정의 한 한계 까지 증가가가능하다.     
@@ -135,7 +144,7 @@ art/runtime/gc/gc_cause.h
 특정 세대가 채워지기 시작할 때,     
 
 
-### Reachability
+### 2. Reachability
 일반적인 객체 생성은 strong reference라고 불린다.     
 ```
 val AObject = new A

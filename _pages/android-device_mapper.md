@@ -62,6 +62,15 @@ Device  	Start   	End   Sectors   Size Type
 Partition 1 does not start on physical sector boundary.
 ```
 
+# Dynamic Partition
+동적 partition은 말 그대로 partition의 생성,삭제, 크기변경을 동적으로 할 수 있는 것이다.   
+때문에 /system, /vendor, /product등의 개별크기를 걱정할 필요가 없다.   
+Linux kernel의 **dm-linear**(device mapper의 linear mapping 연속적인 block을 여러 device에 mapping)을 이용하여 구현됨.  
+User level에서 구현되기 때문에, bootloader가 있는 boot.img, dtbo, vbmeta등은 dynamic partition으로 구현할 수 없다.   
+
+```
+```
+
 
 # References
 [Implementing dm-verify](https://source.android.com/security/verifiedboot/dm-verity)      

@@ -34,7 +34,10 @@
 <loc>http://localhost:4000/kdb/android/device_mapper/</loc>
 </url>
 <url>
-<loc>http://localhost:4000/kdb/android/memory_management/</loc>
+<loc>http://localhost:4000/kdb/android/flash/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/kdb/android/memory/</loc>
 </url>
 <url>
 <loc>http://localhost:4000/kdb/android/</loc>
