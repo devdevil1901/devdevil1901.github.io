@@ -27,9 +27,11 @@ Google에서 kernel을 개발하였지만,  현재는 많은 부분이 linux ker
 
 
 linux의 android 구현은 다음과 같다.   
+
 |entry|location|desc|
+|---|---|
 |ASM(Android Shared Memory)|drivers/staging/android|ashmem(Android Shared Memory), 와 ION Heap의 구현이 들어있다.|
-|Binder|drivers/android/|binder|IPC와 RPC인 Binder|
+|Binder|drivers/android/binder|IPC와 RPC인 Binder|
 |logger||write에 최적화된 고속 kernel 로깅|
 |paranoid networking||네트워크 I/O를 특정 프로세스로 제한하는 메커니즘|
 |PMEM(Physical memory)||user 공간의 physical 메모리의 큰 chunks mapping을 위한 driver|

@@ -20,7 +20,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="Devdevil's blog">
 <meta property="og:title" content="Devdevil’s blog">
-<meta property="og:url" content="http://localhost:4000/assets/js/lunr/lunr-en.js">
+<meta property="og:url" content="http://devdevil1901.github.io/assets/js/lunr/lunr-en.js">
 
 
   <meta property="og:description" content="var idx = lunr(function () {   this.field(‘title’)   this.field(‘excerpt’)   this.field(‘categories’)   this.field(‘tags’)   this.ref(‘id’) ">
@@ -40,7 +40,7 @@
   
 
 
-<link rel="canonical" href="http://localhost:4000/assets/js/lunr/lunr-en.js">
+<link rel="canonical" href="http://devdevil1901.github.io/assets/js/lunr/lunr-en.js">
 
 
 
@@ -51,7 +51,7 @@
     
       "@type": "Person",
       "name": "Tyrese",
-      "url": "http://localhost:4000/"
+      "url": "http://devdevil1901.github.io/"
     
   }
 </script>
@@ -385,11 +385,11 @@ $(document).ready(function() {
     <h4 class="page__share-title">Share on</h4>
   
 
-  <a href="https://twitter.com/intent/tweet?text=%20http%3A%2F%2Flocalhost%3A4000%2Fassets%2Fjs%2Flunr%2Flunr-en.js" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+  <a href="https://twitter.com/intent/tweet?text=%20http%3A%2F%2Fdevdevil1901.github.io%2Fassets%2Fjs%2Flunr%2Flunr-en.js" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
 
-  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fassets%2Fjs%2Flunr%2Flunr-en.js" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fdevdevil1901.github.io%2Fassets%2Fjs%2Flunr%2Flunr-en.js" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
 
-  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fassets%2Fjs%2Flunr%2Flunr-en.js" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fdevdevil1901.github.io%2Fassets%2Fjs%2Flunr%2Flunr-en.js" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
 </section>
 
 

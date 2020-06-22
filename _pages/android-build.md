@@ -6,12 +6,6 @@ toc_ads : true
 layout: single
 ---
 
-# Table of content
-
-# Outline
-여기서는 AOSP를 build하는 방법.  
-그리고 수정을 위한 위치등을 정리한다.   
-
 # How to build
 
 |stage|to do|
@@ -22,7 +16,7 @@ layout: single
 |select|source build/envsetup.sh<br/>lunch<br/><br/>You're building on Linux<br/>보통 aosp_x86_64-eng를 선택한다. eng는 engineer를 의미한다. development engineer.<br/>가장 큰 권한이 부여된다. (root, etc)<br/>그리고 debugging을 위한 tool들과 개발자 설정이 포함된다.</br>user는 market에 release되는 버전이다.<br/>debug할 수 없고, root도 아닌버전<br/>userdebug는 user version기반에서 root와 debug permission이 추가된 것.|
 |compile|m -j16|
 |execution|compile이 완료된 후에 emulator를 입력하면 새로 compile된 image로 emulator를 실행한다.<br/>$ emulator<br/>이것이 사실 실행하는 것은 <br/>prebuilts/android-emulator/linux-x86_64/emulator이다.<br/>eng 버전 이기 때문에 adb shell도 그냥 root이다.<br/>emulator 실행을 위한 image는 aosp/target/product/generic_x86_64/<br/>에 생성된다.|
-|rebuild|build/envsetup.sh에서는 lunch를 실행했을 때, path 작업을 해주기 때문에 m -j16이 아니라, lunch부터 다시 해 줘야 한다.<br/>그래야 emulator를 제대로 실행가능|
+|rebuild|build/envsetup.sh에서는 lunch를 실행했을 때, path 작업을 해주기 때문에 m -j16이 아니라, lunch부터 다시 해 줘야 한다.<br/>그래야 emulator를 제대로 실행가능<br/>물론 m -j16으로 컴파일을 할 필요는 없다.|
 
 Android 공식 문서는 다음을 참조하자.   
 [downloading](https://source.android.com/setup/build/downloading)   
