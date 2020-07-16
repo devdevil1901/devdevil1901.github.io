@@ -22,6 +22,8 @@ Android 공식 문서는 다음을 참조하자.
 [downloading](https://source.android.com/setup/build/downloading)   
 [setup](https://source.android.com/setup/build/initializing)   
 
+command line에서 lunch를 실행하면, build/envsetup.sh의 function lunch()가 실행된다.   
+
 
 # location
 

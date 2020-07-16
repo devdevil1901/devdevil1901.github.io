@@ -93,6 +93,10 @@ $ make menuconfig
 make -j16
 </pre>
 이후에 숫자는 Hyperthreading이 반영된 hardware thread 개수(core x 2)를 지정하면 된다.    
+다음의 command로 확인할 수 있다.    
+```
+nproc --all
+```
 
 # 6. Post works
 android emulator의 경우    

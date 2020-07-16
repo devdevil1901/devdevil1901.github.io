@@ -1,8 +1,7 @@
-# Added by me
+# when _config.yml file is modified
 $ bundle update
 
-$ jekyll build
-
-$ jekyll serve --watch
+# to check in local
+$ jekyll build --watch
 $ jekyll serve --watch --unpublished
 

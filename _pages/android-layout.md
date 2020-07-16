@@ -92,12 +92,35 @@ sp<IServiceManager> gDefaultServiceManager;
 defaultServiceManager()로 전역변수로 공유되는 ServiceManager의 객체를 return하는것.   
 sp는 smart pointer template로 reference counter가 사라지면 자동 삭제해 주는 macro.  
 
-JetPack의 MediaPlayer가 아니라, android.media.MediaPlayer를 예로 들어보자.   
-> Client쪽에서는(App 프로세스를 의미, Application Framework를 사용한다.) 
-다음과 같이 호출된다.   
-|Java Framework|Jni Framework|IPC Proxies|
+> JetPack의 MediaPlayer가 아니라, android.media.MediaPlayer를 예로 들어보자.   
+
+Server쪽에서는 Native Framework를 사용하여 다음과 같이 호출한다.   
+
+|mediaserver|libmediaplayerservice|libbinder.so|
 |---|---|---|
-|frameworks/base/media/java/android/media/MediaPlayer.java<br/>MediaPlayer|frameworks/base/media/jni/android_media_MediaPlayer.cpp<br/>
+|frameworks/av/media/mediaserver/main_mediaserver.cpp<br/>int main()|frameworks/av/media/libmediaplayerservice/MediaPlayerService.cpp<br/>MediaPlayerService::instantiate()|defaultServiceManager()->addService(String16("media.player")|
+
+
+자 정리 하자.   
+frameworks/av/media/libmedia에서   
+transact()를 실행하는 것은 전부
+IXXXX.cpp이다.  즉 I로 시작한다.    
+class IMediaPlayer: public IInterface
+class BpMediaPlayer: public BpInterface<IMediaPlayer> {
+void disconnect()
+    {
+        Parcel data, reply;
+        data.writeInterfaceToken(IMediaPlayer::getInterfaceDescriptor());
+        remote()->transact(DISCONNECT, data, &reply);
+    }
+
+Client쪽에서는(App 프로세스를 의미, Application Framework를 사용한다.) 
+다음과 같이 호출된다.   
+
+|Java Framework->|Jni Framework->|IPC Proxies|
+|---|---|---|
+|frameworks/base/media/java/android/media/MediaPlayer.java<br/><span style="color:blue">MediaPlayer</span>|frameworks/base/media/jni/android_media_MediaPlayer.cpp<br/><span style="color:blue">libmedia_jni.so</span>|frameworks/av/media/libmedia/mediaplayer.cpp<br/><span style="color:blue">libmedia.so</span>|
+
 libmedia.so는 위에서 살펴본 libbinder.so를 dependency로 가지고 있다.     
 또 Native Framework단에서는 mediaserver binary가 
 
@@ -111,11 +134,23 @@ libmedia.so는 위에서 살펴본 libbinder.so를 dependency로 가지고 있�
 frameworks/native/libs/binder/include/binder/IServiceManager.h   
 frameworks/native/libs/binder/IServiceManager.cpp    
 
+linux kernel에서의 처리는 [이곳](/kdb/android/kernel/#binder)을 참조 한다.  
+
 ## 3. Native Framework
 위에서 살펴보았듯이, system_server나 mediaserver는 앱과는 다른 프로세스이다.   
 바로 이것이 Native Framework로서 App에서 사용한 API의 실제 구현을 처리하는 곳이다.   
 
-### 1. Media
+### 1. servicemanager
+실제 libbinder가 kernel driver의 통신하는 역활을 수행한다.   
+즉 /dev/binder를 이 binary가 열어서, driver와 통신한다.   
+
+source는 여기에서 제공한다.    
+```
+frameworks/native/cmds/servicemanager/service_manager.c
+frameworks/native/cmds/servicemanager/binder.c
+```
+
+### 2. Media
 Android에서는 두 가지의 Media 관련 서비스를 제공한다.   
 첫 번째는 Application Framework를 통해 제공하는 MediaPlaer이다.   
 여기서는 OpenMAX 통합 코덱 및 DRM을 포함하는 미디어 재생엔진 Stagefright를 제공한다.   
