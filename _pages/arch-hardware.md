@@ -15,8 +15,9 @@ layout: single
 		2. [eMMC(Embeded Multi Media Card](#132-emmcembeded-multi-media-card)  
 2. [Mainboard](#mainboard)   
 3. [BUS](#bus)   
-	1. [AMBA](#1amba)   
-	2. [PCI(Peripheral Component Interconnect)](#2pciperipheral-component-interconnect)    
+	1. [AMBA](#amba)   
+	2. [PCI(Peripheral Component Interconnect)](#pciperipheral-component-interconnect)    
+	3. [DMA(Direct Memory Access)](#dmadirect-memory-access)   
 
 # Memory
 
@@ -94,7 +95,7 @@ RAM과 Graphic을 위한 AGP나 PCIe들은 Northbridge chip에 연결된다.
 
 
 # BUS
-## 1.AMBA
+## AMBA
 아직 젊었을 때 MMA를 수련했었는데, 스파링에서 첫 서브미션을 암바로 잡았다.   
 이후로는 오직 스탠딩 길로틴으로만 서브미션 승을 따냈지만...   
 아무튼 개인적으로 익숙한 이 이름은 ARM에서 제공하는 bus protocol이다.    
@@ -112,9 +113,36 @@ ARM에서 설계해서 판매하는 core architecture, GIC와 마찬가지인것
 
 cpu에서 l3 cache를 연결하는 것도 AMBA interconnect이고, dram이나, external l4 cache와 연결하는 것도 바로 AMBA.   
 
-## 2.PCI(Peripheral Component Interconnect)
+## PCI(Peripheral Component Interconnect)
 CPU와 주변 기기를 연결하는 Local Bus의 일종으로 테이터 전송률이 우수하다.   
 CPU와 PCI bus 사이에 System/PCI Bus Bridge를 두어서 Peripheral device에 상관 없이 추상화된 통신을 할 수 있다.   
 그래픽/사운드/네트워크 카드와 SCSI 카드드을 연결하여 사용한다.   
 external interrupt의 경우, I/O APIC로 전달되고, PCI를 타고, NorthBridge로 전달되고,    
 Interrupt controller communication bus를 타고, CPU로 진입하게 된다.   
+
+## DMA(Direct Memory Access)
+간단하게 말해서, Device가 CPU를 타지 않고, Main Memory에 별도의 DMA bus를 타고 접근하는 방식이다.    
+CPU가 MMU를 통해서, Main Memory에 접속하듯이, Device는 DMA bus와 Main Memory에 연결된 IOMMU를 통해 Main Memory에 접속하게 된다.   
+부하가 큰 I/O 작업을 cpu를 타지 않고 수행함으로서 다음의 역활을 수행한다.    
+1. **CPU가 I/O가 끝날 때 까지 대기하지 않도록 해줌**
+2. CPU의 부담을 덜어주는 역활을 수행한다.      
+3. CPU 보다 빠른 접근.
+
+Device----> CPU ------> Main Memory   
+                ------>   
+                ------>   
+와 같은 접근을, DMA를 사용하게 되면,    
+Device-----> CPU -----> DMA Controller ------> Main Memory    
+                                       ------>   
+                                       ------>   
+                <--IRQ-   
+이런 식의 처리로 변경해 주기 때문에,    
+CPU의 부담이 덜어지게 되고,   
+IRQ도 종료 시 한개로 줄어들게 되는 것이다.    
+
+
+DMA Controller가 multi channel을 지원하면, 여러 block의 I/O가 동시에 가능해진다.      
+
+
+
+

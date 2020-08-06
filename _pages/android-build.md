@@ -24,6 +24,10 @@ Android 공식 문서는 다음을 참조하자.
 
 command line에서 lunch를 실행하면, build/envsetup.sh의 function lunch()가 실행된다.   
 
+## image file들 생성.
+
+build/tools/releasetools/build_image.py
+
 
 # location
 
