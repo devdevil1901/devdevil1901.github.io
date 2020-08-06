@@ -132,3 +132,10 @@ make -j16
 모듈 로드는 modprobe를 이용한다.   
 
 최신 버전의 avd에서는 /lib/modules 경로 문제가 발생한다.   
+
+## how to get symbol address
+
+```
+echo 0 > /proc/sys/kernel/kptr_restrict
+cat /proc/kallsyms
+```
