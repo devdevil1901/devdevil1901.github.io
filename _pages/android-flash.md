@@ -9,6 +9,10 @@ layout: single
 # Table of content
 
 # Outline
+Nexus 5.0L phone에서 custom rom형태의 android app 동적 분석 솔루션을 개발 하였었다.   
+그때는 매우 쉽게 flash 하였었는데, 지금은 좀더 복잡 다단해진 면이 있어 정리 한다.   
+재밌는것은 구글 Pixel의 경우, Android Flash tool이라는 [website](https://flash.android.com)에서 가능하다.   
+
 
 # Background
 Image를 phone에 적용하는 방법은 두 가지가 존재 한다.   
@@ -34,6 +38,32 @@ dm-verity가 지원하는 ext4 file system image
 
 # Image
 
+> **Factory Image**</span>  
+공장 출하 상태의 image.  
+bootloader에서 flash된다    
+최신 기기(구글의 경우 2015년 이후)    
+```fastboot flashing unlock```   
+이전 devices들에서는     
+```fastboot oem unlock```   
+구글의 factory image에는 flash-all.sh(or flash-all.bat)이 포함되어 있다.   
+bootloader를 다시 잠그려면, 마찬가지로   
+```
+fastboot flashing lock
+fastboot oem lock
+```    
+
+
+> OTA Image or Full OTA Image   
+OTA(Over-the-air)로 update 하는 image.     
+OAT full image가, 여러 패치등이 포함된 상태이고, 더 쉽고 안전하게 적용 가능하다.      
+**recovery로 flash된다**     
+
+
+> Stock Image
+
+
+## download
+[Google](https://developers.google.com/android/images)   
 
 |image|desc|
 |---|---|
@@ -66,17 +96,17 @@ dm-verity가 지원하는 ext4 file system image
 
 ## Dynamic partition
 
-## Factory Images
-구글의 Pixel과 Nexus의 Factory Image는 [다음](https://developers.google.com/android/images)에서 확인 다운로드 가능.   
-
-full OTA image
 
 ## Fastboot
 bootloader와의 protocol.  
-Ethernet이나, USB를 통해 communication.  
+Ethernet이나, USB를 통해 communication한다.     
+
+fastboot protocol을 사용하기 위해서는 [platform-tools](https://developer.android.com/studio/releases/platform-tools.html?hl=ko)를  
+설치해야한다.   
 
 source 위치는 system/core/fastboot   
 
+사용을 위해서는 adb reboot bootloader로 bootloader로 진입해야 한다.   
 
 ```
 adb reboot-bootloader
@@ -92,6 +122,11 @@ fastboot flashall
 ```
 
 # Rooting
+크게 다음과 같은 과정을 거친다.  
+* bootloader unlock
+* twrp recovery rom을 overwrite  
+* twrp로 magisk를 flash
+
 
 ## Magisk
 
