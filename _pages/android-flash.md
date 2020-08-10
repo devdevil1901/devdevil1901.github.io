@@ -52,15 +52,14 @@ fastboot flashing lock
 fastboot oem lock
 ```    
 
-
 > OTA Image or Full OTA Image   
 OTA(Over-the-air)로 update 하는 image.     
 OAT full image가, 여러 패치등이 포함된 상태이고, 더 쉽고 안전하게 적용 가능하다.      
 **recovery로 flash된다**     
 
-
-> Stock Image
-
+> **Stock rom**  
+제조사에서 특정 device를 위해서 제조한 ROM.  
+즉 custom rom과 반대의 개념의 기본적으로 제공되는 ROM.        
 
 ## download
 [Google](https://developers.google.com/android/images)   
