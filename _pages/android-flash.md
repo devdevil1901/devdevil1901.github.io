@@ -52,10 +52,16 @@ fastboot flashing lock
 fastboot oem lock
 ```    
 
-> OTA Image or Full OTA Image   
+> **OTA Image or Full OTA Image**   
 OTA(Over-the-air)로 update 하는 image.     
 OAT full image가, 여러 패치등이 포함된 상태이고, 더 쉽고 안전하게 적용 가능하다.      
+먼저 모든 OTA를 업데이트 시켜 놓아야 하고, bootloader를 unlock할 필요는 없다.   
 **recovery로 flash된다**     
+```
+adb reboot recovery
+adb devices
+adb sideload ota_file.zip
+```
 
 > **Stock rom**  
 제조사에서 특정 device를 위해서 제조한 ROM.  
@@ -122,9 +128,20 @@ fastboot flashall
 
 # Rooting
 크게 다음과 같은 과정을 거친다.  
+* Phone의 개발자 모드 enable후 OEM Unlocking enable, usb debugging enable
 * bootloader unlock
 * twrp recovery rom을 overwrite  
 * twrp로 magisk를 flash
+
+> **phone정보 파악**    
+먼저 자신의 phone의 정보를 정확하게 파악하는 것이 좋다.    
+|항목|내폰예제|
+|---|---|
+|휴대전화 정보 - 모델 및 하드웨어|SKW-H0|
+|Android 버전|9|
+|IMEI|LGU+(sym slot2)|
+|uname -a|Linux localhost 4.14.83-perf+ #2 SMP PREEMPT Mon Mar 9 17:34:21 CST 2020 aarch64|
+|cat /proc/cpuinfo|Hardware        : Qualcomm Technologies, Inc SM8150로 Snapdragon 855 processor인것을 알수 있다.|
 
 
 ## Magisk
@@ -136,8 +153,15 @@ Magisk Hide로 Xposed를 빼고는, SafetyNet을 우회할 수 있다.
 [공식 Github](https://github.com/topjohnwu/Magisk)를 기준으로 현재 Android 9.0+까지 지원한다.   
 10.0은 아직 지원 안함.  
 
-### How to root
+# Downlaod
 
-apk파일을 다운로드 받아서, 매우 쉽게 rooting할 수 있는 Magisk Manager를 제공한다.  
 [공식사이트](https://magiskroot.net)   
+[삼성롬](https://www.sammobile.com/firmwares/archive/)   
+
+TWRP recovery   
+[SamSung](https://twrp.me/Devices/Samsung/)     
+[Xiaomi](https://twrp.me/Devices/Xiaomi/)    
+[Xiaomi Unofficail](https://unofficialtwrp.com/category/xiaomi/)    
+
+
 
