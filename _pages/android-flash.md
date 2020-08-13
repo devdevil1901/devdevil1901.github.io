@@ -51,27 +51,27 @@ dm-verity가 지원하는 ext4 file system image
 
 > **boot.img**  
 boot.img와 recovery.img의 기본 구조는 다음과 같다.   
- ______________________________________   
-|  ramdisk ( linux compressed cpio format )   
-|______________________________________   
-|  kernel ( compressed kernel )   
-|______________________________________    
-|  header   
-|______________________________________  
-   
- +---------------------------------------+    
- | boot header                           | 1 page   
- +---------------------------------------+    
- | kernel (compressed)                   | n pages   
- +---------------------------------------+    
- | ramdisk  (compressed cpio format)     | m pages   
- +---------------------------------------+    
- | second stage    	                     | o pages   
- +---------------------------------------+    
- | recovery dtbo/acpio                   | p pages   
- +---------------------------------------+    
- | dtb             	                     | q pages   
- +---------------------------------------+    
++----------------------------------------------+   
+|  ramdisk ( linux compressed cpio format )    +  
++----------------------------------------------+   
+|  kernel ( compressed kernel )                |    
++----------------------------------------------+   
+|  header                                      |    
++----------------------------------------------+   
+다음은 memory에서의 layout이다.       
++---------------------------------------+    
+| boot header                           | 1 page   
++---------------------------------------+    
+| kernel (compressed)                   | n pages   
++---------------------------------------+    
+| ramdisk  (compressed cpio format)     | m pages   
++---------------------------------------+    
+| second stage    	                    | o pages   
++---------------------------------------+    
+| recovery dtbo/acpio                   | p pages   
++---------------------------------------+    
+| dtb             	                    | q pages   
++---------------------------------------+    
 
 
 header의 format은 **aosp/system/core/mkbootimg/include/bootimg/bootimg.h**에서 확인할 수 있다.        
