@@ -38,30 +38,60 @@ dm-verity가 지원하는 ext4 file system image
 
 # Image
 
-> **Factory Image**</span>  
-공장 출하 상태의 image.  
-bootloader에서 flash된다    
+Image의 종류에 따라 format과 flash 하는 방식도 다르다.  
+factory image는 bootloader로, ota는 recovery의 sideload로 flash를 해야한다.      
+
+## Factory Image  
+공장 출하 상태의 image로서, bootloader image, radio image, 그리고 update할 image가 포함되어 있다.    
+
+> **bootloader를 unlock**   
+**bootloader를 unlock** 하게되면, 개인정보 보호를 위해 사용자 data가 모두 삭제된다.    
+또한 이동통신사에서 device의 SIM을 잠궜다면 bootloader를 unlock할 수 없다.    
+내 기억으로는 Nexus 5L 까지는 잘 되었고, Pixel 2에서는 막혔던 것으로 기억한다.   
 최신 기기(구글의 경우 2015년 이후)    
 ```fastboot flashing unlock```   
 이전 devices들에서는     
 ```fastboot oem unlock```   
-구글의 factory image에는 flash-all.sh(or flash-all.bat)이 포함되어 있다.   
 bootloader를 다시 잠그려면, 마찬가지로   
 ```
 fastboot flashing lock
 fastboot oem lock
 ```    
 
-> **OTA Image or Full OTA Image**   
-OTA(Over-the-air)로 update 하는 image.     
+> **bootloader flash**   
+bootloader.img를 flash한다.  
+```
+adb reboot bootloader
+fastboot flash bootloader bootloader.img
+fastboot reboot-bootloader
+```   
+
+> **radio image flash**   
+ 공장 출하 상태의 image를 flash한다.    
+ ```
+ fastbot flash radio radio.img
+ fastboot reboot-bootloader
+ ```
+
+> **update image를 flash**    
+boot.img dtbo.img product.img super_empty.img system.img system_other.img vbmeta.img vbmeta_system.img vendor.img등을 포함한,    
+압축파일로 업데이트를 수행한다.    
+```
+fastboot -w update update.zip
+```
+
+## **OTA Image or Full OTA Image**   
+OTA(Over-the-air)로 update 하는 image.  
 OAT full image가, 여러 패치등이 포함된 상태이고, 더 쉽고 안전하게 적용 가능하다.      
 먼저 모든 OTA를 업데이트 시켜 놓아야 하고, bootloader를 unlock할 필요는 없다.   
 **recovery로 flash된다**     
 ```
 adb reboot recovery
 adb devices
-adb sideload ota_file.zip
+adb sideload ota.zip
 ```
+ota.zip에는  payload.bin이 포함되어 있고,   
+
 
 > **Stock rom**  
 제조사에서 특정 device를 위해서 제조한 ROM.  
@@ -104,7 +134,9 @@ adb sideload ota_file.zip
 
 ## Fastboot
 bootloader와의 protocol.  
-Ethernet이나, USB를 통해 communication한다.     
+device가 bootloader mode에서, Ethernet이나, USB를 통해 communication한다.     
+
+
 
 fastboot protocol을 사용하기 위해서는 [platform-tools](https://developer.android.com/studio/releases/platform-tools.html?hl=ko)를  
 설치해야한다.   
@@ -132,6 +164,7 @@ fastboot flashall
 * bootloader unlock
 * twrp recovery rom을 overwrite  
 * twrp로 magisk를 flash
+
 
 > **phone정보 파악**    
 먼저 자신의 phone의 정보를 정확하게 파악하는 것이 좋다.    
