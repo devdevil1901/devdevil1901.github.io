@@ -38,6 +38,50 @@ dm-verity가 지원하는 ext4 file system image
 
 # Image
 
+## Layout
+
+|image|desc|
+|---|---|
+|ramdisk.img|root file system(/)은 여기에 포함되어 있었지만<br/>Android 10에서 부터 system.img에 병합되었다.<br/>BoardConfig.mk에서 BOARD_BUILD_SYSTEM_ROOT_IMAGE가 true인 것 처럼 생성된다.<br/>BOARD_BUILD_SYSTEM_ROOT_IMAGE는 항상 false로 해야 한다. 이제 이 옵션은 ramdisk를 사용하지 않고,<br/>직접 system.img를 mount하는 것으로 동작한다.<br/>|
+|boot.img|kernel + ramdisk|
+|recovery.img|kernel + ramdisk|
+|system.img|File system image<br/>기존에 /system Android 10 부터는  /|
+|userdata.img|/data를 위한 file system|
+|cache.img|/cache를 위한 file system|
+
+> **boot.img**  
+boot.img와 recovery.img의 기본 구조는 다음과 같다.   
+ ______________________________________   
+|  ramdisk ( linux compressed cpio format )   
+|______________________________________   
+|  kernel ( compressed kernel )   
+|______________________________________    
+|  header   
+|______________________________________  
+   
+ +---------------------------------------+    
+ | boot header                           | 1 page   
+ +---------------------------------------+    
+ | kernel (compressed)                   | n pages   
+ +---------------------------------------+    
+ | ramdisk  (compressed cpio format)     | m pages   
+ +---------------------------------------+    
+ | second stage    	                     | o pages   
+ +---------------------------------------+    
+ | recovery dtbo/acpio                   | p pages   
+ +---------------------------------------+    
+ | dtb             	                     | q pages   
+ +---------------------------------------+    
+
+
+header의 format은 **aosp/system/core/mkbootimg/include/bootimg/bootimg.h**에서 확인할 수 있다.        
+
+|v0|v1|v2|
+|---|---|---|
+|
+
+
+
 Image의 종류에 따라 format과 flash 하는 방식도 다르다.  
 factory image는 bootloader로, ota는 recovery의 sideload로 flash를 해야한다.      
 
@@ -90,8 +134,43 @@ adb reboot recovery
 adb devices
 adb sideload ota.zip
 ```
-ota.zip에는  payload.bin이 포함되어 있고,   
-
+ota.zip에는  payload.bin이 포함되어 있다.    
+```
+$ AOSP/system/update_engine/scripts/payload_info.py ./payload.bin
+Payload version:         	2
+Manifest length:         	105508
+Number of partitions:    	18
+  Number of "boot" ops:  	32
+  Number of "system" ops:	383
+  Number of "vbmeta" ops:	1
+  Number of "dtbo" ops:  	4
+  Number of "product" ops:   1059
+  Number of "vbmeta_system" ops: 1
+  Number of "vendor" ops:	309
+  Number of "abl" ops:   	1
+  Number of "aop" ops:   	1
+  Number of "devcfg" ops:	1
+  Number of "hyp" ops:   	1
+  Number of "keymaster" ops: 1
+  Number of "qupfw" ops: 	1
+  Number of "tz" ops:    	2
+  Number of "uefisecapp" ops: 1
+  Number of "xbl" ops:   	2
+  Number of "xbl_config" ops: 1
+  Number of "modem" ops: 	41
+Block size:              	4096
+Minor version:           	0
+```
+이 안에 다양한 image파일들을 포함하고 있는 것을 확인할 수 있다.   
+image 파일들을 추출하기 위해서는 [payload_dumper](https://www.droidmirror.com/download/download-payload_dumper-zip/)를 사용한다.    
+```
+python payload_dumper.py ./payload.bin
+boot
+system
+vbmeta
+dtbo
+..
+```
 
 > **Stock rom**  
 제조사에서 특정 device를 위해서 제조한 ROM.  
@@ -99,34 +178,6 @@ ota.zip에는  payload.bin이 포함되어 있고,
 
 ## download
 [Google](https://developers.google.com/android/images)   
-
-|image|desc|
-|---|---|
-|ramdisk.img|root file system(/)은 여기에 포함되어 있었지만<br/>Android 10에서 부터 system.img에 병합되었다.<br/>BoardConfig.mk에서 BOARD_BUILD_SYSTEM_ROOT_IMAGE가 true인 것 처럼 생성된다.<br/>BOARD_BUILD_SYSTEM_ROOT_IMAGE는 항상 false로 해야 한다. 이제 이 옵션은 ramdisk를 사용하지 않고,<br/>직접 system.img를 mount하는 것으로 동작한다.<br/>|
-|boot.img|kernel + ramdisk|
-|recovery.img|kernel + ramdisk|
-|system.img|File system image<br/>기존에 /system Android 10 부터는  /|
-|userdata.img|/data를 위한 file system|
-|cache.img|/cache를 위한 file system|
-
-대략적인 memory에서의 layout은 다음과 같다.  
-<pre>
- ______________________________________
-|  bootloader
-|______________________________________
-|  misc(optional - used during OTA update)
-|______________________________________
-|  boot(kernel + ramdisk)
-|______________________________________
-|  recovery (kernel+ ramdisk)
-|______________________________________
-|  /system (read-only)
-|______________________________________
-|  /data (read/write)
-|______________________________________
-|  /cache
-|______________________________________
-</pre>
 
 
 ## Dynamic partition
