@@ -51,6 +51,7 @@ dm-verity가 지원하는 ext4 file system image
 
 > **boot.img**  
 boot.img와 recovery.img의 기본 구조는 다음과 같다.   
+<pre>
 +----------------------------------------------+   
 |  ramdisk ( linux compressed cpio format )    +  
 +----------------------------------------------+   
@@ -72,7 +73,7 @@ boot.img와 recovery.img의 기본 구조는 다음과 같다.
 +---------------------------------------+    
 | dtb             	                    | q pages   
 +---------------------------------------+    
-
+</pre>
 
 header의 format은 **aosp/system/core/mkbootimg/include/bootimg/bootimg.h**에서 확인할 수 있다.        
 
