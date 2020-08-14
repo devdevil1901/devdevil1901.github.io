@@ -47,18 +47,33 @@ finished. total time: 0.007s
 ```
 
 > **relace recovery**   
+flash recovery를 이용.   
+```
 fastboot flash recovery new_recovery.img    
 fastboot reboot   
+```
 
+> **다양한 mode로 재부팅**   
+일반적인 부팅인 rom으로 부팅시,   
 ```
-fastboot getvar
-fastboot continue
 fastboot reboot
-fastboot erase <boot, recovery, system, userdata, cache중의 하나>
-fastboot flash <boot, recovery, system, userdata, cache중의 하나> 
-fastboot flash <boot, recovery, system, userdata, cache중의 하나> <$ANDROID_PRODUCT_OUT에 있는 image>
-fastboot flashall
 ```
+bootloader로 재 부팅    
+```
+fastboot reboot-bootloader
+```
+recovery로   
+```
+fastboot reboot recovery
+```
+**특정 image로 부팅**   
+```
+fastboot boot image.img
+```
+
+> **bootloader unlock**   
+flashing unlock and flashing unlock_critical   
+
 
 
 ## Update
