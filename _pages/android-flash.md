@@ -15,11 +15,53 @@ Nexus 5.0L phone에서 custom rom형태의 android app 동적 분석 솔루션�
 
 
 # Background
-Image를 phone에 적용하는 방법은 두 가지가 존재 한다.   
-하나는 flash를 통해 raw level로 Image를 교체하는 방법으로, Factory image와 custom rom을 가지고 image를 업데이트 시키는 것이다.   
-다른 하나는 OTA(Over-The-Air)를 통해서 업데이트를 하는 방법으로 Full OTA Image가 사용된다.   
 
-# Update
+## Fastboot
+bootloader와의 protocol.  
+device가 bootloader mode에서, Ethernet이나, USB를 통해 communication한다.     
+
+fastboot protocol을 사용하기 위해서는 [platform-tools](https://developer.android.com/studio/releases/platform-tools.html?hl=ko)를  
+설치해야한다.   
+
+source 위치는 system/core/fastboot   
+사용을 위해서는 adb reboot bootloader로 bootloader로 진입해야 한다.   
+
+> **연결된 device 확인**   
+devices 명령을 사용한다.   
+```
+$ fastboot devices
+4bb11ec2        fastboot
+```
+
+> **bootloader 정보 확인**
+oem device-info를 사용한다.   
+```
+$ fastboot oem device-info
+(bootloader) Verity mode: true
+(bootloader) Device unlocked: true
+(bootloader) Device critical unlocked: false
+(bootloader) Charger screen enabled: false
+(bootloader) Console enabled: false
+OKAY [  0.007s]
+finished. total time: 0.007s
+```
+
+> **relace recovery**   
+fastboot flash recovery new_recovery.img    
+fastboot reboot   
+
+```
+fastboot getvar
+fastboot continue
+fastboot reboot
+fastboot erase <boot, recovery, system, userdata, cache중의 하나>
+fastboot flash <boot, recovery, system, userdata, cache중의 하나> 
+fastboot flash <boot, recovery, system, userdata, cache중의 하나> <$ANDROID_PRODUCT_OUT에 있는 image>
+fastboot flashall
+```
+
+
+## Update
 OTA update를 사용한다.  
 OS, read only App, 시간대 규칙등을 업그레이드 하기 위한 것.   
 A/B Update 방식을 사용하는데, 각 파티션의 두개의 사본인 A와 B가 있고, A는 사용하면서 B에다가 업데이트 수행하는 식으로 동작한다.   
@@ -92,7 +134,9 @@ factory image는 bootloader로, ota는 recovery의 sideload로 flash를 해야�
 > **bootloader를 unlock**   
 **bootloader를 unlock** 하게되면, 개인정보 보호를 위해 사용자 data가 모두 삭제된다.    
 또한 이동통신사에서 device의 SIM을 잠궜다면 bootloader를 unlock할 수 없다.    
+Samsung등의 phone에서는 fastboot command는 사용할 수 없고, Odin을 써야한다.    
 내 기억으로는 Nexus 5L 까지는 잘 되었고, Pixel 2에서는 막혔던 것으로 기억한다.   
+
 최신 기기(구글의 경우 2015년 이후)    
 ```fastboot flashing unlock```   
 이전 devices들에서는     
@@ -135,7 +179,8 @@ adb reboot recovery
 adb devices
 adb sideload ota.zip
 ```
-ota.zip에는  payload.bin이 포함되어 있다.    
+ota.zip에는  payload.bin이 포함되어 있다.   
+AOSP안의 python(2.x) script로 품고 있는 image들을 확인할 수 있다.   
 ```
 $ AOSP/system/update_engine/scripts/payload_info.py ./payload.bin
 Payload version:         	2
@@ -162,8 +207,8 @@ Number of partitions:    	18
 Block size:              	4096
 Minor version:           	0
 ```
-이 안에 다양한 image파일들을 포함하고 있는 것을 확인할 수 있다.   
 image 파일들을 추출하기 위해서는 [payload_dumper](https://www.droidmirror.com/download/download-payload_dumper-zip/)를 사용한다.    
+
 ```
 python payload_dumper.py ./payload.bin
 boot
@@ -176,39 +221,6 @@ dtbo
 > **Stock rom**  
 제조사에서 특정 device를 위해서 제조한 ROM.  
 즉 custom rom과 반대의 개념의 기본적으로 제공되는 ROM.        
-
-## download
-[Google](https://developers.google.com/android/images)   
-
-
-## Dynamic partition
-
-
-## Fastboot
-bootloader와의 protocol.  
-device가 bootloader mode에서, Ethernet이나, USB를 통해 communication한다.     
-
-
-
-fastboot protocol을 사용하기 위해서는 [platform-tools](https://developer.android.com/studio/releases/platform-tools.html?hl=ko)를  
-설치해야한다.   
-
-source 위치는 system/core/fastboot   
-
-사용을 위해서는 adb reboot bootloader로 bootloader로 진입해야 한다.   
-
-```
-adb reboot-bootloader
-
-fastboot devices
-fastboot getvar
-fastboot continue
-fastboot reboot
-fastboot erase <boot, recovery, system, userdata, cache중의 하나>
-fastboot flash <boot, recovery, system, userdata, cache중의 하나> 
-fastboot flash <boot, recovery, system, userdata, cache중의 하나> <$ANDROID_PRODUCT_OUT에 있는 image>
-fastboot flashall
-```
 
 # Rooting
 크게 다음과 같은 과정을 거친다.  
@@ -238,15 +250,28 @@ Magisk Hide로 Xposed를 빼고는, SafetyNet을 우회할 수 있다.
 [공식 Github](https://github.com/topjohnwu/Magisk)를 기준으로 현재 Android 9.0+까지 지원한다.   
 10.0은 아직 지원 안함.  
 
-# Downlaod
+# Reference  
+> **source**
+[TWRP source](https://github.com/omnirom/android_bootable_recovery/)   
+[Msgisk](https://github.com/topjohnwu/Magisk)  
 
-[공식사이트](https://magiskroot.net)   
+> **Magisk**  
+[Modules](https://magiskroot.net/)  
+
+> **stock rom sites**   
 [삼성롬](https://www.sammobile.com/firmwares/archive/)   
 
-TWRP recovery   
+> **recovery**   
 [SamSung](https://twrp.me/Devices/Samsung/)     
 [Xiaomi](https://twrp.me/Devices/Xiaomi/)    
 [Xiaomi Unofficail](https://unofficialtwrp.com/category/xiaomi/)    
+
+> **device별 flashing tool**   
+* Qualcomm Sanpdragon chipsets를 위한 QPST   
+* Samsung devices들을 위한, Odin   
+* Xiaomi devices들을 위한 Mi Flashtool   
+* MediaaTek Chipsets을 위한 SP Flash Tool   
+* Speedtrum Chipsets을 위한 SPD Flashtool    
 
 
 
