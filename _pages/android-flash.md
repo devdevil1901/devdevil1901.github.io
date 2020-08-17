@@ -128,7 +128,7 @@ dm-verity가 지원하는 ext4 file system image
 
 # Image
 
-## Layout
+## Type
 
 |image|desc|
 |---|---|
@@ -138,6 +138,9 @@ dm-verity가 지원하는 ext4 file system image
 |system.img|File system image<br/>기존에 /system Android 10 부터는  /|
 |userdata.img|/data를 위한 file system|
 |cache.img|/cache를 위한 file system|
+
+
+## Layout
 
 > **boot.img**  
 boot.img와 recovery.img의 기본 구조는 다음과 같다.   
