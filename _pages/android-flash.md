@@ -66,7 +66,8 @@ recovery로
 ```
 fastboot reboot recovery
 ```
-**특정 image로 부팅**   
+
+> **특정 image로 부팅**   
 ```
 fastboot boot image.img
 ```
@@ -74,7 +75,39 @@ fastboot boot image.img
 > **bootloader unlock**   
 flashing unlock and flashing unlock_critical   
 
+> **oem command**   
+제조사 마다 다른 구현의 명령어들이다.  
+예를 들면,   
+oem device-info   
+oem oem get_imei1   
+제조사의 구현이기 때문에, 일반적인 명령도 특정 device에서는 안 먹히는 경우가 많다.    
+이런 경우, fastboot를 막아 놓지 않았다면, oem으로 별도로 구현되어 있는 경우도 많다.    
+그 예로 샤오미의 Blackshark2 pro에서는  
+다음과 같이 bootloader를 unlock 해야 한다.   
+```
+$ adb reboot bootload
+* daemon not running. starting it now on port 5037 *
+* daemon started successfully *
 
+$ fastboot oem bs_unlock
+OKAY [  0.020s]
+finished. total time: 0.020s
+
+$ fastboot oem bs_unlock_critical
+...
+OKAY [  0.020s]
+finished. total time: 0.020s
+
+fastboot oem device-info
+...
+(bootloader) Verity mode: true
+(bootloader) Device unlocked: true
+(bootloader) Device critical unlocked: true
+(bootloader) Charger screen enabled: false
+(bootloader) Console enabled: false
+OKAY [  0.008s]
+finished. total time: 0.008s
+```
 
 ## Update
 OTA update를 사용한다.  
@@ -149,8 +182,13 @@ factory image는 bootloader로, ota는 recovery의 sideload로 flash를 해야�
 > **bootloader를 unlock**   
 **bootloader를 unlock** 하게되면, 개인정보 보호를 위해 사용자 data가 모두 삭제된다.    
 또한 이동통신사에서 device의 SIM을 잠궜다면 bootloader를 unlock할 수 없다.    
-Samsung등의 phone에서는 fastboot command는 사용할 수 없고, Odin을 써야한다.    
-내 기억으로는 Nexus 5L 까지는 잘 되었고, Pixel 2에서는 막혔던 것으로 기억한다.   
+Samsung등의 phone에서는 fastboot command는 사용할 수 없고, device 별 전용 flash tool을 사용해야 한다.    
+* Qualcomm Sanpdragon chipsets를 위한 QPST   
+* Samsung devices들을 위한, Odin   
+* Xiaomi devices들을 위한 Mi Flashtool   
+* MediaaTek Chipsets을 위한 SP Flash Tool   
+* Speedtrum Chipsets을 위한 SPD Flashtool   
+내 기억으로는 Nexus 5L 까지는 잘 되었고, Pixel 2에서는 초반에 한정 빼고는 막혔던 것으로 기억한다.   
 
 최신 기기(구글의 경우 2015년 이후)    
 ```fastboot flashing unlock```   
@@ -161,6 +199,8 @@ bootloader를 다시 잠그려면, 마찬가지로
 fastboot flashing lock
 fastboot oem lock
 ```    
+
+
 
 > **bootloader flash**   
 bootloader.img를 flash한다.  
@@ -281,12 +321,7 @@ Magisk Hide로 Xposed를 빼고는, SafetyNet을 우회할 수 있다.
 [Xiaomi](https://twrp.me/Devices/Xiaomi/)    
 [Xiaomi Unofficail](https://unofficialtwrp.com/category/xiaomi/)    
 
-> **device별 flashing tool**   
-* Qualcomm Sanpdragon chipsets를 위한 QPST   
-* Samsung devices들을 위한, Odin   
-* Xiaomi devices들을 위한 Mi Flashtool   
-* MediaaTek Chipsets을 위한 SP Flash Tool   
-* Speedtrum Chipsets을 위한 SPD Flashtool    
+  
 
 
 
