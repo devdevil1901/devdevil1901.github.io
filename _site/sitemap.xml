@@ -61,6 +61,9 @@
 <loc>http://devdevil1901.github.io/kdb/android/structure/</loc>
 </url>
 <url>
+<loc>http://devdevil1901.github.io/kdb/android/ui/</loc>
+</url>
+<url>
 <loc>http://devdevil1901.github.io/kdb/android/</loc>
 </url>
 <url>
@@ -161,6 +164,9 @@
 </url>
 <url>
 <loc>http://devdevil1901.github.io/kdb/linux/</loc>
+</url>
+<url>
+<loc>http://devdevil1901.github.io/kdb/security/hook/</loc>
 </url>
 <url>
 <loc>http://devdevil1901.github.io/kdb/security/re/</loc>

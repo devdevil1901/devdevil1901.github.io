@@ -10,6 +10,7 @@ layout: single
 1. [Outline](#outline)       
 	1. [Glossary](#1-glossary)      
 	2. [Classification](#2-classification)      
+	3. [FIQ)(#3-FIQ](#3-fiq)    
 2. [Handling](#handling)    
 	1. [register handler](#1-register-handler)   
 	2. [handling process](#2-handling-process)   
@@ -104,6 +105,22 @@ ENTRY(vectors)
 ```
 
 [More Detail](https://developer.arm.com/docs/den0024/a/aarch64-exception-handling)     
+
+## 2. FIQ
+Fast란 이름이 붙은 만큼 좀 더 빠른 처리를 위하는 Hardware Interrupt를 위한 Interrupt이다.    
+IRQ보다 priority가 높기 때문에 IRQ를 handling 하는 도중에라도 선점해서 먼저 처리될 수 있다는 말.   
+과거 32bit ARM에서는 vector entry 마지막에 위치해서 jump가 아닌 작은 code를 넣을 수 있게 하고,   
+IRQ가 r13과 r14를 이용하는 반면, r8~r14의 7개의 register를 사용하게 하는 등의 속도 향상 부분도 존재했다.   
+
+ARM Architecture에서는 TEE와 큰 연관성이 있다.   
+FIQ는 **linux kernel을 위한 것이 아니라, TEE의 secure kernel을 위한 것**.   
+GIC v2에서는 group 0 bus와 group 1 bus가 있어서, group 0 bus는 secure mode용, group1은 non-secure였다.   
+group 0 즉 secure mode를 통해서만 FIQ가 전달될 수 있었다.    
+즉 TEE의 secure kernel 전용의 interrupt로서 사용되었던 것이다.    
+
+GIC v3로 오면서 non-secure group 1과 secure group 0, 1로 secure group이 분리되었고,   
+설정에 따라서 el0, el1, el2, el3의 secure kernel과 non-secure kernel에 FIQ를 보낼 수 있도록 하였다.    
+그렇지만, FIQ가 secure kerenl 즉 Trusted OS 쪽으로 전달되는 것은 동일하다.     
 
 # Handling
 ## 1. register handler

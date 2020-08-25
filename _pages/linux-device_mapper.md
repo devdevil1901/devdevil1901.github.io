@@ -14,8 +14,6 @@ Device Mapper는 block device단의 추상화를 제공하는 kernel단 framewor
 block device는 block단위 암호화 방식에서 처럼 16byte와 같은 한 block단위로 I/O를 하는 device를 의미한다.   
 harddisk에 접근을 하기 위해서 Random access를 제공한다.(이것이 character device와 가장 큰 차이)    
    
-
-
 Device Mapper는 물리적인 block device를 가상의 block device로 mapping 하는 kernel framework이다.      
 virtual device로의 접근을 실제 물리 device로 device mapper가 전달해 주는 역활을 수행한다.   
 때문에 device mapper 단에서 물리적 disk 2개를 하나의 논리 가상 block device로 묶을 수도 있고,   
@@ -48,31 +46,52 @@ Windows의 BitLocker, Apple의 FileVault와 같은 기능으로 전체 디스크
 drivers/md/dm-crypt.c에 구현되어 있다.   
 
 ## dm-verity
-read-only block device의 각 block 단위의 무결성 검사를 수행한다.   
+Android 4.4 부터 적용된 기술,  read-only block device의 각 block 단위의 무결성 검사를 수행한다.   
 kernel crypto API에 의해 제공되는 hash 값을 이용한다.   
 이를 위해서 signed meta-data와 hash tree를 사용한다.   
-실제로 block을 접근할 때만 검증한다.   
+성능 향상을 위해서, 실제로 block을 접근할 때만 검증한다.   
 block을 읽을 때 병렬로 hashing해 놓고, 확인한다.   
 hash를 비교해서 틀리면 I/O error를 생성한다.    
 
-
-Android에서는 4.4에서 도입되었다.   
-
-
 다음 과정을 수행한다.   
-1. ext4 시스템 이미지를 생성합니다.
-2. 생성한 이미지의 해시 트리를 생성합니다.
-3. 해시 트리의 dm-verity 테이블을 빌드합니다.
-4. dm-verity 테이블에 서명하여 테이블 서명을 생성합니다.
-5. verity 메타데이터 번들로 dm-verity 테이블 및 테이블 서명을 묶습니다.
-6. 시스템 이미지, verity 메타데이터 및 해시 트리를 연결합니다.
+1. ext4 시스템 이미지를 생성.
+2. 생성한 이미지의 해시 트리를 생성.
+3. 해시 트리의 dm-verity 테이블을 빌드.
+4. dm-verity 테이블에 서명하여 테이블 서명을 생성.
+5. verity 메타데이터 번들로 dm-verity 테이블 및 테이블 서명을 묶음.
+6. 시스템 이미지, verity 메타데이터 및 해시 트리를 연결.
 
+
+android 10의 avd image이다.   
+```
+fdisk -l ~/Android/Sdk/system-images/android-29/default/x86_64/system.img
+Disk /home/devdevil/Android/Sdk/system-images/android-29/default/x86_64/system.img: 3 GiB, 3232759808 bytes, 6313984 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: B77FCD51-0AF8-4D1B-9760-8A8F48BDFF0E
+
+Device                                                                         Start     End Sectors Size Type
+/home/devdevil/Android/Sdk/system-images/android-29/default/x86_64/system.img1  2048    4095    2048   1M Linux filesystem
+/home/devdevil/Android/Sdk/system-images/android-29/default/x86_64/system.img2  4096 6311935 6307840   3G Linux filesystem
+```
+
+실제 phone에서도, 다음과 같이 android에서 device mapper를 이용해서, 추상화 되어 있는 partition을 확인할 수 있다.   
 
 ```
+$ ls -l /dev/device-mapper                                                                                                                                                                                                                                         
+crw------- 1 root root 10, 236 1971-04-28 18:29 /dev/device-mapper
+
+$ df -h                                                                                                                                                                                                                                                            
+/dev/block/dm-1 992M  876M  100M  90% /vendor
+/dev/block/dm-2 107G  7.4G   99G   8% /data
+
 /dev/block/dm-2               2.4G  2.3G   64M  98% /
 /dev/block/dm-1               124M  123M  444K 100% /vendor
 ```
 
+/vendor, /, /data 등 device마다 차이가 있는 것을 확인할 수 있다.   
 
 
 

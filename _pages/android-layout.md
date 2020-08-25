@@ -9,6 +9,8 @@ layout: single
 # Table of content
 
 # Outline
+Hardware Abstraction Layer 즉 HAL은 Application 개발자가 Hardware는 모르고 개발 할 수 있도록 추상화 해 놓은 것이다.   
+
 
 # Android System
 Android System을 이해하기 위해서는 전체 Layout을 이해해야 한다.   

@@ -19,3 +19,4 @@ layout: single
 11. [Android Emulator](/kdb/android/emulator/)   
 12. [Android Linker](/kdb/android/linker/)   
 13. [Android Structure](/kdb/android/structure/)   
+14. [GUI](/kdb/android/ui/)   

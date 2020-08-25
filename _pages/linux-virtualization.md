@@ -7,11 +7,13 @@ layout: single
 ---
 
 # Table of content
-1. [Outline](#outline)  
-2. [Type](#type)   
-3. [KVM(Kernel based Virtual Machine)](#kvmkernel-based-virtual-machine)   
-4. [CPU](#cpu)   
-5. [QEMU](#qemu)   
+* [Outline](#outline)  
+* [Type](#type)   
+* [KVM(Kernel based Virtual Machine)](#kvmkernel-based-virtual-machine)   
+* [CPU](#cpu)   
+* [QEMU](#qemu)   
+	* [Sparse](#sparse)    
+* [Cuttlefish]($cuttlefish)    
 
 # Outline 
 이전 보안팀에 있을 때, Host OS Type Virtualization 솔루션에 대한 모의해킹을 한적이 있었는데,   
@@ -121,6 +123,7 @@ linux에서 svm이 enable 되었는지 확인하려면,
 $ kvm-ok
 ```
 만약 실패했고, cpu가 AMD라면 UEFI/BIOS에서 SVM을 enable 시켜줘야 한다. 
+그리고 /dev/kvm에 권한도 부여해 줘야 한다.   
 
 # CPU  
 Intel은 HAXM(Hardware Accelerated Execution Manager),   
@@ -142,4 +145,29 @@ Android emulator에서 사용하는 방식은  full emulation(system emulation�
 Optional하게 kvm과 같은 in-kernel accelerator를 쓸수있다.     
 SMP를 지원하는데 지금은 하나이상의 cpu를 쓰려면, in-kernel accelerator를 써야한다.   
 -kvm flag를 사용하는 in-kernel accelerator는 host os와 guest os가 동일한 architecture인 경우 vm을 가속할 수 있다   
+
+## Sparse
+QEMU의 file system format이다.   
+QEMU의 raw imge는 sparse type과 non-sparse type이 존재한다.   
+sparse에서는 빈 공간을 header를 포함하여 압축하는 방식이다. 즉 header에는 0x00이 얼마나 있는지가 포함되어 있다.    
+[tool](https://github.com/anestisb/android-simg2img)을 이용해서, sparse raw를 non sparse raw로 변환할 수 있다.   
+다음과 같이 qemu-img command를 이용할 수도 있다.   
+```
+qemu-img convert -O raw system.img system.img.raw
+devdevil@devdevil-System-Product-Name:~/fixImage$ ls -l
+합계 5379872
+-rw-r--r-- 1 devdevil devdevil 2796552192  2월  4 17:48 system.img
+-rw-r--r-- 1 devdevil devdevil 2796552192  2월  5 11:05 system.img.raw
+drwxr-xr-x 2 devdevil devdevil       4096  2월  4 20:28 system_img
+```
+
+# Cuttlefish  
+다음 살펴 봐야 한다.   
+https://github.com/google/android-cuttlefish
+https://www.linuxplumbersconf.org/event/2/contributions/269/attachments/56/63/Kernel_Hacking_with_Cuttlefish.pdf
+https://ci.android.com/builds/branches/aosp-master/grid?
+
+Best guide
+https://sites.google.com/junsun.net/how-to-run-cuttlefish
+https://android.googlesource.com/device/google/cuttlefish/
 

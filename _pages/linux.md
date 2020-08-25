@@ -21,4 +21,8 @@ layout: single
 10. [System call](/kdb/linux/system_call/)
 11. [Virtualization](/kdb/linux/vm/)
 
+# References    
+[최신 commit 확인](https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git)    
+
+
 

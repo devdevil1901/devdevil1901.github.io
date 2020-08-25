@@ -214,8 +214,8 @@ $ xxd dtb | head
 ```
 
 ## 4. overlay
-basic dt와 overlay dt 두가지 형식이 존재gksek.   
-이 두개가 합쳐져서 사용되기 땜누에 호환성도 중요한 부분.    
+basic dt와 overlay dt 두가지 형식이 존재한다.   
+이 두개가 합쳐져서 사용되기 때문에 호환성도 중요한 부분이다.    
 두 dt 모두, bootloader가 접근할 수 있는 partition에 위치해야 한다.   
 
 **basic dt**는 SOC 전용 부분 및 기본 구성에 대한 것으로 SOC 공급업체에 의해서 제공된다.   

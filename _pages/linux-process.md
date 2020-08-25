@@ -84,9 +84,8 @@ pid 4683's current affinity list: 0-15
 ```
 
 # Thread
-Process는 두가지 방식으로 생성한다.     
-heavy-weight creation으로 부모의 task info, fs, tty, fs, mm, signal을 전부 글대로 복사하는 방식(legacy)      
-copy-on-write로 실재 사용시에 복사되는 방식.(current)        
+Process에는 Heavy-Weight Creation으로 부모의 task info, fs, tty, fs, mm, signal을 전부 글대로 복사하는 방식과   
+copy-on-write로 실재 사용시에 복사되는 방식 두 가지가 존재한다.          
 (vfork()는 논외로)     
 여기서 Thread는 light-weight creation으로 최소한 만을복사한다.    
 물론 Process는 별도의 가상메모리 공간만을 가지고, Thread는 같은 Process내에서 별도의 stack및 TLS를 가지고 하는      

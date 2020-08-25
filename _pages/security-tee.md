@@ -7,9 +7,16 @@ layout: single
 ---
 
 # Outline
-작성중이다.   
-영국의 TEE 관련 회사의 제품을 글로벌로 서비스되는 앱에 도입 검토를 한적이 있었다.   
+ARM에서 ARM Trustzone API를 개발하다가 일이 커지자 GlobalPlatform과 파트너쉽을 맺어서 TEE API를 만들었다.   
+(GlobalPlatform에는 Visa, Mastercard, NTT, ARM, Intel, AMD, Hp 가 포함되어 있다.)
+즉 어떤 Trusted OS(TEE 쪽 kernel)가 올라가던지 호환 가능한 API를 만든것.    
+ARM의 AP에서 Trustzone extension, secure signal이 추가된 AMBA bus infrastructure 등으로 구성된다.   
 
+TA(Trusted Application)는 TEE에서 실행 중인 Application을 의미한다.   
+CA(Client Application)은 Rich OS에서 실행 중인 Application.    
+CA는 TAC(Trusted Application Connector)를 통해 TA와 통신한다.    
+TEE에는 ARM Trustzone, Intel TXT, AMD Secure Execution Environment 등이 존재한다.   
+cortext-a 시리즈, M23, M33 시리즈 등에 적용 가능하다고 함.    
 # TEE
 
 # Trusty
