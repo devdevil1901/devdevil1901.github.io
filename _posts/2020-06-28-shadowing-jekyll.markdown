@@ -6,9 +6,10 @@ published : false
 categories: jekyll update
 ---
 
-# [Kim Jong-Un in coma with North Korea passing power to sister](https://www.youtube.com/watch?v=-wk3i_zPQjY)   
-according to reports north korean **supreme** leader kim jong-un's health  
-is deteriorating as claimed by a former aide to south korea's late president kim dejung    
-according to chang's song men the north korean leader is in a coma.    
-His sister kim yo zhong has been recognized as second in command within north korea's power structure.   
-she has been reportedly given the authority of managing relations with the united states and south korea as per china the power dis restructuring
+# [Powerful Ancient Sanctuary Found in Greece](https://www.youtube.com/watch?v=XaAQqUdvEdo)   
+ Delphi, Greece.   
+ Near the **Gulf** of Corinth, on the **slopes** of Mount Parnassus,    
+ a religious **shrine**, known as the Sanctuary of Apollo, was established sometime before 1200 BC.      
+ It was here that the legendary Oracle of Delphi, a **succession** of priestesses of Apollo, **prophesied** for the people of Greece.    
+ According to the Greek author Plutarch, the Oracle would enter a small chamber in the Temple of Apollo, take her seat on a tripod,
+ and **inhale** sweet-smelling vapors, inducing a trance-like state from which she could communicate with the gods.   
