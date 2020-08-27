@@ -112,7 +112,11 @@ And the we have these ancient obelisks that were at one point.
 |granite|그레닛|화강암||
 |in a sense||어떤 의미에서는|obelisks themselves are in a sense a crystal tower|
 |apparently|어페런니|명백히||
-
+|meanwhile||그동안에||
+|rationalism|레셔널리즘|합리주의|In Bavaria new ideals of rationalism, religious freedom and universal human rights competed with the Catholic church's heavy influence over public affairs.|
+|secular|세큘러|세속적인||
+|frustrate|실망시키다<br/>실망시키는|continue to be frustrated|
+|shine|샬인|빛나는|that would shine a light on the shortcomings of the Church's ideology.|
 
 
 
