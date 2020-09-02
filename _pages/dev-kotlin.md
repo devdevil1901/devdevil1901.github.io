@@ -49,6 +49,10 @@ kotlin {
         }
     }
 ```
+이때 가각의 main들의 위치는     
+src/commonMain   
+src/desktopMain    
+이런 식이 된다.   
 
 즉 platform 별도 구현해야 할 function과 공통 로직을 분리하게되는데,    
 commonMain()에서 expect keyword를 사용했다면, 하위 Main들에서 이를 각각 구현해주어야 하고,    
@@ -70,6 +74,7 @@ actual fun souldImplemenatMe() {
 multiplatform에서는 주요한 target shortcut이 미리 내장되어 있다.     
 이런 target에는 ios, watchos, tvos등이 있고,    
 ios target shortcut에는 iosArm64, iosX64와 같은 target들이 내장되어 있다.   
+(각각 iosMain, iosArm64Main, iosX64Main을 지닌고 있다.)    
 이런 hierarchical한 구조를 사용하고 싶다면, gradle.properties에 다음을 명시해야 한다.    
 ```
 kotlin.mpp.enableGranularSourceSetsMetadata=true
@@ -89,14 +94,20 @@ kotlin {
 ```
 이런식으로 해준다.   
 
+platform dependent한 library들은 iosArm64나 iosX64에는 적용되지 않고,    
+부모인 iosMain에만 적용 가능하다.   
+부모에 적용한 library를 자식들에서 사용하게 하려면, **gralde.properties**에 다음을 추가해 주도록 한다.    
+```
+kotlin.mpp.enableGranularSourceSetsMetadata=true
+kotlin.native.enableDependencyPropagation=false
+```
+
 좀더 상세한 내용은 [이곳](https://kotlinlang.org/docs/reference/mpp-intro.html)을 참조하자.       
 
-## Practice
 
-IntelliJ에서 Kotlin-Multiplatform Library나 Kotlin-Mobile Android/iOS, Kotlin-Mobile Shared Library를 선택한다.     
-
-먼저 Kotlin-Mobile Android/iOS를 살펴보도록 하자.    
-
+## Development
+Intellij에서 project를 생성하게 되면,    
+Mobile Application, Mobile Library, Application, Library, Native Application, Full-Stack Web Application 등을 선택할 수 있다.    
 
 ## 정리중.
 뭔소리인지는 모르겠지만, 프로젝트를 export하는 구조임에도 이것이 gradle로 자동화된다고 한다... 현재는 잘 이해가 안간다.   
