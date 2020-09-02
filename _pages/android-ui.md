@@ -15,9 +15,74 @@ GUI 부분은 사실 어려운 부분은 아니다.
 Application 개발자로 전직후에 중요한 프로젝트를 맡으면서, 처음 개발해 보는 GUI를 미루지 않고,    
 직접 개발했던 이유는 사용자가 직접 사용하는 부분이기 때문에 그 만큼 중요하다고 생각 했기  때문이다.    
 
-# Background
+# context
 applicationContext는 Application을 의미하고,    
-baseContext는 acitivity의 Lifecycle을 따르는 Context.   
+baseContext는 acitivity의 Lifecycle을 따르는 Context이다.     
+
+# Activity
+
+
+# Fragment
+Activity는 여러 Activity들이 모여서 하나의 Activity를 구성할 수 없다.     
+여러 View들이 ViewGroup에 포함될 수 있듯이, Grouping되서 Activity를 구성할 수 있도록 해 주는 것이 Fragment이다.    
+자체적인 사용자 Event 수집, 자체적인 Lifecycle을 가지고 있으며,    
+Activity에 동적으로 Attach, Detach가 가능하다.    
+해당 Fragment의 owner 개념의 Activity를 Host Activity라고 부르며,    
+FragmentActivity를 상속한 Activity이다.   
+Host Activity의 LifeCycle이 fragment들에 영향을 미쳐서, finish가 되면 같이 소멸되고,    
+Pause가 되면 같이 Pause된다.   
+자체적인 View Layout을 가지고 있기 때문에 Activity에 포함시키기 위해서는,     
+Host Activity의 Layout resource에서 <frament>요소로 선언하거나,    
+Host Activity의 ViewGroup에 삽입하여야 한다.    
+
+Fragment는 모듈화되고, 재사용 가능하도록 설계하는 것이 좋다.    
+만약에 광고 SDK를 개발해서, 다양한 Acitivty에서 사용할 수 있도록 한다면,    
+이것을 Fragment로 만들어서 Activity에 넣도록 하는 것도 좋은 방법이라고 할 수 있다.    
+
+보통 Fragment를 상속 받아서 구현하지만,     
+DialogFragment, ListFragment(ListView를 위한), PreferenceFragmentCompat(설정화면만들기 위한)과 같이,    
+기본적으로 제공되는 Fragment도 존재한다.    
+
+## Fragment관리 
+Fragment를 사용하려면 Host Activity는 AppCompatActivity와 같이, FragmentActivity를 상속받아야 한다.    
+이 FragmentActivity는 
+
+세부적인 구현을 살펴보자면, fragment를 사용하기 위해서 상속받아야 하는 FragmentActivity는,    
+mFragments라는 FragmentController class의 field를 지니고 있다.   
+
+
+## Lifecycle
+Fragment의 Lifecycle은 다음과 같다.   
+|||
+|---|---|
+|onAttach()|특정 Activity가 host activity로서 연결된다.|  
+|onCreate()|Fragment가 생성된다.|   
+|onCreateView()|Fragment가 UI를 그린다.|    
+|onActivityCreated()||    
+|onStart()||    
+|onResume()||    
+|onPause()||    
+|onStop()||   
+|onDestroyView()||    
+|onDestroy()||    
+|onDetach()||    
+
+## fragment related classes
+androix의 경우 aosp안에서 소스를 찾을 수 없다.    
+다음과 같이 따로 받아주어야 한다.   
+```
+git clone https://android.googlesource.com/platform/frameworks/support
+```
+
+||||
+|---|---|---|
+|FragmentManager|$SUPPORT/fragment/fragment/src/main/java/androidx/fragment/app/FragmentManager.java|Activity 안에서 Fragment를 관리하기 위해 사용한다.|
+|Fragment|$AOSP/frameworks/base/core/java/android/app/Fragment.java||
+|FragmentHostCallback|frameworks/base/core/java/android/app/FragmentHostCallback.java||
+|FragmentController|$SUPPORT/fragment/fragment/src/main/java/androidx/fragment/app/FragmentActivity.java||
+|BackStackRecord|
+
+
 
 # Maintaining data
 GUI에 대해서 자세히 살펴보기 전에,  어디에 뭘 저장해야 하는지를 정리해 놓고 가는 것이 중요하다.    
@@ -75,26 +140,24 @@ class CustomAppliction : Application() {
 뭔가 여러모로 편리하지만, 단점이 많은 양날의 칼 같은 느낌이 강하다.   
 
 ## [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel?hl=ko)   
-Fragment가 detached되게 되면,    
-
-FragmentManagerImpl::moveToState()
-FragmentManagerViewModel::clearNonConfigState(Fragment f)    
-ViewModelStore::clear()   
-mMap에 저장된 해당 fragment가 own하고 있는 ViewModle들의 clear()를 실행한다.   
-
-FragmentManagerImpl::moveToState()에서는 이후 Fragment::performDetach()를 실행해서 detach를 수행한다.   
-
-
-
-
-항상 오해하는 것이 구글 내부에서 지능적으로 뭘 처리해 준다고 믿는 것이다.    
-하지만 내부를 분석해 보면 항상 별거 없으며 그렇기 때문에 정확하게 이해하는 것이 매우 중요하다.   
-
 간단하게 View에서 data를 분리 시킨 AAC(Android Architecture Component)이다.(androidx.lifecycle.ViewModel)       
-View는 Android OS와의 처리를 담당하고,     
-(가능하면 Passive View Pattern을 사용해서, 오직 데이터를 표시하고, 사용자의 Action을 ViewModel에게 전달하는 방법만 알고 있어야 한다.)    
-ViewModel은  Activity나 Fragment의 onCreate()에서 ViewModelProviders의 of() method를 통해 생성되며,    
-자신을 생성한 owner(activity나 fragment)의 생명주기와는 분리된다.   
+Presentation Layer에서 View와 ViewModel을 두어서, 
+View는 Android OS와의 interface를 담당하고,     
+ViewModel은 Data Layer의 Repository와의 interface를 담당한다.    
+
+이때 View는 Passive View Pattern으로, 오직 ViewModel의 데이터 변화를 구독하고, 사용자의 event를 ViewModel에게 전달하는 역활만을  수행해야한다.    
+ViewModel은 Activity나 Fragment의 **onCreate**()에서, **ViewModelProviders::of()**를 통해 생성된다.   
+이때 해당 method를 실행한 Activity나 Fragment는 owner가 되며, ViewModel은 owner의 Lifecycle과 연결되게 된다.    
+Activity가 화면 회전 등으로 Finish되거나, Fragment가 detached되게 되면,   
+owner에 연관된 ViewModel들은 다음과 같이 onClear()를 타게된다.    
+**FragmentManagerImpl::moveToState()**->**FragmentManagerViewModel::clearNonConfigState(Fragment f)**->**ViewModelStore::clear()**->**ViewModel::clear()**->**ViewModel::onClear()**           
+이후 FragmentManagerImpl::moveToState()에서는 Fragment::performDetach()를 실행해서 detach를 수행한다.    
+이때 ViewModel이 제거되는 것이 아니라, owner가 제거되는 것이다.    
+owner가 onCreate()를 타고 새로운 instance가 생성되면 기존 ViewModel이 여기에 다시 연결된다.  
+즉 새로운 instance가 새로운 owner가 된다.    
+
+
+이아래는 정리 해야 한다.    
 
 해당 Activity와 Fragment의 Lifecycle에 따라 유지 된다.   
 이말은 Activity가 finish()등으로 onDestroy()를 타고 종료되거나,   
