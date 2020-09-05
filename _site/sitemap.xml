@@ -41,6 +41,9 @@
 <loc>http://devdevil1901.github.io/kdb/android/emulator/</loc>
 </url>
 <url>
+<loc>http://devdevil1901.github.io/kdb/android/file/</loc>
+</url>
+<url>
 <loc>http://devdevil1901.github.io/kdb/android/flash/</loc>
 </url>
 <url>
@@ -57,6 +60,9 @@
 </url>
 <url>
 <loc>http://devdevil1901.github.io/kdb/android/memory/</loc>
+</url>
+<url>
+<loc>http://devdevil1901.github.io/kdb/android/release/</loc>
 </url>
 <url>
 <loc>http://devdevil1901.github.io/kdb/android/art/</loc>
@@ -102,6 +108,9 @@
 </url>
 <url>
 <loc>http://devdevil1901.github.io/kdb/dev/review/</loc>
+</url>
+<url>
+<loc>http://devdevil1901.github.io/kdb/dev/flutter/</loc>
 </url>
 <url>
 <loc>http://devdevil1901.github.io/kdb/dev/git/</loc>

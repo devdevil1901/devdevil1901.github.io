@@ -49,7 +49,6 @@ Android O에서 Concurrent Copying Collector가 도입되었고,
 
 RegionTLAB은 TLAB(Thread Local Allocation Buffer)를 App의 Thread에 할당 한다.   
 
-
 ConcurrentCopying::RunPhases()에서 다음의 6 단계로 진행된다.   
 1. InitializePhase
 2. MarkingPhase
@@ -221,7 +220,7 @@ art/runtime/gc/gc_cause.h
 
 
 ### 2. Reachability
-일반적인 객체 생성은 strong reference라고 불린다.     
+일반적인 new로 인한 객체 생성은 strong reference라고 불린다.     
 ```
 val AObject = new A
 ```
@@ -231,6 +230,22 @@ val AObject = new A
 ```
 val value: Integer = 3
 ```
+
+soft reference, week reference는 Wrapper class에 객체를 전달하는 구조이다.    
+**GC**가 일어났을 때, Reference가 남아있으면 GC되지 않는,    
+Strong Reference와는 달리, Reference를 특정 조건에서 회수해 버린다는 차이가 있다.     
+Soft의 경우 메모리 부족등의 GC 조건에 일치하면 회수하고,    
+Week는 무조건 회수해 버린다는 차이가 있다.   
+Reference를 구해올 때는 해당 Wrapper의 get() method를 이용한다.   
+```
+var weakReference: WeakReference<MockData> = WeakReference(MockData("week"))
+var softReference: WeakReference<MockData> = WeakReference(MockData("soft"))
+
+weekReference.get()
+softReference.get()
+```
+
+
 
 # Profiling
 
@@ -345,8 +360,6 @@ AllocNonMovableObject()
 Activity에서 import android.content.ComponentCallbacks2을 상속받아서, onTrimMemory()를 구현한다.
 System에서 App을 종료시키지 않도록 하거나, ...
 [상세한내용](https://developer.android.com/topic/performance/memory?hl=ko)   
-
-
 
 
 # References

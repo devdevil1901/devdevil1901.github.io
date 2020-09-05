@@ -20,3 +20,5 @@ layout: single
 12. [Android Linker](/kdb/android/linker/)   
 13. [Android Structure](/kdb/android/structure/)   
 14. [GUI](/kdb/android/ui/)   
+15. [File](/kdb/android/file/)   
+16. [Release](/kdb/android/release/)   

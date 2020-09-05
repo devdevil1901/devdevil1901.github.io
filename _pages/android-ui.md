@@ -15,12 +15,21 @@ GUI 부분은 사실 어려운 부분은 아니다.
 Application 개발자로 전직후에 중요한 프로젝트를 맡으면서, 처음 개발해 보는 GUI를 미루지 않고,    
 직접 개발했던 이유는 사용자가 직접 사용하는 부분이기 때문에 그 만큼 중요하다고 생각 했기  때문이다.    
 
+더 이상 유지보수되지 않는 AOSP안의 소스가 아니라,    
+Jetpack 기준으로 설명한다.   
+이 소스확인을 위해서는 Android Studio를 이용할 수도 있지만, 다음과 같이 따로 받아주는 것이 좋다.      
+```
+git clone https://android.googlesource.com/platform/frameworks/support
+```
+
 # context
 applicationContext는 Application을 의미하고,    
 baseContext는 acitivity의 Lifecycle을 따르는 Context이다.     
 
-# Activity
+# Lifecycle
+on_created
 
+# Activity
 
 # Fragment
 Activity는 여러 Activity들이 모여서 하나의 Activity를 구성할 수 없다.     
@@ -45,6 +54,9 @@ DialogFragment, ListFragment(ListView를 위한), PreferenceFragmentCompat(설�
 
 ## Fragment관리 
 Fragment를 사용하려면 Host Activity는 AppCompatActivity와 같이, FragmentActivity를 상속받아야 한다.    
+
+<pre>
+</pre>
 이 FragmentActivity는 
 
 세부적인 구현을 살펴보자면, fragment를 사용하기 위해서 상속받아야 하는 FragmentActivity는,    
@@ -68,11 +80,6 @@ Fragment의 Lifecycle은 다음과 같다.
 |onDetach()||    
 
 ## fragment related classes
-androix의 경우 aosp안에서 소스를 찾을 수 없다.    
-다음과 같이 따로 받아주어야 한다.   
-```
-git clone https://android.googlesource.com/platform/frameworks/support
-```
 
 ||||
 |---|---|---|
