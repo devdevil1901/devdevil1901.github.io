@@ -10,5 +10,5 @@ layout: single
 ### [Gradle](/kdb/dev/gradle/)
 ### [Code Review](/kdb/dev/review/)
 ### [Kotlin](/kdb/dev/kotlin/)
-### [Flutter](/kdb/dev/flutter/)
 ### [Server](/kdb/dev/server/)
+### [Multiplatform](/kdb/dev/multiplatform/)
